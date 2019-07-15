@@ -3,7 +3,6 @@ install:
   - ./gradlew :pf4j-spring-boot-support:jar
   - ./gradlew :pf4j-spring-boot-starter:jar
   - ./gradlew doMigration
-  - ./gradlew generatePf4jJooqSchemaSource
   - ./gradlew buildApp
   - ./gradlew copyDependencies
 before_install:

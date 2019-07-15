@@ -122,10 +122,46 @@ subprojects {
         testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
     }
 
-    if (isApplicationProject(name) && project.hasProperty("db.url")) {
+//*************************************************************************
+// Application & Distribution
+//*************************************************************************
+
+    startScripts {
+        dependsOn setProperties
+        doFirst {
+            it.setApplicationName("$executable")
+            it.defaultJvmOpts.add("-Dserver.port=$http_port")
+        }
+        startScripts.defaultJvmOpts.add("-XX:NewSize=192m")
+        startScripts.defaultJvmOpts.add("-XX:+UseParallelOldGC")
+        startScripts.defaultJvmOpts.add("-XX:+UseAdaptiveSizePolicy")
+        startScripts.defaultJvmOpts.add("-XX:MaxGCPauseMillis=1000")
+        startScripts.defaultJvmOpts.add("-Dfile.encoding=UTF-8")
+        startScripts.defaultJvmOpts.add("-Djava.security.egd=file:/dev/./urandom")
+
+        if (checkProperty('java_max_memory')) {
+            startScripts.defaultJvmOpts.add("-Xmx$java_max_memory")
+        }
+        if (checkProperty('java_min_memory')) {
+            startScripts.defaultJvmOpts.add("-Xms$java_min_memory")
+        }
+
+        if (checkProperty("jmx_host")) {
+            startScripts.defaultJvmOpts.add("-Dcom.sun.management.jmxremote")
+            startScripts.defaultJvmOpts.add("-Dcom.sun.management.jmxremote.authenticate=false")
+            startScripts.defaultJvmOpts.add("-Dcom.sun.management.jmxremote.ssl=false")
+            startScripts.defaultJvmOpts.add("-Dcom.sun.management.jmxremote.local.only=false")
+            startScripts.defaultJvmOpts.add("-Djava.rmi.server.hostname=$jmx_host")
+            if (checkProperty("jmx_port")) {
+                startScripts.defaultJvmOpts.add("-Dcom.sun.management.jmxremote.port=$jmx_port")
+            }
+        }
+    }
+
+    if (isApplicationProject(name)) {
 
 //*************************************************************************
-// Spring
+// Spring Boot
 //*************************************************************************
 
         bootRun {
@@ -134,116 +170,83 @@ subprojects {
             }
         }
 
-//*************************************************************************
-// Application & Distribution
-//*************************************************************************
-
         task("buildApp") {
             finalizedBy jar
         }
-
-        startScripts {
-            dependsOn setProperties
-            doFirst {
-                it.setApplicationName("$executable")
-                it.defaultJvmOpts.add("-Dserver.port=$http_port")
-            }
-            startScripts.defaultJvmOpts.add("-XX:NewSize=192m")
-            startScripts.defaultJvmOpts.add("-XX:+UseParallelOldGC")
-            startScripts.defaultJvmOpts.add("-XX:+UseAdaptiveSizePolicy")
-            startScripts.defaultJvmOpts.add("-XX:MaxGCPauseMillis=1000")
-            startScripts.defaultJvmOpts.add("-Dfile.encoding=UTF-8")
-            startScripts.defaultJvmOpts.add("-Djava.security.egd=file:/dev/./urandom")
-
-            if (checkProperty('java_max_memory')) {
-                startScripts.defaultJvmOpts.add("-Xmx$java_max_memory")
-            }
-            if (checkProperty('java_min_memory')) {
-                startScripts.defaultJvmOpts.add("-Xms$java_min_memory")
-            }
-
-            if (checkProperty("jmx_host")) {
-                startScripts.defaultJvmOpts.add("-Dcom.sun.management.jmxremote")
-                startScripts.defaultJvmOpts.add("-Dcom.sun.management.jmxremote.authenticate=false")
-                startScripts.defaultJvmOpts.add("-Dcom.sun.management.jmxremote.ssl=false")
-                startScripts.defaultJvmOpts.add("-Dcom.sun.management.jmxremote.local.only=false")
-                startScripts.defaultJvmOpts.add("-Djava.rmi.server.hostname=$jmx_host")
-                if (checkProperty("jmx_port")) {
-                    startScripts.defaultJvmOpts.add("-Dcom.sun.management.jmxremote.port=$jmx_port")
-                }
-            }
-        }
+        
+        if (project.hasProperty("db.url")) {
 
 //*************************************************************************
 // Database Initialization
 //*************************************************************************
 
-        task("doMigration") {
-            dependsOn processResources
-            doFirst {
-                println ">>>>>>>>>>> doing db_migration on ${project.'db.url'}"
+            task("doMigration") {
+                dependsOn processResources
+                doFirst {
+                    println ">>>>>>>>>>> doing db_migration on ${project.'db.url'}"
 
-                flyway {
-                    url = project.'db.url'
-                    user = project.'db.user'
-                    password = project.'db.password'
-                    driver = project.'db.driver'
-                    schemas = ["${project.'db.schema'}"]
-                    baselineVersion = '0'
-                    baselineOnMigrate = true
-                    table = project.'db.migration.table'
-                    locations = ["filesystem:$buildDir/resources/main/${project.'db.migration.location'}"]
+                    flyway {
+                        url = project.'db.url'
+                        user = project.'db.user'
+                        password = project.'db.password'
+                        driver = project.'db.driver'
+                        schemas = ["${project.'db.schema'}"]
+                        baselineVersion = '0'
+                        baselineOnMigrate = true
+                        table = project.'db.migration.table'
+                        locations = ["filesystem:$buildDir/resources/main/${project.'db.migration.location'}"]
+                    }
                 }
+                finalizedBy flywayMigrate, flywayInfo
             }
-            finalizedBy flywayMigrate, flywayInfo
-        }
 
-        task("doDataMigration") {
-            dependsOn processResources
-            doFirst {
-                println ">>>>>>>>>>> do db_data migration on ${project.'db.url'}"
+            task("doDataMigration") {
+                dependsOn processResources
+                doFirst {
+                    println ">>>>>>>>>>> do db_data migration on ${project.'db.url'}"
 
-                flyway {
-                    url = project.'db.url'
-                    user = project.'db.user'
-                    password = project.'db.password'
-                    driver = project.'db.driver'
-                    schemas = ["${project.'db.schema'}"]
-                    baselineOnMigrate = true
-                    baselineVersion = '0'
-                    table = project.'db.data.table'
-                    locations = ["filesystem:$buildDir/resources/main/${project.'db.data.location'}"]
+                    flyway {
+                        url = project.'db.url'
+                        user = project.'db.user'
+                        password = project.'db.password'
+                        driver = project.'db.driver'
+                        schemas = ["${project.'db.schema'}"]
+                        baselineOnMigrate = true
+                        baselineVersion = '0'
+                        table = project.'db.data.table'
+                        locations = ["filesystem:$buildDir/resources/main/${project.'db.data.location'}"]
+                    }
+
                 }
-
+                finalizedBy flywayMigrate, flywayInfo
             }
-            finalizedBy flywayMigrate, flywayInfo
-        }
 
-        jooq {
-            pf4j(sourceSets.main) {
-                jdbc {
-                    url = project.'db.url'
-                    user = project.'db.user'
-                    password = project.'db.password'
-                    driver = project.'db.driver'
-                }
-                generator {
-                    name = 'org.jooq.codegen.DefaultGenerator'
-                    database {
-                        name = 'org.jooq.meta.postgres.PostgresDatabase'
-                        inputSchema = project.'db.schema'
-                        includes = '.*'
-                        excludes = '_.*'
-                        forcedTypes {
-                            forcedType {
-                                userType = 'com.fasterxml.jackson.databind.JsonNode'
-                                binding = 'demo.pf4j.shared.PostgresJsonbBinding'
-                                types = 'jsonb'
+            jooq {
+                pf4j(sourceSets.main) {
+                    jdbc {
+                        url = project.'db.url'
+                        user = project.'db.user'
+                        password = project.'db.password'
+                        driver = project.'db.driver'
+                    }
+                    generator {
+                        name = 'org.jooq.codegen.DefaultGenerator'
+                        database {
+                            name = 'org.jooq.meta.postgres.PostgresDatabase'
+                            inputSchema = project.'db.schema'
+                            includes = '.*'
+                            excludes = '_.*'
+                            forcedTypes {
+                                forcedType {
+                                    userType = 'com.fasterxml.jackson.databind.JsonNode'
+                                    binding = 'demo.pf4j.shared.PostgresJsonbBinding'
+                                    types = 'jsonb'
+                                }
                             }
                         }
-                    }
-                    target {
-                        packageName = project.'jooq.target.package'
+                        target {
+                            packageName = project.'jooq.target.package'
+                        }
                     }
                 }
             }
