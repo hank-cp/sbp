@@ -9,4 +9,4 @@ addons:
   postgresql: "9.6"
 before_script:
   - psql -c 'create database pf4j;' -U postgres
-  - psql -c 'create database pf4j-test;' -U postgresh
+  - psql -c 'create database pf4j-test;' -U postgres
