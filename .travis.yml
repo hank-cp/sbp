@@ -2,14 +2,14 @@ language: java
 install:
   - ./gradlew :pf4j-spring-boot-support:jar
   - ./gradlew :pf4j-spring-boot-starter:jar
+  - ./gradlew doMigration
+  - ./gradlew generatePf4jJooqSchemaSource
   - ./gradlew buildApp
   - ./gradlew copyDependencies
+before_install:
+  - psql -c 'create database "pf4j";' -U postgres
+  - psql -c 'create database "pf4j-test";' -U postgres
 services:
   - postgresql
 addons:
   postgresql: "9.6"
-before_script:
-  - psql -c 'create database "pf4j";' -U postgres
-  - psql -c 'create database "pf4j-test";' -U postgres
-  - ./gradlew doMigration
-  - ./gradlew generatePf4jJooqSchemaSource
