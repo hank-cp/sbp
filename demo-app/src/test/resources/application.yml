@@ -1,6 +1,7 @@
 spring:
   datasource:
     url: "jdbc:postgresql://localhost/pf4j-test"
+    username: postgres
     driver-class-name: "org.postgresql.Driver"
   pf4j:
     runtimeMode: development
