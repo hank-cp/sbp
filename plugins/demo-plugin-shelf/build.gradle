@@ -1,0 +1,22 @@
+dependencies {
+    compile project(':demo-shared')
+    compile project(':demo-api')
+    compile project(':demo-plugin-author-api')
+    compile project(':pf4j-spring-boot-support')
+
+    implementation 'org.flywaydb:flyway-core:5.2.4'
+
+    runtime "org.postgresql:postgresql"
+
+    jooqRuntime "org.postgresql:postgresql"
+}
+
+//*************************************************************************
+// App Properties
+//*************************************************************************
+
+mainClassName = 'demo.pf4j.shelf.ShelfPluginStarter'
+
+manifest {
+    attributes 'Main-Class': 'demo.pf4j.shelf.ShelfPluginStarter'
+}

@@ -1,0 +1,17 @@
+spring:
+  datasource:
+    url: "jdbc:postgresql://localhost/pf4j"
+    driver-class-name: "org.postgresql.Driver"
+  flyway:
+    schemas:
+      - plugin_shelf
+    locations: classpath:db_migration
+    table: _db_migration
+  jooq:
+    sql-dialect: postgres
+
+logging:
+  level:
+    org.hibernate.tool.schema.internal.ExceptionHandlerLoggedImpl: ERROR
+    org.jooq: DEBUG
+    org.jooq.Constants: ERROR

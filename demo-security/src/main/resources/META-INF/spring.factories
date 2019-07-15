@@ -1,0 +1,4 @@
+# Auto Configure
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  demo.pf4j.security.SecurityConfig,\
+  demo.pf4j.security.PermissionCheckingAspectConfig

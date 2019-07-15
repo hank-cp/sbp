@@ -1,0 +1,20 @@
+dependencies {
+    compile project(':pf4j-spring-boot-support')
+    
+    compile "org.springframework.boot:spring-boot-starter-web"
+    compile "org.springframework.boot:spring-boot-starter-aop"
+    compile "org.springframework.boot:spring-boot-starter-data-jpa"
+    compile 'org.springframework.boot:spring-boot-starter-jooq'
+    compile "org.springframework.boot:spring-boot-configuration-processor"
+    compile "org.springframework:spring-context-support"
+
+    compile "javax.validation:validation-api:2.0.1.Final"
+    compile "joda-time:joda-time"
+    compile "com.fasterxml.jackson.datatype:jackson-datatype-joda"
+    compile 'org.modelmapper:modelmapper:2.3.0'
+    compile 'org.modelmapper.extensions:modelmapper-jooq:2.3.0'
+    
+    compile "org.apache.commons:commons-lang3:3.8.1"
+
+    compile 'org.flywaydb:flyway-core:5.2.4'
+}

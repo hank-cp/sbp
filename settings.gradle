@@ -1,0 +1,19 @@
+include 'pf4j-spring-boot-support',
+        'pf4j-spring-boot-starter',
+        'demo-shared',
+        'demo-security',
+        'demo-api',
+        'demo-plugin-author-api',
+        'demo-app',
+        'demo-plugin-author',
+        'demo-plugin-shelf',
+        'demo-plugin-library',
+        'demo-plugin-admin'
+
+project(":demo-api").projectDir = file("demo-apis/demo-api")
+project(":demo-plugin-author-api").projectDir = file("demo-apis/demo-plugin-author-api")
+
+project(":demo-plugin-author").projectDir = file("plugins/demo-plugin-author")
+project(":demo-plugin-shelf").projectDir = file("plugins/demo-plugin-shelf")
+project(":demo-plugin-library").projectDir = file("plugins/demo-plugin-library")
+project(":demo-plugin-admin").projectDir = file("plugins/demo-plugin-admin")

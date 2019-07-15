@@ -1,0 +1,29 @@
+dependencies {
+    compile project(':demo-shared')
+    compile project(':demo-api')
+    compile project(':demo-plugin-author-api')
+    compile project(':pf4j-spring-boot-support')
+
+    implementation 'org.flywaydb:flyway-core:5.2.4'
+
+    runtime "org.postgresql:postgresql"
+
+    jooqRuntime "org.postgresql:postgresql"
+}
+
+//*************************************************************************
+// App Properties
+//*************************************************************************
+
+mainClassName = 'demo.pf4j.author.AuthorPluginStarter'
+
+manifest {
+    attributes 'Main-Class': 'demo.pf4j.author.AuthorPluginStarter'
+}
+
+task copyDependencies(type: Copy) {
+    dependsOn project(':demo-shared').jar, project(':demo-api').jar
+    from configurations.compile
+    into 'libs'
+    include "demo-plugin-author-api*.jar"
+}

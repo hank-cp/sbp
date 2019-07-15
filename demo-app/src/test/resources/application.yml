@@ -1,0 +1,46 @@
+spring:
+  datasource:
+    url: "jdbc:postgresql://localhost/pf4j-test"
+    driver-class-name: "org.postgresql.Driver"
+  pf4j:
+    runtimeMode: development
+    enabled: true
+    classes-directories:
+      - "out/production/classes"
+      - "out/production/resources"
+    lib-directories:
+      - "libs"
+  flyway:
+    schemas:
+      - demo_app
+    locations: classpath:db_migration
+    table: _db_migration
+    import-data: true
+    clean-before-migrate: true
+  jooq:
+    sql-dialect: postgres
+  jpa:
+    properties:
+      hibernate:
+        temp:
+          use_jdbc_metadata_defaults: false
+    database-platform: org.hibernate.dialect.PostgreSQL9Dialect
+
+logging:
+  level:
+    org.hibernate.tool.schema.internal.ExceptionHandlerLoggedImpl: ERROR
+#    org.jooq: DEBUG
+    org.jooq.Constants: ERROR
+
+plugin:
+  properties:
+    spring:
+      flyway:
+        import-data: true
+        clean-before-migrate: true
+      jpa:
+        properties:
+          hibernate:
+            temp:
+              use_jdbc_metadata_defaults: false
+        database-platform: org.hibernate.dialect.PostgreSQL9Dialect

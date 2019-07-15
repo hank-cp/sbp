@@ -1,0 +1,24 @@
+# Created by .ignore support plugin (hsz.mobi)
+
+out
+build
+.gradle
+.idea
+*.iml
+classes
+
+**gradlew**
+**gradle-wrapper**
+**Test_**
+
+/svr_api/src/main/resources/application.properties
+/svr_web/src/main/resources/application.properties
+/local.properties
+
+/.gradletasknamecache
+
+*.log
+**/*.log
+
+tmp
+**/libs

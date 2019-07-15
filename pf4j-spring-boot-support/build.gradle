@@ -1,0 +1,10 @@
+dependencies {
+    implementation "org.springframework.boot:spring-boot"
+    implementation "org.springframework:spring-webmvc"
+
+    compile ('org.pf4j:pf4j:2.6.0') {
+        exclude group: 'org.slf4j', module: 'slf4j-log4j12'
+    }
+    
+    implementation "org.apache.commons:commons-lang3"
+}

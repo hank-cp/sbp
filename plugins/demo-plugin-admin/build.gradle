@@ -1,0 +1,20 @@
+dependencies {
+    compile project(':demo-shared')
+    compile project(':demo-api')
+    compile project(':demo-security')
+    compile project(':pf4j-spring-boot-support')
+
+    runtime "org.postgresql:postgresql"
+
+    jooqRuntime "org.postgresql:postgresql"
+}
+
+//*************************************************************************
+// App Properties
+//*************************************************************************
+
+mainClassName = 'demo.pf4j.admin.AdminPluginStarter'
+
+manifest {
+    attributes 'Main-Class': 'demo.pf4j.admin.AdminPluginStarter'
+}

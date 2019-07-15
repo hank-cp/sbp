@@ -1,0 +1,19 @@
+dependencies {
+    compile project(':demo-shared')
+    compile project(':demo-api')
+    compile project(':pf4j-spring-boot-support')
+
+    runtime "org.postgresql:postgresql"
+
+    jooqRuntime "org.postgresql:postgresql"
+}
+
+//*************************************************************************
+// App Properties
+//*************************************************************************
+
+mainClassName = 'demo.pf4j.library.LibraryPluginStarter'
+
+manifest {
+    attributes 'Main-Class': 'demo.pf4j.library.LibraryPluginStarter'
+}

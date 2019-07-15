@@ -1,0 +1,26 @@
+spring:
+  datasource:
+    url: "jdbc:postgresql://localhost/pf4j"
+    driver-class-name: "org.postgresql.Driver"
+  flyway:
+    enabled: false
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQL95Dialect
+        hbm2dll:
+          create_namespaces: true
+        database-platform: org.hibernate.dialect.PostgreSQL9Dialect
+        temp:
+          use_jdbc_metadata_defaults: false
+    show-sql: true
+  plugin:
+    false
+
+logging:
+  level:
+    org.hibernate.tool.schema.internal.ExceptionHandlerLoggedImpl: ERROR
+    org.jooq: DEBUG
+    org.jooq.Constants: ERROR

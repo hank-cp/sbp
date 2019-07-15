@@ -1,0 +1,248 @@
+
+def checkProperty(String propName) {
+    if (!project.hasProperty(propName)) return false
+    String prop = project.property(propName)
+    return prop != null && prop.length() > 0
+}
+
+def getPropertyOrElse(String propName, String alternative) {
+    if (!checkProperty(propName)) return alternative
+    return project.property(propName)
+}
+
+def isApplicationProject(String projectName) {
+    return projectName.startsWith('demo') \
+        && !projectName.endsWith('-api') \
+        && !projectName.endsWith('-shared') \
+        && !projectName.endsWith('-security')
+}
+
+buildscript {
+    ext.springBootVersion = '2.0.5.RELEASE'
+    
+    repositories {
+        jcenter()
+        mavenCentral()
+        maven { url 'http://repo.spring.io/plugins-release' }
+    }
+    dependencies {
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
+        classpath "org.yaml:snakeyaml:1.19"
+        classpath 'ch.raffael.markdown-doclet:markdown-doclet:1.4'
+    }
+}
+
+//*************************************************************************
+// IDEA
+//*************************************************************************
+
+plugins {
+    id 'idea'
+    id 'nu.studer.jooq' version '3.0.3' apply false
+    id 'org.flywaydb.flyway' version "5.2.4" apply false
+}
+
+idea {
+    module {
+        inheritOutputDirs = true
+        downloadSources = true
+    }
+}
+
+//*************************************************************************
+// Java Project Config
+//*************************************************************************
+
+subprojects {
+    repositories {
+        jcenter()
+        mavenCentral()
+        maven { url 'https://repo.spring.io/milestone' }
+        maven { url "https://jitpack.io" }
+    }
+
+    apply plugin: 'java'
+    apply plugin: 'application'
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'io.spring.dependency-management'
+    apply plugin: 'ch.raffael.markdown-doclet'
+    if (isApplicationProject(name)) {
+        apply plugin: 'nu.studer.jooq'
+        apply plugin: 'org.flywaydb.flyway'
+    }
+
+//*************************************************************************
+// Properties
+//*************************************************************************
+
+    Properties verProp = new Properties()
+    verProp.load(project.rootProject.file('version.properties').newDataInputStream())
+    ext.mainVersion = (verProp.get(("${project.name}" + '.ver' )) ?: '0.0.1').toString()
+    ext.buildNumber = (verProp.get(("${project.name}" + '.build')) ?: '1').toString()
+    version = "${mainVersion}"  //.${buildNumber}"
+
+    task setProperties {
+        doFirst {
+            project.ext.executable = "$project.name"
+        }
+    }
+
+//*************************************************************************
+// Compile & Assemble
+//*************************************************************************
+
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    tasks.withType(AbstractCompile) {
+        options.encoding = 'UTF-8'
+    }
+    tasks.withType(Javadoc) {
+        options.encoding = 'UTF-8'
+    }
+
+    jar {
+        manifest.attributes provider: 'gradle'
+        enabled true
+        doFirst {
+            archiveFileName = "$project.name-$version.${archiveExtension.get()}"
+        }
+    }
+
+    test {
+        testLogging.showStandardStreams = true
+        workingDir = project.rootDir
+    }
+
+    def lombokVersion = '1.16.20'
+
+    dependencies {
+        compile "org.projectlombok:lombok:${lombokVersion}"
+        annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+        testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+    }
+    
+//*************************************************************************
+// Spring
+//*************************************************************************
+
+    bootRun {
+        doFirst {
+            jvmArgs = ["-Dfile.encoding=UTF-8", "-Dserver.port=${http_port}"]
+        }
+    }
+
+//*************************************************************************
+// Application & Distribution
+//*************************************************************************
+
+    startScripts {
+        dependsOn setProperties
+        doFirst {
+            it.setApplicationName("$executable")
+            it.defaultJvmOpts.add("-Dserver.port=$http_port")
+        }
+        startScripts.defaultJvmOpts.add("-XX:NewSize=192m")
+        startScripts.defaultJvmOpts.add("-XX:+UseParallelOldGC")
+        startScripts.defaultJvmOpts.add("-XX:+UseAdaptiveSizePolicy")
+        startScripts.defaultJvmOpts.add("-XX:MaxGCPauseMillis=1000")
+        startScripts.defaultJvmOpts.add("-Dfile.encoding=UTF-8")
+        startScripts.defaultJvmOpts.add("-Djava.security.egd=file:/dev/./urandom")
+
+        if (checkProperty('java_max_memory')) {
+            startScripts.defaultJvmOpts.add("-Xmx$java_max_memory")
+        }
+        if (checkProperty('java_min_memory')) {
+            startScripts.defaultJvmOpts.add("-Xms$java_min_memory")
+        }
+
+        if (checkProperty("jmx_host")) {
+            startScripts.defaultJvmOpts.add("-Dcom.sun.management.jmxremote")
+            startScripts.defaultJvmOpts.add("-Dcom.sun.management.jmxremote.authenticate=false")
+            startScripts.defaultJvmOpts.add("-Dcom.sun.management.jmxremote.ssl=false")
+            startScripts.defaultJvmOpts.add("-Dcom.sun.management.jmxremote.local.only=false")
+            startScripts.defaultJvmOpts.add("-Djava.rmi.server.hostname=$jmx_host")
+            if (checkProperty("jmx_port")) {
+                startScripts.defaultJvmOpts.add("-Dcom.sun.management.jmxremote.port=$jmx_port")
+            }
+        }
+    }
+
+//*************************************************************************
+// Database Initialization
+//*************************************************************************
+
+    if (isApplicationProject(name)) {
+        task("doMigration") {
+            dependsOn processResources
+            doFirst {
+                println ">>>>>>>>>>> doing db_migration on ${project.'db.url'}"
+
+                flyway {
+                    url = project.'db.url'
+                    user = project.'db.user'
+                    password = project.'db.password'
+                    driver = project.'db.driver'
+                    schemas = ["${project.'db.schema'}"]
+                    baselineVersion = '0'
+                    baselineOnMigrate = true
+                    table = project.'db.migration.table'
+                    locations = ["filesystem:$buildDir/resources/main/${project.'db.migration.location'}"]
+                }
+            }
+            finalizedBy flywayMigrate, flywayInfo
+        }
+
+        task("doDataMigration") {
+            dependsOn processResources
+            doFirst {
+                println ">>>>>>>>>>> do db_data migration on ${project.'db.url'}"
+
+                flyway {
+                    url = project.'db.url'
+                    user = project.'db.user'
+                    password = project.'db.password'
+                    driver = project.'db.driver'
+                    schemas = ["${project.'db.schema'}"]
+                    baselineOnMigrate = true
+                    baselineVersion = '0'
+                    table = project.'db.data.table'
+                    locations = ["filesystem:$buildDir/resources/main/${project.'db.data.location'}"]
+                }
+
+            }
+            finalizedBy flywayMigrate, flywayInfo
+        }
+
+        jooq {
+            pf4j(sourceSets.main) {
+                jdbc {
+                    url = project.'db.url'
+                    user = project.'db.user'
+                    password = project.'db.password'
+                    driver = project.'db.driver'
+                }
+                generator {
+                    name = 'org.jooq.codegen.DefaultGenerator'
+                    database {
+                        name = 'org.jooq.meta.postgres.PostgresDatabase'
+                        inputSchema = project.'db.schema'
+                        includes = '.*'
+                        excludes = '_.*'
+                        forcedTypes {
+                            forcedType {
+                                userType = 'com.fasterxml.jackson.databind.JsonNode'
+                                binding = 'demo.pf4j.shared.PostgresJsonbBinding'
+                                types = 'jsonb'
+                            }
+                        }
+                    }
+                    target {
+                        packageName = project.'jooq.target.package'
+                    }
+                }
+            }
+        }
+    }
+
+}

@@ -1,0 +1,4 @@
+# Auto Configure
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  org.pf4j.spring.boot.Pf4jAutoConfiguration,\
+  org.pf4j.spring.boot.FlywayClassLoaderConfiguration
