@@ -17,4 +17,7 @@ addons:
   apt:
     packages:
       - postgresql-client-10
+env:
+  global:
+    - PGPORT=5433
 sudo: true
