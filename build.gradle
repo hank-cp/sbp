@@ -110,6 +110,9 @@ subprojects {
     }
 
     test {
+        if (isApplicationProject(name)) {
+            dependsOn generatePf4jJooqSchemaSource
+        }
         testLogging.showStandardStreams = true
         workingDir = project.rootDir
     }
