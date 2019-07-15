@@ -101,7 +101,7 @@ public class PluginIntegrationTest {
                         containsInAnyOrder("author", "shelf", "admin", "library")));
     }
 
-//    @Test
+    @Test
     public void testPluginStartStop() throws Exception {
         pluginManager.stopPlugin("demo-plugin-shelf");
 
@@ -109,11 +109,11 @@ public class PluginIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError());
 
-//        mvc.perform(get("/plugin/extensions/list")
-//                .contentType(MediaType.APPLICATION_JSON))
-//                .andExpect(status().isOk())
-//                .andExpect(jsonPath("$[*]",
-//                        containsInAnyOrder("author", "admin", "library")));
+        mvc.perform(get("/plugin/extensions/list")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[*]",
+                        containsInAnyOrder("author", "admin", "library")));
 
         pluginManager.startPlugin("demo-plugin-shelf");
 

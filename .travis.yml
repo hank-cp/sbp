@@ -1,4 +1,6 @@
 language: java
+jdk:
+  - oraclejdk8
 install:
   - ./gradlew :pf4j-spring-boot-support:jar
   - ./gradlew :pf4j-spring-boot-starter:jar
