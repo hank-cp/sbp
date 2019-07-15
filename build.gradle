@@ -77,8 +77,8 @@ subprojects {
 
     Properties verProp = new Properties()
     verProp.load(project.rootProject.file('version.properties').newDataInputStream())
-    ext.mainVersion = (verProp.get(("${project.name}" + '.ver' )) ?: '0.0.1').toString()
-    ext.buildNumber = (verProp.get(("${project.name}" + '.build')) ?: '1').toString()
+    ext.mainVersion = (verProp.get(("${project.name}" + '.ver' ).toString()) ?: '0.0.1').toString()
+    ext.buildNumber = (verProp.get(("${project.name}" + '.build').toString()) ?: '1').toString()
     version = "${mainVersion}"  //.${buildNumber}"
 
     task setProperties {
@@ -121,58 +121,63 @@ subprojects {
         annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
         testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
     }
-    
+
+    if (isApplicationProject(name) && project.hasProperty("db.url")) {
+
 //*************************************************************************
 // Spring
 //*************************************************************************
 
-    bootRun {
-        doFirst {
-            jvmArgs = ["-Dfile.encoding=UTF-8", "-Dserver.port=${http_port}"]
+        bootRun {
+            doFirst {
+                jvmArgs = ["-Dfile.encoding=UTF-8", "-Dserver.port=${http_port}"]
+            }
         }
-    }
 
 //*************************************************************************
 // Application & Distribution
 //*************************************************************************
 
-    startScripts {
-        dependsOn setProperties
-        doFirst {
-            it.setApplicationName("$executable")
-            it.defaultJvmOpts.add("-Dserver.port=$http_port")
-        }
-        startScripts.defaultJvmOpts.add("-XX:NewSize=192m")
-        startScripts.defaultJvmOpts.add("-XX:+UseParallelOldGC")
-        startScripts.defaultJvmOpts.add("-XX:+UseAdaptiveSizePolicy")
-        startScripts.defaultJvmOpts.add("-XX:MaxGCPauseMillis=1000")
-        startScripts.defaultJvmOpts.add("-Dfile.encoding=UTF-8")
-        startScripts.defaultJvmOpts.add("-Djava.security.egd=file:/dev/./urandom")
-
-        if (checkProperty('java_max_memory')) {
-            startScripts.defaultJvmOpts.add("-Xmx$java_max_memory")
-        }
-        if (checkProperty('java_min_memory')) {
-            startScripts.defaultJvmOpts.add("-Xms$java_min_memory")
+        task("buildApp") {
+            finalizedBy jar
         }
 
-        if (checkProperty("jmx_host")) {
-            startScripts.defaultJvmOpts.add("-Dcom.sun.management.jmxremote")
-            startScripts.defaultJvmOpts.add("-Dcom.sun.management.jmxremote.authenticate=false")
-            startScripts.defaultJvmOpts.add("-Dcom.sun.management.jmxremote.ssl=false")
-            startScripts.defaultJvmOpts.add("-Dcom.sun.management.jmxremote.local.only=false")
-            startScripts.defaultJvmOpts.add("-Djava.rmi.server.hostname=$jmx_host")
-            if (checkProperty("jmx_port")) {
-                startScripts.defaultJvmOpts.add("-Dcom.sun.management.jmxremote.port=$jmx_port")
+        startScripts {
+            dependsOn setProperties
+            doFirst {
+                it.setApplicationName("$executable")
+                it.defaultJvmOpts.add("-Dserver.port=$http_port")
+            }
+            startScripts.defaultJvmOpts.add("-XX:NewSize=192m")
+            startScripts.defaultJvmOpts.add("-XX:+UseParallelOldGC")
+            startScripts.defaultJvmOpts.add("-XX:+UseAdaptiveSizePolicy")
+            startScripts.defaultJvmOpts.add("-XX:MaxGCPauseMillis=1000")
+            startScripts.defaultJvmOpts.add("-Dfile.encoding=UTF-8")
+            startScripts.defaultJvmOpts.add("-Djava.security.egd=file:/dev/./urandom")
+
+            if (checkProperty('java_max_memory')) {
+                startScripts.defaultJvmOpts.add("-Xmx$java_max_memory")
+            }
+            if (checkProperty('java_min_memory')) {
+                startScripts.defaultJvmOpts.add("-Xms$java_min_memory")
+            }
+
+            if (checkProperty("jmx_host")) {
+                startScripts.defaultJvmOpts.add("-Dcom.sun.management.jmxremote")
+                startScripts.defaultJvmOpts.add("-Dcom.sun.management.jmxremote.authenticate=false")
+                startScripts.defaultJvmOpts.add("-Dcom.sun.management.jmxremote.ssl=false")
+                startScripts.defaultJvmOpts.add("-Dcom.sun.management.jmxremote.local.only=false")
+                startScripts.defaultJvmOpts.add("-Djava.rmi.server.hostname=$jmx_host")
+                if (checkProperty("jmx_port")) {
+                    startScripts.defaultJvmOpts.add("-Dcom.sun.management.jmxremote.port=$jmx_port")
+                }
             }
         }
-    }
 
 //*************************************************************************
 // Database Initialization
 //*************************************************************************
 
-    if (isApplicationProject(name)) {
         task("doMigration") {
             dependsOn processResources
             doFirst {
@@ -244,5 +249,4 @@ subprojects {
             }
         }
     }
-
 }

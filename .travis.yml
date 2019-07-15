@@ -1,8 +1,9 @@
 language: java
 install:
   - ./gradlew :pf4j-spring-boot-support:jar
-  - ./gradlew :pf4j-spring-boot-start:jar
-  - ./gradlew :demo-plugin-author:copyDependencies
+  - ./gradlew :pf4j-spring-boot-starter:jar
+  - ./gradlew buildApp
+  - ./gradlew copyDependencies
 services:
   - postgresql
 addons:
