@@ -3,6 +3,8 @@ install:
   - ./gradlew :pf4j-spring-boot-support:jar
   - ./gradlew :pf4j-spring-boot-start:jar
   - ./gradlew :demo-plugin-author:copyDependencies
+  - ./gradlew doMigration
+  - ./gradlew generatePf4jJooqSchemaSource
 services:
   - postgresql
 addons:
