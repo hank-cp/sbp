@@ -112,6 +112,10 @@ subprojects {
     test {
         testLogging.showStandardStreams = true
         workingDir = project.rootDir
+        testLogging {
+            events "failed"
+            exceptionFormat "short"
+        }
     }
 
     def lombokVersion = '1.16.20'
@@ -173,7 +177,7 @@ subprojects {
         task("buildApp") {
             finalizedBy jar
         }
-        
+
         if (project.hasProperty("db.url")) {
 
 //*************************************************************************
