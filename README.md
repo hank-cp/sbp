@@ -2,6 +2,11 @@
 ![Travis (.org)](https://img.shields.io/travis/hank-cp/pf4j-spring-boot.svg)
 ![GitHub](https://img.shields.io/github/license/hank-cp/pf4j-spring-boot.svg)
 ![GitHub last commit](https://img.shields.io/github/last-commit/hank-cp/pf4j-spring-boot.svg)
+[![](https://jitpack.io/v/hank-cp/pf4j-spring-boot.svg)](https://jitpack.io/#hank-cp/pf4j-spring-boot)
+<!---
+[![](https://jitpack.io/v/hank-cp/pf4j-spring-boot.svg)](https://jitpack.io/#hank-cp/pf4j-spring-boot)
+-->
+
 
 pf4j-spring-boot introduce plugin oriented programming to Spring Boot. It is inspired and builds 
 on top of [Pf4j](https://pf4j.org/) project. 
@@ -57,11 +62,31 @@ application, just like any single service provider node in Spring Cloud network.
 2. Introduce `pf4j-spring-boot-starter` to dependencies.
     * Maven
         ```
-        TBD
+        <repositories>
+            <repository>
+                <id>jitpack.io</id>
+                <url>https://jitpack.io</url>
+            </repository>
+        </repositories>
+         
+        <dependency>
+            <groupId>com.github.hank-cp.pf4j-spring-boot</groupId>
+            <artifactId>pf4j-spring-boot-starter</artifactId>
+            <version>0.1.0</version>
+        </dependency>
         ```
     * Gradle
         ```
-        TBD
+        allprojects {
+            repositories {
+                ...
+                maven { url 'https://jitpack.io' }
+            }
+        }
+        	
+        dependencies {
+                implementation 'com.github.hank-cp.pf4j-spring-boot:pf4j-spring-boot-starter:0.1.0'
+        }
         ```
 4. Add belows to `application.properties`.
     ```
@@ -124,8 +149,7 @@ API via AOP.
 everything we need in the real project. 
 
 ### Documentation
-* [Plugin driven design]()
-* [How it works]()
+* [How it works](docs/how_it_works.md)
     * Plugin loading by pf4j
     * Get involved with Spring `ApplicationContext` initialization process.
     * Constraint
