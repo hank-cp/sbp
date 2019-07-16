@@ -123,9 +123,9 @@ subprojects {
     dependencies {
         compile "org.projectlombok:lombok:${lombokVersion}"
         annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
-        annotationProcessor "'org.pf4j:pf4j:2.6.0'"
+        annotationProcessor "org.pf4j:pf4j:2.6.0"
         testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
-        testAnnotationProcessor "'org.pf4j:pf4j:2.6.0'"
+        testAnnotationProcessor "org.pf4j:pf4j:2.6.0"
     }
 
 //*************************************************************************
