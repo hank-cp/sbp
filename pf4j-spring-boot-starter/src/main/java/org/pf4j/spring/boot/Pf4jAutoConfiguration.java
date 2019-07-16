@@ -85,6 +85,7 @@ public class Pf4jAutoConfiguration {
 	}
 
 	@Bean
+	@ConditionalOnMissingBean
 	public PluginManager pluginManager(Pf4jProperties properties,
 									   Pf4jPluginProperties pluginProperties) {
 		// Setup RuntimeMode

@@ -22,11 +22,12 @@ import org.modelmapper.convention.NameTokenizers;
 import org.modelmapper.jooq.RecordValueReader;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.context.annotation.Profile;
 
 /**
  * @author <a href="https://github.com/hank-cp">Hank CP</a>
@@ -34,18 +35,24 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 @SpringBootApplication(scanBasePackages = "demo.pf4j", exclude = {
         SecurityAutoConfiguration.class, SecurityFilterAutoConfiguration.class
 })
+@Profile("no_security")
 public class DemoApp {
 
     public static void main(String[] args) {
-        SpringApplication.run(DemoApp.class, args);
+        SpringApplicationBuilder builder = new SpringApplicationBuilder();
+        builder.profiles("no_security");
+        builder.sources(DemoApp.class);
+        builder.build().run();
     }
 
     @Bean
+    @ConditionalOnMissingBean
     public ApplicationContextProvider applicationContextProvider() {
         return new ApplicationContextProvider();
     }
 
     @Bean
+    @ConditionalOnMissingBean
     public ModelMapper modelMapper() {
         ModelMapper mapper = new ModelMapper();
         mapper.getConfiguration().setSourceNameTokenizer(NameTokenizers.CAMEL_CASE)

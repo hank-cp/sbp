@@ -1,3 +1,8 @@
+![GitHub release](https://img.shields.io/github/release/hank-cp/pf4j-spring-boot.svg)
+![Travis (.org)](https://img.shields.io/travis/hank-cp/pf4j-spring-boot.svg)
+![GitHub](https://img.shields.io/github/license/hank-cp/pf4j-spring-boot.svg)
+![GitHub last commit](https://img.shields.io/github/last-commit/hank-cp/pf4j-spring-boot.svg)
+
 pf4j-spring-boot introduce plugin oriented programming to Spring Boot. It is inspired and builds 
 on top of [Pf4j](https://pf4j.org/) project. 
 

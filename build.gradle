@@ -18,29 +18,29 @@ def isApplicationProject(String projectName) {
 }
 
 buildscript {
-    ext.springBootVersion = '2.0.5.RELEASE'
-    
     repositories {
         jcenter()
         mavenCentral()
         maven { url 'http://repo.spring.io/plugins-release' }
     }
     dependencies {
-        classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
         classpath "org.yaml:snakeyaml:1.19"
         classpath 'ch.raffael.markdown-doclet:markdown-doclet:1.4'
     }
 }
 
-//*************************************************************************
-// IDEA
-//*************************************************************************
-
 plugins {
     id 'idea'
+    id "io.spring.dependency-management" version "1.0.8.RELEASE"
+    id "org.springframework.boot" version "2.1.6.RELEASE" apply false
     id 'nu.studer.jooq' version '3.0.3' apply false
     id 'org.flywaydb.flyway' version "5.2.4" apply false
 }
+
+
+//*************************************************************************
+// IDEA
+//*************************************************************************
 
 idea {
     module {
@@ -62,11 +62,11 @@ subprojects {
     }
 
     apply plugin: 'java'
-    apply plugin: 'application'
-    apply plugin: 'org.springframework.boot'
     apply plugin: 'io.spring.dependency-management'
     apply plugin: 'ch.raffael.markdown-doclet'
     if (isApplicationProject(name)) {
+        apply plugin: 'application'
+        apply plugin: 'org.springframework.boot'
         apply plugin: 'nu.studer.jooq'
         apply plugin: 'org.flywaydb.flyway'
     }
@@ -129,46 +129,24 @@ subprojects {
     }
 
 //*************************************************************************
-// Application & Distribution
+// Build Tasks
 //*************************************************************************
 
-    startScripts {
-        dependsOn setProperties
-        doFirst {
-            it.setApplicationName("$executable")
-            it.defaultJvmOpts.add("-Dserver.port=$http_port")
-        }
-        startScripts.defaultJvmOpts.add("-XX:NewSize=192m")
-        startScripts.defaultJvmOpts.add("-XX:+UseParallelOldGC")
-        startScripts.defaultJvmOpts.add("-XX:+UseAdaptiveSizePolicy")
-        startScripts.defaultJvmOpts.add("-XX:MaxGCPauseMillis=1000")
-        startScripts.defaultJvmOpts.add("-Dfile.encoding=UTF-8")
-        startScripts.defaultJvmOpts.add("-Djava.security.egd=file:/dev/./urandom")
-
-        if (checkProperty('java_max_memory')) {
-            startScripts.defaultJvmOpts.add("-Xmx$java_max_memory")
-        }
-        if (checkProperty('java_min_memory')) {
-            startScripts.defaultJvmOpts.add("-Xms$java_min_memory")
-        }
-
-        if (checkProperty("jmx_host")) {
-            startScripts.defaultJvmOpts.add("-Dcom.sun.management.jmxremote")
-            startScripts.defaultJvmOpts.add("-Dcom.sun.management.jmxremote.authenticate=false")
-            startScripts.defaultJvmOpts.add("-Dcom.sun.management.jmxremote.ssl=false")
-            startScripts.defaultJvmOpts.add("-Dcom.sun.management.jmxremote.local.only=false")
-            startScripts.defaultJvmOpts.add("-Djava.rmi.server.hostname=$jmx_host")
-            if (checkProperty("jmx_port")) {
-                startScripts.defaultJvmOpts.add("-Dcom.sun.management.jmxremote.port=$jmx_port")
-            }
-        }
+    task("buildApp") {
+        finalizedBy jar
     }
-
-    if (isApplicationProject(name)) {
 
 //*************************************************************************
 // Spring Boot
 //*************************************************************************
+
+    dependencyManagement {
+        imports {
+            mavenBom org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES
+        }
+    }
+
+    if (isApplicationProject(name)) {
 
         bootRun {
             doFirst {
@@ -176,8 +154,40 @@ subprojects {
             }
         }
 
-        task("buildApp") {
-            finalizedBy jar
+//*************************************************************************
+// Application & Distribution
+//*************************************************************************
+
+        startScripts {
+            dependsOn setProperties
+            doFirst {
+                it.setApplicationName("$executable")
+                it.defaultJvmOpts.add("-Dserver.port=$http_port")
+            }
+            startScripts.defaultJvmOpts.add("-XX:NewSize=192m")
+            startScripts.defaultJvmOpts.add("-XX:+UseParallelOldGC")
+            startScripts.defaultJvmOpts.add("-XX:+UseAdaptiveSizePolicy")
+            startScripts.defaultJvmOpts.add("-XX:MaxGCPauseMillis=1000")
+            startScripts.defaultJvmOpts.add("-Dfile.encoding=UTF-8")
+            startScripts.defaultJvmOpts.add("-Djava.security.egd=file:/dev/./urandom")
+
+            if (checkProperty('java_max_memory')) {
+                startScripts.defaultJvmOpts.add("-Xmx$java_max_memory")
+            }
+            if (checkProperty('java_min_memory')) {
+                startScripts.defaultJvmOpts.add("-Xms$java_min_memory")
+            }
+
+            if (checkProperty("jmx_host")) {
+                startScripts.defaultJvmOpts.add("-Dcom.sun.management.jmxremote")
+                startScripts.defaultJvmOpts.add("-Dcom.sun.management.jmxremote.authenticate=false")
+                startScripts.defaultJvmOpts.add("-Dcom.sun.management.jmxremote.ssl=false")
+                startScripts.defaultJvmOpts.add("-Dcom.sun.management.jmxremote.local.only=false")
+                startScripts.defaultJvmOpts.add("-Djava.rmi.server.hostname=$jmx_host")
+                if (checkProperty("jmx_port")) {
+                    startScripts.defaultJvmOpts.add("-Dcom.sun.management.jmxremote.port=$jmx_port")
+                }
+            }
         }
 
         if (project.hasProperty("db.url")) {

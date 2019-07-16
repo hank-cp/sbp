@@ -15,6 +15,7 @@
  */
 package demo.security;
 
+import demo.pf4j.app.DemoApp;
 import demo.pf4j.shared.IdsConverter;
 import demo.pf4j.shared.spring.ApplicationContextProvider;
 import org.modelmapper.ModelMapper;
@@ -22,6 +23,7 @@ import org.modelmapper.convention.NameTokenizers;
 import org.modelmapper.jooq.RecordValueReader;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -39,11 +41,13 @@ public class DemoSecurityApp {
     }
 
     @Bean
+    @ConditionalOnMissingBean
     public ApplicationContextProvider applicationContextProvider() {
         return new ApplicationContextProvider();
     }
 
     @Bean
+    @ConditionalOnMissingBean
     public ModelMapper modelMapper() {
         ModelMapper mapper = new ModelMapper();
         mapper.getConfiguration().setSourceNameTokenizer(NameTokenizers.CAMEL_CASE)
@@ -51,5 +55,4 @@ public class DemoSecurityApp {
         mapper.addConverter(new IdsConverter());
         return mapper;
     }
-
 }
