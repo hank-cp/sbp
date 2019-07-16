@@ -20,7 +20,6 @@ import demo.pf4j.shared.spring.ApplicationContextProvider;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.NameTokenizers;
 import org.modelmapper.jooq.RecordValueReader;
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
@@ -33,7 +32,7 @@ import org.springframework.context.annotation.Profile;
  * @author <a href="https://github.com/hank-cp">Hank CP</a>
  */
 @SpringBootApplication(scanBasePackages = "demo.pf4j", exclude = {
-        SecurityAutoConfiguration.class, SecurityFilterAutoConfiguration.class
+        SecurityAutoConfiguration.class, SecurityFilterAutoConfiguration.class,
 })
 @Profile("no_security")
 public class DemoApp {

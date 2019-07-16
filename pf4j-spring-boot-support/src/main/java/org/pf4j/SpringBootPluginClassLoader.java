@@ -21,6 +21,8 @@ import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author <a href="https://github.com/hank-cp">Hank CP</a>
@@ -29,10 +31,21 @@ public class SpringBootPluginClassLoader extends PluginClassLoader {
 
     private static final Logger log = LoggerFactory.getLogger(SpringBootPluginClassLoader.class);
 
+    private List<String> pluginFirstClasses;
+
     public SpringBootPluginClassLoader(PluginManager pluginManager, PluginDescriptor pluginDescriptor, ClassLoader parent) {
         // load class from parent first to avoid same class loaded by different classLoader,
         // so Spring could autowired bean by type correctly.
         super(pluginManager, pluginDescriptor, parent, true);
+    }
+
+    public void setPluginFirstClasses(List<String> pluginFirstClasses) {
+        this.pluginFirstClasses = pluginFirstClasses.stream()
+                .map(pluginFirstClass -> pluginFirstClass
+                        .replaceAll(".", "[$0]")
+                        .replace("[*]", ".*?")
+                        .replace("[?]", ".?"))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -52,23 +65,64 @@ public class SpringBootPluginClassLoader extends PluginClassLoader {
     @Override
     public Class<?> loadClass(String className) throws ClassNotFoundException {
         try {
-            return super.loadClass(className);
-        } catch (ClassNotFoundException e) {
-            // try again in in dependencies classpath
-            try {
-                Method loadClassFromDependenciesMethod = ReflectionUtils.findMethod(getClass(),
-                        "loadClassFromDependencies", String.class);
-                loadClassFromDependenciesMethod.setAccessible(true);
-                Class<?> loadedClass = (Class<?>) loadClassFromDependenciesMethod.invoke(this, className);
-                if (loadedClass != null) {
-                    log.trace("Found class '{}' in dependencies", className);
-                    return loadedClass;
-                }
-            } catch (Exception ex) {
-                throw new ClassNotFoundException(className);
+            // if specified, try to load from plugin classpath first
+            if (pluginFirstClasses != null && testClassNameInWildcard(className)) {
+                try {
+                    return loadClassFromPlugin(className);
+                } catch (ClassNotFoundException ignored) {}
             }
-        }
+            // not found, load from parent
+            return super.loadClass(className);
+        } catch (ClassNotFoundException ignored) {}
 
+        // try again in in dependencies classpath
+        return loadClassFromDependencies(className);
+    }
+
+    private boolean testClassNameInWildcard(String className) {
+        for (String pluginFirstClass : pluginFirstClasses) {
+            if (className.matches(pluginFirstClass)) return true;
+        }
+        return false;
+    }
+
+    private Class<?> loadClassFromPlugin(String className) throws ClassNotFoundException {
+        synchronized (getClassLoadingLock(className)) {
+            log.trace("Received request to load class '{}'", className);
+
+            // second check whether it's already been loaded
+            Class<?> loadedClass = findLoadedClass(className);
+            if (loadedClass != null) {
+                log.trace("Found loaded class '{}'", className);
+                return loadedClass;
+            }
+
+            // nope, try to load locally
+            try {
+                loadedClass = findClass(className);
+                log.trace("Found class '{}' in plugin classpath", className);
+                return loadedClass;
+            } catch (ClassNotFoundException ignored) {}
+
+            // try next step
+            return loadClassFromDependencies(className);
+        }
+    }
+
+    private Class<?> loadClassFromDependencies(String className) throws ClassNotFoundException {
+        try {
+            Method loadClassFromDependenciesMethod = ReflectionUtils.findMethod(getClass().getSuperclass(),
+                    "loadClassFromDependencies", String.class);
+            loadClassFromDependenciesMethod.setAccessible(true);
+            Class<?> loadedClass = (Class<?>) loadClassFromDependenciesMethod.invoke(this, className);
+            if (loadedClass != null) {
+                log.trace("Found class '{}' in dependencies", className);
+                return loadedClass;
+            }
+        } catch (Exception ex) {
+            throw new ClassNotFoundException(className);
+        }
         throw new ClassNotFoundException(className);
     }
+
 }

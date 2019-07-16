@@ -158,6 +158,9 @@ everything we need in the real project.
 * [Persistence]()
     * Plain SQL / Jooq
     * Spring Data (JPA / Hibernate)
+        * copyDependencies
+        * plugin.pluginFirstClasses
+        * javax.transaction:javax.transaction-api
     * NoSQL (Mongo / Redis)
 * [Security / AOP]()
 * [Deployment]()
@@ -175,6 +178,7 @@ everything we need in the real project.
 * Management console
 * Front End modularization
 * Continuous Deployment
+* Optimize ClassLoader
 
 ### Note
 * Package name cannot start with `org.pf4j`

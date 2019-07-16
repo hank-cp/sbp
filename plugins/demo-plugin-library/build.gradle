@@ -1,7 +1,14 @@
+configurations {
+    jpa
+}
+
 dependencies {
     compile project(':demo-shared')
     compile project(':demo-api')
     compile project(':pf4j-spring-boot-support')
+
+    implementation "org.springframework.boot:spring-boot-starter-data-jpa"
+    jpa "org.springframework.boot:spring-boot-starter-data-jpa"
 
     runtime "org.postgresql:postgresql"
 
@@ -16,4 +23,10 @@ mainClassName = 'demo.pf4j.library.LibraryPluginStarter'
 
 manifest {
     attributes 'Main-Class': 'demo.pf4j.library.LibraryPluginStarter'
+}
+
+task copyDependencies(type: Copy) {
+    from configurations.jpa.files
+    into 'libs'
+//    include "demo-plugin-author-api*.jar"
 }

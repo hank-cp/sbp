@@ -3,7 +3,6 @@ dependencies {
     
     compile "org.springframework.boot:spring-boot-starter-web"
     compile "org.springframework.boot:spring-boot-starter-aop"
-    compile "org.springframework.boot:spring-boot-starter-data-jpa"
     compile 'org.springframework.boot:spring-boot-starter-jooq'
     compile "org.springframework.boot:spring-boot-configuration-processor"
     compile "org.springframework:spring-context-support"

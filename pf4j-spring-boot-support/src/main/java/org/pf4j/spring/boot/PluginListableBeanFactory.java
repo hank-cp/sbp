@@ -13,27 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package demo.pf4j.library;
+package org.pf4j.spring.boot;
 
-import org.pf4j.PluginWrapper;
-import org.pf4j.SpringBootPlugin;
-import org.pf4j.spring.boot.SharedResourceSpringBootstrap;
-import org.pf4j.spring.boot.SpringBootstrap;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.beans.factory.support.RootBeanDefinition;
 
 /**
  * @author <a href="https://github.com/hank-cp">Hank CP</a>
  */
-public class LibraryPlugin extends SpringBootPlugin {
+public class PluginListableBeanFactory extends DefaultListableBeanFactory {
 
-    public LibraryPlugin(PluginWrapper wrapper) {
-        super(wrapper);
+    private ClassLoader classLoader;
+
+    public PluginListableBeanFactory(ClassLoader classLoader) {
+        this.classLoader = classLoader;
     }
 
-    @Override
-    protected SpringBootstrap createSpringBootstrap() {
-        return new SharedResourceSpringBootstrap(
-                this, LibraryPluginStarter.class)
-                .addSharedBeanName("bookService");
+    protected Class<?> predictBeanType(String beanName, RootBeanDefinition mbd, Class<?>... typesToMatch) {
+        try {
+            return classLoader.loadClass(beanName);
+        } catch (ClassNotFoundException ignored) {}
+        return super.predictBeanType(beanName, mbd, typesToMatch);
     }
 
 }

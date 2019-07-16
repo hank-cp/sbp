@@ -16,9 +16,11 @@
 package org.pf4j.spring.boot;
 
 import org.pf4j.SpringBootPlugin;
+import org.pf4j.SpringBootPluginClassLoader;
 import org.pf4j.SpringBootPluginManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.Banner;
 import org.springframework.boot.SpringApplication;
@@ -31,10 +33,10 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.ReflectionUtils;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
+import java.lang.reflect.Field;
+import java.util.*;
 
 /**
  * Base plugin {@link ApplicationContext} bootstrap class like {@link SpringApplication}
@@ -74,6 +76,8 @@ public class SpringBootstrap extends SpringApplication {
 
     private final Map<String, Object> presetProperties = new HashMap<>();
 
+    private List<String> pluginFirstClasses;
+
     /**
      * Constructor should be the only thing need to take care for this Class.
      * Generally new an instance and {@link #run(String...)} it
@@ -81,6 +85,7 @@ public class SpringBootstrap extends SpringApplication {
      *
      * @param primarySources {@link SpringApplication} that annotated with {@link SpringBootApplication}
      */
+    @SuppressWarnings("JavadocReference")
     public SpringBootstrap(SpringBootPlugin plugin,
                            Class<?>... primarySources) {
         super(new DefaultResourceLoader(plugin.getWrapper().getPluginClassLoader()), primarySources);
@@ -121,6 +126,22 @@ public class SpringBootstrap extends SpringApplication {
         environment.getPropertySources().addLast(new ExcludeConfigurations());
     }
 
+    @Override
+    protected void bindToSpringApplication(ConfigurableEnvironment environment) {
+        super.bindToSpringApplication(environment);
+
+        pluginFirstClasses = new ArrayList<>();
+        String pluginFirstClassesProp = null;
+        int i = 0;
+        do {
+            pluginFirstClassesProp = environment.getProperty(
+                    String.format("plugin.pluginFirstClasses[%s]", i++));
+            if (pluginFirstClassesProp != null) {
+                pluginFirstClasses.add(pluginFirstClassesProp);
+            }
+        } while (pluginFirstClassesProp != null);
+    }
+
     /** Override this methods to customize excluded spring boot configuration */
     protected String[] getExcludeConfigurations() {
         return DEFAULT_EXCLUDE_CONFIGURATIONS;
@@ -132,6 +153,7 @@ public class SpringBootstrap extends SpringApplication {
         AnnotationConfigApplicationContext applicationContext =
                 (AnnotationConfigApplicationContext) super.createApplicationContext();
 //        applicationContext.setParent(mainApplicationContext);
+        hackBeanFactory(applicationContext);
         applicationContext.setClassLoader(pluginClassLoader);
 
         applicationContext.getBeanFactory().registerSingleton(PLUGIN_BEAN_NAME, plugin);
@@ -143,6 +165,22 @@ public class SpringBootstrap extends SpringApplication {
             }
         }
         return applicationContext;
+    }
+
+    private void hackBeanFactory(ApplicationContext applicationContext) {
+        if (pluginFirstClasses != null
+                && pluginClassLoader instanceof SpringBootPluginClassLoader) {
+            ((SpringBootPluginClassLoader) pluginClassLoader)
+                    .setPluginFirstClasses(pluginFirstClasses);
+        }
+
+        BeanFactory beanFactory = new PluginListableBeanFactory(pluginClassLoader);
+        Field beanFactoryField = ReflectionUtils.findField(
+                applicationContext.getClass(), "beanFactory");
+        if (beanFactoryField != null) {
+            beanFactoryField.setAccessible(true);
+            ReflectionUtils.setField(beanFactoryField, applicationContext, beanFactory);
+        }
     }
 
     protected void registerBeanFromMainContext(AbstractApplicationContext applicationContext,

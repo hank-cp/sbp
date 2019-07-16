@@ -3,4 +3,6 @@
 # - add one plugin id on each line
 # - put this file in plugins folder
 ########################################
-# demo-plugin-author
+#demo-plugin-author
+#demo-plugin-shelf
+#demo-plugin-admin

@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Properties for PF4j
+ * Properties for PF4j plugin
  * @author <a href="https://github.com/hank-cp">Hank CP</a>
  * @see Pf4jAutoConfiguration
  */
@@ -34,4 +34,9 @@ public class Pf4jPluginProperties {
 
 	Map<String, Object> properties = new HashMap<>();
 
+	/**
+	 * Load these classes from plugin classpath first,
+	 * e.g Spring Boot AutoConfiguration used in plugin only.
+	 */
+	private String[] pluginFirstClasses = {};
 }

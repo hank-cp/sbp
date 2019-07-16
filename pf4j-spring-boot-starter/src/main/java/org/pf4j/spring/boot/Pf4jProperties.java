@@ -33,9 +33,13 @@ public class Pf4jProperties {
 
 	public static final String PREFIX = "spring.pf4j";
 
-	/** Enable Pf4j. */
+	/**
+	 * Enable Pf4j
+	 */
 	private boolean enabled = false;
-	/** Auto start plugin when main app is ready. */
+	/**
+	 * Auto start plugin when main app is ready
+	 */
 	private boolean autoStartPlugin = true;
 	/**
 	 * Set to true to allow requires expression to be exactly x.y.z. The default is
@@ -43,20 +47,35 @@ public class Pf4jProperties {
 	 * same as >=x.y.z
 	 */
 	private boolean exactVersionAllowed = false;
-	/** Extended Plugin Class Directory **/
+	/**
+	 * Extended Plugin Class Directory
+	 */
 	private List<String> classesDirectories = new ArrayList<>();
-	/** Extended Plugin Jar Directory **/
+	/**
+	 * Extended Plugin Jar Directory
+	 */
 	private List<String> libDirectories = new ArrayList<>();
-	/** Runtime Mode：development、 deployment **/
+	/**
+	 * Runtime Mode：development/deployment
+	 */
 	private RuntimeMode runtimeMode = RuntimeMode.DEPLOYMENT;
 	/**
 	 * Plugin root directory: default “plugins”; when non-jar mode plugin, the value
 	 * should be an absolute directory address
-	 **/
+	 */
 	private String pluginsRoot = "plugins";
-	/** Plugin address: absolute address **/
+	/**
+	 * Plugin address: absolute address
+	 */
 	private List<String> plugins = new ArrayList<>();
-	/* The system version used for comparisons to the plugin requires attribute. */
+	/**
+	 * The system version used for comparisons to the plugin requires attribute.
+	 */
 	private String systemVersion = "0.0.0";
+	/**
+	 * Load these classes from plugin classpath first,
+	 * e.g Spring Boot AutoConfiguration used in plugin only.
+	 */
+	private String[] pluginFirstClasses = {};
 
 }
