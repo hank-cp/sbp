@@ -4,8 +4,10 @@ dependencies {
     compile project(':demo-api')
     compile project(':demo-security')
 
-    implementation 'javax.transaction:javax.transaction-api'
     implementation 'org.flywaydb:flyway-core:5.2.4'
+
+    implementation 'javax.transaction:javax.transaction-api'
+    implementation 'org.hibernate:hibernate-core'
 
     runtime "org.postgresql:postgresql"
 

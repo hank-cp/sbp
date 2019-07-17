@@ -26,4 +26,6 @@ public interface BookService {
 
     Book persistBook(String name);
 
+    void deleteBook(long id);
+
 }

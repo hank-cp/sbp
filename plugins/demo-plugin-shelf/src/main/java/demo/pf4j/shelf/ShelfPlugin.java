@@ -33,7 +33,8 @@ public class ShelfPlugin extends SpringBootPlugin {
     protected SpringBootstrap createSpringBootstrap() {
         return new SharedResourceSpringBootstrap(this, ShelfPluginStarter.class)
                 .addSharedBeanName("bookService")
-                .addSharedBeanName("authorService");
+                .addSharedBeanName("authorService")
+                .addSharedBeanName("transactionManager");
     }
 
 }

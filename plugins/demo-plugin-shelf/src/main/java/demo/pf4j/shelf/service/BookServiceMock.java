@@ -36,4 +36,9 @@ public class BookServiceMock implements BookService {
         author.name = name;
         return author;
     }
+
+    @Override
+    public void deleteBook(long id) {
+
+    }
 }

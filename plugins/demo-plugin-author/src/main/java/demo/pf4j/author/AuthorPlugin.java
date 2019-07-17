@@ -32,7 +32,8 @@ public class AuthorPlugin extends SpringBootPlugin {
     @Override
     protected SpringBootstrap createSpringBootstrap() {
         return new SharedResourceSpringBootstrap(this, AuthorPluginStarter.class)
-                .addSharedBeanName("bookService");
+                .addSharedBeanName("bookService")
+                .addSharedBeanName("transactionManager");
     }
 
 }

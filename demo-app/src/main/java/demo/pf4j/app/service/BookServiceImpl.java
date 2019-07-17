@@ -63,4 +63,12 @@ public class BookServiceImpl implements BookService {
                 .returning()
                 .fetchOne().map(e -> mapper.map(e, Book.class));
     }
+
+    @Override
+    @Transactional
+    public void deleteBook(long bookId) {
+        dslContext.deleteFrom(BOOK)
+                .where(BOOK.ID.eq(bookId))
+                .execute();
+    }
 }

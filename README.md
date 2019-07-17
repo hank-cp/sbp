@@ -1,9 +1,9 @@
-![GitHub release](https://img.shields.io/github/release/hank-cp/pf4j-spring-boot.svg)
-![Travis (.org)](https://img.shields.io/travis/hank-cp/pf4j-spring-boot.svg)
+[![GitHub release](https://img.shields.io/github/release/hank-cp/pf4j-spring-boot.svg)](https://github.com/hank-cp/pf4j-spring-boot/releases)
+[![](https://jitpack.io/v/hank-cp/pf4j-spring-boot.svg)](https://jitpack.io/#hank-cp/pf4j-spring-boot)
+[![Travis (.org)](https://img.shields.io/travis/hank-cp/pf4j-spring-boot.svg)](https://travis-ci.org/hank-cp/pf4j-spring-boot)
 ![GitHub](https://img.shields.io/github/license/hank-cp/pf4j-spring-boot.svg)
 ![GitHub last commit](https://img.shields.io/github/last-commit/hank-cp/pf4j-spring-boot.svg)
-[![](https://jitpack.io/v/hank-cp/pf4j-spring-boot.svg)](https://jitpack.io/#hank-cp/pf4j-spring-boot)
-<!---
+<!--
 [![](https://jitpack.io/v/hank-cp/pf4j-spring-boot.svg)](https://jitpack.io/#hank-cp/pf4j-spring-boot)
 -->
 
@@ -150,39 +150,18 @@ everything we need in the real project.
 
 ### Documentation
 * [How it works](docs/how_it_works.md)
-    * Plugin loading by pf4j
-    * Get involved with Spring `ApplicationContext` initialization process.
-    * Constraint
-* [Configuration]()
-* [Request Mapping]()
-* [Persistence]()
-    * Plain SQL / Jooq
-    * Spring Data (JPA / Hibernate)
-        * copyDependencies
-        * plugin.pluginFirstClasses
-        * javax.transaction:javax.transaction-api
-    * NoSQL (Mongo / Redis)
-* [Security / AOP]()
+* [Configuration](docs/configuration.md)
+* [Request Mapping](docs/request_mapping.md)
+* [Persistence](docs/persistence.md)
+* [Security / AOP](docs/security_aop.md)
 * [Deployment]()
-* [Weaknesses]()
-* [Trouble Shoot]()
-* [TODO]()
+* [Need to know](docs/how_it_works.md)
+* [Trouble Shoot](docs/trouble_shoot.md)
+* [TODO](docs/todo.md)
 
+<!--
 ### Credit & Contribution
-
-### TODO
-* Cache (n+1 problem)
-* Distributed Transaction Support
-* More elegant way to register plugin controller
-* Actuator support
-* Management console
-* Front End modularization
-* Continuous Deployment
-* Optimize ClassLoader
-
-### Note
-* Package name cannot start with `org.pf4j`
-* Stay in same framework stack, don't introduce library with complex dependencies into plugin, e.g Spring data JPA
+-->
 
 ### License 
 

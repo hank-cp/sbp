@@ -52,7 +52,6 @@ public class SharedResourceSpringBootstrap extends SpringBootstrap {
                 (AnnotationConfigApplicationContext) super.createApplicationContext();
         // share dataSource
         registerBeanFromMainContext(applicationContext, "dataSource");
-        registerBeanFromMainContext(applicationContext, "transactionManager");
         // share MongoDbFactory
         registerBeanFromMainContext(applicationContext, "mongoDbFactory");
 

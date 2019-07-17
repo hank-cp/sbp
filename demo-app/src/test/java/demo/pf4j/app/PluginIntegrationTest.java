@@ -17,6 +17,8 @@ package demo.pf4j.app;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import demo.pf4j.api.service.BookService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.pf4j.SpringBootPlugin;
@@ -61,6 +63,9 @@ public class PluginIntegrationTest {
 
     @Autowired
     private ApplicationContext applicationContext;
+
+    @Autowired
+    private BookService bookService;
 
     @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
@@ -264,8 +269,19 @@ public class PluginIntegrationTest {
     }
 
     @Test
-    @Transactional
+//    @Transactional
     public void testJpaCompatibility() throws Exception {
+        /*
+        JpaTransactionManager does not support
+        running within DataSourceTransactionManager if told to manage the DataSource itself.
+        It is recommended to use a single JpaTransactionManager for all transactions
+        on a single DataSource, no matter whether JPA or JDBC access.
+
+        If @Transactional is annotated, Spring Test will start a transaction by
+        DataSourceTransactionManager to rollback test data, which is conflict with
+        JPATransactionManager. So in this test case we have to rollback test data manually.
+         */
+
         // no data initially
         mvc.perform(get("/library/list")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -290,11 +306,15 @@ public class PluginIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(4)));
 
-        // insert new book cascade
-        mvc.perform(get("/book/list")
+        // new book insert cascade
+        ArrayNode books = (ArrayNode) objectMapper.readTree(
+                mvc.perform(get("/book/list")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(4)));
+                .andExpect(jsonPath("$", hasSize(4)))
+                .andReturn().getResponse().getContentAsByteArray());
+
+        bookService.deleteBook(books.get(books.size()-1).get("id").asLong());
     }
 
     @Test
