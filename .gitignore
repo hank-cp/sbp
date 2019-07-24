@@ -15,3 +15,5 @@ build
 
 tmp
 **/libs
+
+/transaction-logs

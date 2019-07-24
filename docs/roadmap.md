@@ -6,6 +6,7 @@
 * [ ] Plugin Management api / console
 * [ ] Plugin continuous Deployment
 * [ ] Log collecting
+* [ ] Change project name to => spodulr | sprego | spring modular
 
 ### 0.1.2
 * [x] Distributed Transaction Support

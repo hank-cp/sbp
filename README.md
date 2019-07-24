@@ -150,14 +150,14 @@ everything we need in the real project.
 
 ### Documentation
 * [How it works](docs/how_it_works.md)
+* [Coding Plugin](docs/coding_plugin.md)
 * [Configuration](docs/configuration.md)
-* [Request Mapping](docs/request_mapping.md)
 * [Persistence](docs/persistence.md)
 * [Security / AOP](docs/security_aop.md)
 * [Deployment]()
-* [Need to know](docs/how_it_works.md)
-* [Trouble Shoot](docs/trouble_shoot.md)
-* [TODO](docs/todo.md)
+* [Trouble Shoot & Misc](docs/how_it_works.md)
+* [About demo proejct](docs/trouble_shoot.md)
+* [Road map](docs/roadmap.md)
 
 <!--
 ### Credit & Contribution

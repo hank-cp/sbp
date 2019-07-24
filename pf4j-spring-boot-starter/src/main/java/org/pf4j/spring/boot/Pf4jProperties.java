@@ -72,10 +72,5 @@ public class Pf4jProperties {
 	 * The system version used for comparisons to the plugin requires attribute.
 	 */
 	private String systemVersion = "0.0.0";
-	/**
-	 * Load these classes from plugin classpath first,
-	 * e.g Spring Boot AutoConfiguration used in plugin only.
-	 */
-	private String[] pluginFirstClasses = {};
 
 }
