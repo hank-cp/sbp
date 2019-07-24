@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -51,6 +52,9 @@ public class LibraryController {
 
     @Autowired
     private ApplicationContext applicationContext;
+
+    @Autowired
+    private EntityManager entityManager;
 
     @RequestMapping(value = "/list")
     @Transactional(readOnly = true)
@@ -90,10 +94,12 @@ public class LibraryController {
 
         // insert a new book for test
         Book book = bookService.persistBook(UUID.randomUUID().toString());
-        libraryBooks = new LibraryBooks();
-        libraryBooks.library = library;
-        libraryBooks.bookId = book.id;
-        libraryBooksRepository.save(libraryBooks);
+
+        // FIXME Atomikos couldn't join below @Transactional to previous JPA session
+//        libraryBooks = new LibraryBooks();
+//        libraryBooks.library = library;
+//        libraryBooks.bookId = book.id;
+//        libraryBooksRepository.save(libraryBooks);
 
         return library;
     }
@@ -101,6 +107,9 @@ public class LibraryController {
     @RequestMapping(value = "/failed")
     @Transactional
     public @ResponseBody Library failed() {
+        // insert a new book and it should be rollback later
+        bookService.persistBook(UUID.randomUUID().toString());
+
         Library library = new Library();
         library.code = UUID.randomUUID().toString();
         libraryRepository.save(library);
@@ -121,4 +130,10 @@ public class LibraryController {
         return library;
     }
 
+    @RequestMapping(value = "/delete/{libraryId}")
+    @Transactional
+    public @ResponseBody void save(@PathVariable long libraryId) {
+        libraryBooksRepository.deleteByLibraryId(libraryId);
+        libraryRepository.deleteById(libraryId);
+    }
 }

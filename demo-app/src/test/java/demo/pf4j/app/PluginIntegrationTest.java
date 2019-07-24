@@ -15,10 +15,12 @@
  */
 package demo.pf4j.app;
 
+import com.atomikos.jdbc.AtomikosDataSourceBean;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import demo.pf4j.api.service.BookService;
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.pf4j.SpringBootPlugin;
@@ -35,6 +37,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.sql.DataSource;
 import java.net.URL;
 import java.util.Arrays;
 
@@ -73,6 +76,14 @@ public class PluginIntegrationTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private DataSource dataSource;
+
+    @After
+    public void afterTest() {
+        ((AtomikosDataSourceBean)dataSource).close();
+    }
 
     @Test
     public void testApp() throws Exception {
@@ -233,6 +244,11 @@ public class PluginIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)));
 
+        mvc.perform(get("/book/list")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(3)));
+
         try {
             mvc.perform(get("/author/failed")
                     .contentType(MediaType.APPLICATION_JSON))
@@ -244,6 +260,37 @@ public class PluginIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)));
+
+        // books cascade saving should be rollback to 3
+        mvc.perform(get("/book/list")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(3)));
+    }
+
+    @Test
+    public void testAppServiceFailedAndRollbackWithJpa() throws Exception {
+        mvc.perform(get("/library/list")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(0)));
+
+        mvc.perform(get("/book/list")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(3)));
+
+        try {
+            mvc.perform(get("/library/failed")
+                    .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isInternalServerError());
+        } catch (Exception ignored) {}
+
+        // libraries should be rollback to 0
+        mvc.perform(get("/library/list")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(0)));
 
         // books cascade saving should be rollback to 3
         mvc.perform(get("/book/list")
@@ -304,7 +351,7 @@ public class PluginIntegrationTest {
         mvc.perform(get("/library/books/"+response.get("id").asLong())
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(4)));
+                .andExpect(jsonPath("$", hasSize(3)));
 
         // new book insert cascade
         ArrayNode books = (ArrayNode) objectMapper.readTree(
@@ -314,7 +361,11 @@ public class PluginIntegrationTest {
                 .andExpect(jsonPath("$", hasSize(4)))
                 .andReturn().getResponse().getContentAsByteArray());
 
+        // rollback test data since @Transactional couldn't be applied to this test
         bookService.deleteBook(books.get(books.size()-1).get("id").asLong());
+        mvc.perform(get("/library/delete/"+response.get("id").asLong())
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
     }
 
     @Test

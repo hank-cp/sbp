@@ -18,6 +18,10 @@ spring:
           use_jdbc_metadata_defaults: false
     show-sql: true
     open-in-view: false
+  jta:
+    atomikos:
+      datasource:
+        beanName: dataSource-library
 
 plugin:
   pluginFirstClasses:

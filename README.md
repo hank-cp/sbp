@@ -9,7 +9,7 @@
 
 
 pf4j-spring-boot introduce plugin oriented programming to Spring Boot. It is inspired and builds 
-on top of [Pf4j](https://pf4j.org/) project. 
+on top of [Pf4j](https://pf4j.org/) project.
 
 ### Why we need plugin for Spring Boot?
 * Spring boot is good, but it is monolithic. It means you have to delivery the whole application
@@ -40,7 +40,7 @@ Spring Cloud application.
 * OSGi based server need a server container to deploy, which is not _cloud friendly_.
 * OSGi configuration is complex and strict, the learning curve is steep.
 * Bundle cannot be run standalone, which is hard for debug and test.
-* ~~Spring dm server is dead, and its successor Virgo is now still struggle to live.~~ 
+* ~~Spring dm server has been dead, and its successor Virgo is now still struggling to live.~~ 
 
 ##### vs Spring Cloud
 * Spring Cloud does not aim to solve similar problem as pf4j-spring-boot, but so far it maybe the 

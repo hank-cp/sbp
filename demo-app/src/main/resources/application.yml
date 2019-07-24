@@ -24,6 +24,12 @@ spring:
         temp:
           use_jdbc_metadata_defaults: false
     database-platform: org.hibernate.dialect.PostgreSQL9Dialect
+  jta:
+    atomikos:
+      datasource:
+        max-pool-size: 20
+        min-pool-size: 5
+        borrow-connection-timeout: 60
 
 logging:
   level:

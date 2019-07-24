@@ -18,7 +18,7 @@ package demo.pf4j.admin;
 import demo.pf4j.security.SecurityConfig;
 import org.pf4j.PluginWrapper;
 import org.pf4j.SpringBootPlugin;
-import org.pf4j.spring.boot.SharedResourceSpringBootstrap;
+import org.pf4j.spring.boot.SharedDataSourceSpringBootstrap;
 import org.pf4j.spring.boot.SpringBootstrap;
 
 /**
@@ -32,7 +32,7 @@ public class AdminPlugin extends SpringBootPlugin {
 
     @Override
     protected SpringBootstrap createSpringBootstrap() {
-        SpringBootstrap bootstrap = new SharedResourceSpringBootstrap(this, AdminPluginStarter.class);
+        SpringBootstrap bootstrap = new SharedDataSourceSpringBootstrap(this, AdminPluginStarter.class);
         if (getMainApplicationContext().containsBean(SecurityConfig.class.getName())) {
             bootstrap.addPresetProperty("pf4j.security.enabled", true);
         }

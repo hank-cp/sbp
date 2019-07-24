@@ -21,21 +21,22 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
+import javax.sql.DataSource;
+
 /**
- * Demonstrate how to share additional resources from main {@link ApplicationContext}.
- * In this case, it shared DataSource, TransactionManager and MongoFactory so the
- * plugin could shared database connection resource, eg. connection pool, transaction
- * as main app.
- * <br/>
+ * Demonstrate how to share {@link DataSource} from main {@link ApplicationContext},
+ * so plugin could use the same database as app and share database connection resource,
+ * e.g. connection pool, transaction, etc.
+ *
  * <b>Note that related AutoConfigurations have to be excluded explicitly to avoid
  * duplicated resource retaining.</b>
  *
  * @author <a href="https://github.com/hank-cp">Hank CP</a>
  */
-public class SharedResourceSpringBootstrap extends SpringBootstrap {
+public class SharedDataSourceSpringBootstrap extends SpringBootstrap {
 
-    public SharedResourceSpringBootstrap(SpringBootPlugin plugin,
-                                         Class<?>... primarySources) {
+    public SharedDataSourceSpringBootstrap(SpringBootPlugin plugin,
+                                           Class<?>... primarySources) {
         super(plugin, primarySources);
     }
 
@@ -43,6 +44,7 @@ public class SharedResourceSpringBootstrap extends SpringBootstrap {
     protected String[] getExcludeConfigurations() {
         return ArrayUtils.addAll(super.getExcludeConfigurations(),
                 "org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration",
+                "org.springframework.boot.autoconfigure.transaction.jta.JtaAutoConfiguration",
                 "org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration");
     }
 
@@ -52,6 +54,7 @@ public class SharedResourceSpringBootstrap extends SpringBootstrap {
                 (AnnotationConfigApplicationContext) super.createApplicationContext();
         // share dataSource
         registerBeanFromMainContext(applicationContext, "dataSource");
+        registerBeanFromMainContext(applicationContext, "transactionManager");
         // share MongoDbFactory
         registerBeanFromMainContext(applicationContext, "mongoDbFactory");
 

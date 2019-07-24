@@ -28,4 +28,6 @@ public interface LibraryBooksRepository extends JpaRepository<LibraryBooks, Long
         JpaSpecificationExecutor<LibraryBooks> {
 
     List<LibraryBooks> findByLibraryId(long libraryId);
+
+    void deleteByLibraryId(long libraryId);
 }

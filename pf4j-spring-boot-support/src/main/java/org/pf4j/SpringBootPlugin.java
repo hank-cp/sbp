@@ -17,7 +17,7 @@ package org.pf4j;
 
 import org.apache.commons.lang3.StringUtils;
 import org.pf4j.spring.boot.PluginRequestMappingHandlerMapping;
-import org.pf4j.spring.boot.SharedResourceSpringBootstrap;
+import org.pf4j.spring.boot.SharedDataSourceSpringBootstrap;
 import org.pf4j.spring.boot.SpringBootstrap;
 import org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
@@ -55,7 +55,7 @@ import java.util.Set;
  * * Close plugin {@link ApplicationContext}
  *
  * @see SpringBootstrap
- * @see SharedResourceSpringBootstrap
+ * @see SharedDataSourceSpringBootstrap
  * @author <a href="https://github.com/hank-cp">Hank CP</a>
  */
 public abstract class SpringBootPlugin extends Plugin {

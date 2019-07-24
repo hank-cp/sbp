@@ -15,6 +15,8 @@
  */
 package demo.pf4j.app;
 
+import com.atomikos.jdbc.AtomikosDataSourceBean;
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+
+import javax.sql.DataSource;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -39,6 +43,14 @@ public class PluginSecurityTest {
 
     @Autowired
     private MockMvc mvc;
+
+    @Autowired
+    private DataSource dataSource;
+
+    @After
+    public void afterTest() {
+        ((AtomikosDataSourceBean)dataSource).close();
+    }
 
     @Test
     public void testAppUnauthorized() throws Exception {

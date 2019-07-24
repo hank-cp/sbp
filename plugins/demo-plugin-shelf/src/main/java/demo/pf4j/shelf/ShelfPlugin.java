@@ -17,7 +17,7 @@ package demo.pf4j.shelf;
 
 import org.pf4j.PluginWrapper;
 import org.pf4j.SpringBootPlugin;
-import org.pf4j.spring.boot.SharedResourceSpringBootstrap;
+import org.pf4j.spring.boot.SharedDataSourceSpringBootstrap;
 import org.pf4j.spring.boot.SpringBootstrap;
 
 /**
@@ -31,10 +31,9 @@ public class ShelfPlugin extends SpringBootPlugin {
 
     @Override
     protected SpringBootstrap createSpringBootstrap() {
-        return new SharedResourceSpringBootstrap(this, ShelfPluginStarter.class)
+        return new SharedDataSourceSpringBootstrap(this, ShelfPluginStarter.class)
                 .addSharedBeanName("bookService")
-                .addSharedBeanName("authorService")
-                .addSharedBeanName("transactionManager");
+                .addSharedBeanName("authorService");
     }
 
 }

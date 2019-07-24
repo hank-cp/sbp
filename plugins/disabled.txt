@@ -6,3 +6,4 @@
 #demo-plugin-author
 #demo-plugin-shelf
 #demo-plugin-admin
+#demo-plugin-library

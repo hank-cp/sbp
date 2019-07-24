@@ -17,7 +17,8 @@ package demo.pf4j.library;
 
 import org.pf4j.PluginWrapper;
 import org.pf4j.SpringBootPlugin;
-import org.pf4j.spring.boot.SharedResourceSpringBootstrap;
+import org.pf4j.spring.boot.SharedDataSourceSpringBootstrap;
+import org.pf4j.spring.boot.SharedJtaSpringBootstrap;
 import org.pf4j.spring.boot.SpringBootstrap;
 
 /**
@@ -31,7 +32,9 @@ public class LibraryPlugin extends SpringBootPlugin {
 
     @Override
     protected SpringBootstrap createSpringBootstrap() {
-        return new SharedResourceSpringBootstrap(
+        // Use SharedJtaSpringBootstrap if plugin use different dataSource
+//        return new SharedJtaSpringBootstrap(
+        return new SharedDataSourceSpringBootstrap(
                 this, LibraryPluginStarter.class)
                 .addSharedBeanName("bookService");
     }

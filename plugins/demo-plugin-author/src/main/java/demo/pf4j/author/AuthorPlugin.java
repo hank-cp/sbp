@@ -17,7 +17,7 @@ package demo.pf4j.author;
 
 import org.pf4j.PluginWrapper;
 import org.pf4j.SpringBootPlugin;
-import org.pf4j.spring.boot.SharedResourceSpringBootstrap;
+import org.pf4j.spring.boot.SharedDataSourceSpringBootstrap;
 import org.pf4j.spring.boot.SpringBootstrap;
 
 /**
@@ -31,9 +31,8 @@ public class AuthorPlugin extends SpringBootPlugin {
 
     @Override
     protected SpringBootstrap createSpringBootstrap() {
-        return new SharedResourceSpringBootstrap(this, AuthorPluginStarter.class)
-                .addSharedBeanName("bookService")
-                .addSharedBeanName("transactionManager");
+        return new SharedDataSourceSpringBootstrap(this, AuthorPluginStarter.class)
+                .addSharedBeanName("bookService");
     }
 
 }

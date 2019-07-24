@@ -104,6 +104,8 @@ public class AuthorController {
         ArrayList<String> books = new ArrayList<>();
         books.add(book.name);
         books.add(UUID.randomUUID().toString());
+        // persist book with duplicated id in authorService.persistAuthor()
+        // and it should cause exception
         authorService.persistAuthor(UUID.randomUUID().toString(), books);
         return dslContext.selectFrom(AUTHOR)
                 .fetch().stream()
