@@ -72,9 +72,15 @@ public abstract class SpringBootPlugin extends Plugin {
 //        controllerRegistry = new DynamicControllerRegistry(this);
     }
 
-    protected PluginRequestMappingHandlerMapping getMainRequestMapping() {
+    private PluginRequestMappingHandlerMapping getMainRequestMapping() {
         return (PluginRequestMappingHandlerMapping)
                 getMainApplicationContext().getBean(RequestMappingHandlerMapping.class);
+    }
+
+    /**
+     * Release plugin holding release on stop.
+     */
+    public void releaseResource() {
     }
 
     @Override
@@ -102,6 +108,7 @@ public abstract class SpringBootPlugin extends Plugin {
 
     @Override
     public void stop() {
+        log.debug("Stopping plugin {} ......", getWrapper().getPluginId());
         // register Extensions
         Set<String> extensionClassNames = getWrapper().getPluginManager()
                 .getExtensionClassNames(getWrapper().getPluginId());
@@ -120,6 +127,7 @@ public abstract class SpringBootPlugin extends Plugin {
 
         getMainRequestMapping().unregisterControllers(this);
         ((ConfigurableApplicationContext) applicationContext).close();
+        log.debug("Plugin {} is stopped", getWrapper().getPluginId());
     }
 
     protected abstract SpringBootstrap createSpringBootstrap();

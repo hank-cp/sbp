@@ -15,9 +15,9 @@
  */
 package demo.pf4j.library;
 
+import com.atomikos.jdbc.AtomikosDataSourceBean;
 import org.pf4j.PluginWrapper;
 import org.pf4j.SpringBootPlugin;
-import org.pf4j.spring.boot.SharedDataSourceSpringBootstrap;
 import org.pf4j.spring.boot.SharedJtaSpringBootstrap;
 import org.pf4j.spring.boot.SpringBootstrap;
 
@@ -32,11 +32,21 @@ public class LibraryPlugin extends SpringBootPlugin {
 
     @Override
     protected SpringBootstrap createSpringBootstrap() {
-        // Use SharedJtaSpringBootstrap if plugin use different dataSource
-//        return new SharedJtaSpringBootstrap(
-        return new SharedDataSourceSpringBootstrap(
+        return new SharedJtaSpringBootstrap(
                 this, LibraryPluginStarter.class)
                 .addSharedBeanName("bookService");
     }
 
+    @Override
+    public void stop() {
+        releaseResource();
+        super.stop();
+    }
+
+    @Override
+    public void releaseResource() {
+        AtomikosDataSourceBean dataSource = (AtomikosDataSourceBean)
+                getApplicationContext().getBean("dataSource");
+        dataSource.close();
+    }
 }

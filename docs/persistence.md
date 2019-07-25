@@ -11,8 +11,7 @@ transaction support. This is recommended since it's the simplest way.
 
 ![](persistence_1.png?raw=true)
 
-Check [SharedDataSourceSpringBootstrap](../pf4j-spring-boot-support/src/main/java/org/pf4j/spring/boot/SharedDataSourceSpringBootstrap.java) 
-for example.
+See [SharedDataSourceSpringBootstrap](../pf4j-spring-boot-support/src/main/java/org/pf4j/spring/boot/SharedDataSourceSpringBootstrap.java).
 
 ### Approach 2: Single shared dataSource / Multiple persistence middle-ware
 It's possible to mix JPA and other simple RMDB mapping tools like Jooq/Mybatis,
@@ -50,12 +49,12 @@ coordinate transactions with `@Transactional` transparently.
 ##### Example Configuration
 In this example, we explain how to introduce JPA only in plugin:
 1. Copy Spring Data JPA and all it's dependencies to plugin libs folder.
-Check `copyDependencies` task in [build.gradle](../plugins/demo-plugin-library/build.gradle) for example.
+See `copyDependencies` task in [build.gradle](../plugins/demo-plugin-library/build.gradle) for example.
 2. Configure `plugin.pluginFirstClasses` property to tell `PluginClassLoader`
 load `@Configuration` classes from main app's `ClassLoader` to avoid `ClassCastException`.
     * Spring place almost `AutoConfiguration` in an all-in-one spring-boot-\<version\>.jar, which
     is conflicted with the one in Spring Data JPA dependencies.
-    * Check [demo-plugin-library](../plugins/demo-plugin-library/src/main/resources/application.yml) for example.
+    * See [demo-plugin-library](../plugins/demo-plugin-library/src/main/resources/application.yml) for example.
 3. Add dependencies to app project"
     ```
     dependencies {
@@ -73,8 +72,11 @@ will be thrown.
    ``` 
 5. Use [SharedJtaSpringBootstrap](../pf4j-spring-boot-support/src/main/java/org/pf4j/spring/boot/SharedJtaSpringBootstrap.java)
 to start your plugin.
+6. **!!! IMPORTANT !!!** Atomikos `JtaTransactionManager` manage distribution transaction with static reference 
+and file system. So you will have to release `XADataSrouce` on plugin stopping. 
+See [LibraryPlugin](../plugins/demo-plugin-library/src/main/java/demo/pf4j/library/LibraryPlugin.java).  
 
-Check [demo-plugin-library](../plugins/demo-plugin-library) project for example.
+See [demo-plugin-library](../plugins/demo-plugin-library) project for more example.
 
 ### Approach 3: Multiple dataSource
 Similar to approach 2, we could use JTA/XA to provide distributed transaction

@@ -15,11 +15,14 @@
  */
 package demo.pf4j.app;
 
+import com.atomikos.datasource.RecoverableResource;
+import com.atomikos.icatch.config.Configuration;
 import com.atomikos.jdbc.AtomikosDataSourceBean;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import demo.pf4j.api.service.BookService;
+import lombok.extern.java.Log;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,7 +42,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -59,6 +65,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc(secure = false)
 @Rollback
 @ActiveProfiles("no_security")
+@Log
 public class PluginIntegrationTest {
 
     @Autowired
@@ -83,6 +90,9 @@ public class PluginIntegrationTest {
     @After
     public void afterTest() {
         ((AtomikosDataSourceBean)dataSource).close();
+        SpringBootPlugin plugin = (SpringBootPlugin)
+                pluginManager.getPlugin("demo-plugin-library").getPlugin();
+        plugin.releaseResource();
     }
 
     @Test
@@ -145,6 +155,41 @@ public class PluginIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[*]",
                         containsInAnyOrder("author", "shelf", "admin", "library")));
+    }
+
+    @Test
+    public void testPluginStartStopReleaseDataSource() throws Exception {
+        // first access dataSource to trigger xaDataSource init
+        mvc.perform(get("/book/list")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(3)));
+        mvc.perform(get("/library/list")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(0)));
+
+        List<RecoverableResource> dataSource = new ArrayList<>();
+        Enumeration<RecoverableResource> enumeration = Configuration.getResources();
+        while (enumeration.hasMoreElements()) {
+            dataSource.add(enumeration.nextElement());
+        }
+        assertThat(dataSource, hasSize(2));
+
+        RecoverableResource jpaDataSource = Configuration.getResource("dataSource-library");
+        assertThat(jpaDataSource, notNullValue());
+        assertThat(jpaDataSource.isClosed(), is(false));
+
+        pluginManager.stopPlugin("demo-plugin-library");
+
+        jpaDataSource = Configuration.getResource("dataSource-library");
+        assertThat(jpaDataSource, nullValue());
+
+        pluginManager.startPlugin("demo-plugin-library");
+
+        jpaDataSource = Configuration.getResource("dataSource-library");
+        assertThat(jpaDataSource, notNullValue());
+        assertThat(jpaDataSource.isClosed(), is(false));
     }
 
     @Test

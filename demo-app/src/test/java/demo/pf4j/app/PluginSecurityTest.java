@@ -16,9 +16,12 @@
 package demo.pf4j.app;
 
 import com.atomikos.jdbc.AtomikosDataSourceBean;
+import lombok.extern.java.Log;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.pf4j.SpringBootPlugin;
+import org.pf4j.SpringBootPluginManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -39,10 +42,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(classes = DemoTestApp.class)
 @AutoConfigureMockMvc
 @Rollback
+@Log
 public class PluginSecurityTest {
 
     @Autowired
     private MockMvc mvc;
+
+    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
+    @Autowired
+    private SpringBootPluginManager pluginManager;
 
     @Autowired
     private DataSource dataSource;
@@ -50,6 +58,9 @@ public class PluginSecurityTest {
     @After
     public void afterTest() {
         ((AtomikosDataSourceBean)dataSource).close();
+        SpringBootPlugin plugin = (SpringBootPlugin)
+                pluginManager.getPlugin("demo-plugin-library").getPlugin();
+        plugin.releaseResource();
     }
 
     @Test

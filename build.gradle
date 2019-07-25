@@ -18,6 +18,8 @@ def isApplicationProject(String projectName) {
 }
 
 buildscript {
+    ext.springBootVersion = '2.1.6.RELEASE'
+
     repositories {
         jcenter()
         mavenCentral()
@@ -26,17 +28,15 @@ buildscript {
     dependencies {
         classpath "org.yaml:snakeyaml:1.19"
         classpath 'ch.raffael.markdown-doclet:markdown-doclet:1.4'
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
     }
 }
 
 plugins {
     id 'idea'
-    id "io.spring.dependency-management" version "1.0.8.RELEASE"
-    id "org.springframework.boot" version "2.1.6.RELEASE" apply false
     id 'nu.studer.jooq' version '3.0.3' apply false
     id 'org.flywaydb.flyway' version "5.2.4" apply false
 }
-
 
 //*************************************************************************
 // IDEA
@@ -50,7 +50,7 @@ idea {
 }
 
 //*************************************************************************
-// Java Project Config
+// Sub Project Config
 //*************************************************************************
 
 subprojects {
