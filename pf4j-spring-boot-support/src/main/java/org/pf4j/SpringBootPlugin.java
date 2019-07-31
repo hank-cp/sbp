@@ -64,12 +64,9 @@ public abstract class SpringBootPlugin extends Plugin {
 
     private ApplicationContext applicationContext;
 
-//    private final DynamicControllerRegistry controllerRegistry;
-
     public SpringBootPlugin(PluginWrapper wrapper) {
         super(wrapper);
         springBootstrap = createSpringBootstrap();
-//        controllerRegistry = new DynamicControllerRegistry(this);
     }
 
     private PluginRequestMappingHandlerMapping getMainRequestMapping() {

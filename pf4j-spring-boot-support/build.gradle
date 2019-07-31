@@ -18,7 +18,7 @@ artifacts {
     archives javadocJar
 }
 
-group = 'org.pf4j.spring.boot'
+group = 'org.laxture.sbplugin'
 
 dependencies {
     implementation "org.springframework.boot:spring-boot"
