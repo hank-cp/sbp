@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: "jdbc:postgresql://localhost/pf4j-test"
+    url: "jdbc:postgresql://localhost/sbp-dev"
     username: postgres
     driver-class-name: "org.postgresql.Driver"
   flyway:

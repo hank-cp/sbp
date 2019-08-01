@@ -1,5 +1,5 @@
 dependencies {
-    compile project(':pf4j-spring-boot-starter')
+    compile project(':sbp-spring-boot-starter')
     compile project(':demo-shared')
     compile project(':demo-api')
     compile project(':demo-security')
@@ -20,8 +20,8 @@ dependencies {
 // App Properties
 //*************************************************************************
 
-mainClassName = 'demo.pf4j.app.DemoApp'
+mainClassName = 'demo.sbp.app.DemoApp'
 
 manifest {
-    attributes 'Main-Class': 'demo.pf4j.app.DemoApp'
+    attributes 'Main-Class': 'demo.sbp.app.DemoApp'
 }

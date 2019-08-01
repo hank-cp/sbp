@@ -1,9 +1,9 @@
 spring:
   datasource:
-    url: "jdbc:postgresql://localhost/pf4j"
+    url: "jdbc:postgresql://localhost/sbp"
     username: postgres
     driver-class-name: "org.postgresql.Driver"
-  pf4j:
+  sbp:
     runtimeMode: development
     enabled: true
     classes-directories:
@@ -37,7 +37,7 @@ logging:
     org.jooq: DEBUG
     org.jooq.Constants: ERROR
 
-plugin:
+sbp-plugin:
   properties:
     spring:
       jpa:

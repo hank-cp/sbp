@@ -3,11 +3,11 @@ jdk:
   - oraclejdk8
   - openjdk8
 before_install:
-  - psql -c 'create database "pf4j";' -U postgres
-  - psql -c 'create database "pf4j-test";' -U postgres
+  - psql -c 'create database "sbp";' -U postgres
+  - psql -c 'create database "sbp-test";' -U postgres
 install:
-  - ./gradlew :pf4j-spring-boot-support:jar
-  - ./gradlew :pf4j-spring-boot-starter:jar
+  - ./gradlew :sbplugin-core:jar
+  - ./gradlew :sbplugin-spring-boot-starter:jar
   - ./gradlew doMigration
   - ./gradlew buildApp
   - ./gradlew copyDependencies

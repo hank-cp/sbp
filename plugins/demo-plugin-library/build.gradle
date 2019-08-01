@@ -5,7 +5,7 @@ configurations {
 dependencies {
     compile project(':demo-shared')
     compile project(':demo-api')
-    compile project(':pf4j-spring-boot-support')
+    compile project(':sbp-core')
 
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"
     jpa "org.springframework.boot:spring-boot-starter-data-jpa"
@@ -19,10 +19,10 @@ dependencies {
 // App Properties
 //*************************************************************************
 
-mainClassName = 'demo.pf4j.library.LibraryPluginStarter'
+mainClassName = 'demo.sbp.library.LibraryPluginStarter'
 
 manifest {
-    attributes 'Main-Class': 'demo.pf4j.library.LibraryPluginStarter'
+    attributes 'Main-Class': 'demo.sbp.library.LibraryPluginStarter'
 }
 
 task copyDependencies(type: Copy) {

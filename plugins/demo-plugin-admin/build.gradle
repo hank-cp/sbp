@@ -2,7 +2,7 @@ dependencies {
     compile project(':demo-shared')
     compile project(':demo-api')
     compile project(':demo-security')
-    compile project(':pf4j-spring-boot-support')
+    compile project(':sbp-core')
 
     runtime "org.postgresql:postgresql"
 
@@ -13,8 +13,8 @@ dependencies {
 // App Properties
 //*************************************************************************
 
-mainClassName = 'demo.pf4j.admin.AdminPluginStarter'
+mainClassName = 'demo.sbp.admin.AdminPluginStarter'
 
 manifest {
-    attributes 'Main-Class': 'demo.pf4j.admin.AdminPluginStarter'
+    attributes 'Main-Class': 'demo.sbp.admin.AdminPluginStarter'
 }

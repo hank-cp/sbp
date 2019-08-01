@@ -15,9 +15,8 @@
  */
 package demo.security;
 
-import demo.pf4j.app.DemoApp;
-import demo.pf4j.shared.IdsConverter;
-import demo.pf4j.shared.spring.ApplicationContextProvider;
+import demo.sbp.shared.IdsConverter;
+import demo.sbp.shared.spring.ApplicationContextProvider;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.NameTokenizers;
 import org.modelmapper.jooq.RecordValueReader;
@@ -31,7 +30,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 /**
  * @author <a href="https://github.com/hank-cp">Hank CP</a>
  */
-@SpringBootApplication(scanBasePackages = "demo.pf4j")
+@SpringBootApplication(scanBasePackages = "demo.sbp")
 @EnableWebSecurity
 @EnableAspectJAutoProxy
 public class DemoSecurityApp {

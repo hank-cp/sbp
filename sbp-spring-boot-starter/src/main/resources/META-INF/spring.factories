@@ -1,0 +1,4 @@
+# Auto Configure
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  org.laxture.sbp.spring.boot.SbpAutoConfiguration,\
+  org.laxture.sbp.spring.boot.FlywayClassLoaderConfiguration

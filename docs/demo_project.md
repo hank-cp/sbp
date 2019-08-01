@@ -1,4 +1,4 @@
-Demo project is used for pf4j-spring-boot project integration test and
+Demo project is used for **sbp** project integration test and
 demonstrate its feature. You could also use it as your own projects 
 starting skeleton.
 
@@ -8,11 +8,11 @@ starting skeleton.
 * JDK 8+
 * PostgreSQL 9.6+
     * Modify `postgresql.conf` file, set `max_prepared_connections` to non-zero value.
-    * Create database: `psql -c 'create database "pf4j";' -U postgres`
-    * Create database: `psql -c 'create database "pf4j-test";' -U postgres`
+    * Create database: `psql -c 'create database "sbp";' -U postgres`
+    * Create database: `psql -c 'create database "sbp-test";' -U postgres`
 
 ##### Setup on local
-* `git clone git@github.com:hank-cp/pf4j-spring-boot.git`
+* `git clone git@github.com:hank-cp/sbp.git`
 * run build command in sequence:
     ```
     > ./gradlew install
@@ -26,12 +26,15 @@ starting skeleton.
 * Make sure jooq mapping code if generated
     ```
     > ./gradlew doMigration
-    > ./gradlew clean generatePf4jJooqSchemaSource
+    > ./gradlew clean generateSbpJooqSchemaSource
+    > ./gradlew copyDependencies
     ```
 * Optionally, import test data with
     ```
     > ./gradlew doDataMigration
     ```
+* If you using IDEA, you will need to refresh Gradle setting to include 
+generated Jooq code.
 * There are two Spring Boot app you could choose to start. `DemoApp`
 omit security configuration. `DemoSecurityApp` includes security 
 configuration with two user:

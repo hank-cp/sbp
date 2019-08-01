@@ -1,5 +1,5 @@
 dependencies {
-    compile project(':pf4j-spring-boot-support')
+    compile project(':sbp-core')
     compile project(':demo-shared')
 
     compile "org.springframework.boot:spring-boot-starter-security"

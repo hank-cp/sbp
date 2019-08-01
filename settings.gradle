@@ -1,5 +1,5 @@
-include 'pf4j-spring-boot-support',
-        'pf4j-spring-boot-starter',
+include 'sbp-core',
+        'sbp-spring-boot-starter',
         'demo-shared',
         'demo-security',
         'demo-api',

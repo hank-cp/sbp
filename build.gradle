@@ -238,7 +238,7 @@ subprojects {
             }
 
             jooq {
-                pf4j(sourceSets.main) {
+                sbp(sourceSets.main) {
                     jdbc {
                         url = project.'db.url'
                         user = project.'db.user'
@@ -255,7 +255,7 @@ subprojects {
                             forcedTypes {
                                 forcedType {
                                     userType = 'com.fasterxml.jackson.databind.JsonNode'
-                                    binding = 'demo.pf4j.shared.PostgresJsonbBinding'
+                                    binding = 'demo.sbp.shared.PostgresJsonbBinding'
                                     types = 'jsonb'
                                 }
                             }

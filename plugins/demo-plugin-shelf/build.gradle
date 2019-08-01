@@ -2,7 +2,7 @@ dependencies {
     compile project(':demo-shared')
     compile project(':demo-api')
     compile project(':demo-plugin-author-api')
-    compile project(':pf4j-spring-boot-support')
+    compile project(':sbp-core')
 
     implementation 'org.flywaydb:flyway-core:5.2.4'
 
@@ -15,8 +15,8 @@ dependencies {
 // App Properties
 //*************************************************************************
 
-mainClassName = 'demo.pf4j.shelf.ShelfPluginStarter'
+mainClassName = 'demo.sbp.shelf.ShelfPluginStarter'
 
 manifest {
-    attributes 'Main-Class': 'demo.pf4j.shelf.ShelfPluginStarter'
+    attributes 'Main-Class': 'demo.sbp.shelf.ShelfPluginStarter'
 }
