@@ -27,7 +27,6 @@ plugin:
   pluginFirstClasses:
     - org.springframework.boot.autoconfigure.data.*
     - org.springframework.boot.autoconfigure.orm.*
-#    - org.springframework.boot.autoconfigure.transaction.jta.*
     - org.springframework.boot.orm.jpa.*
 
 logging:

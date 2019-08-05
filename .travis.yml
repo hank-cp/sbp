@@ -6,8 +6,8 @@ before_install:
   - psql -c 'create database "sbp";' -U postgres
   - psql -c 'create database "sbp-test";' -U postgres
 install:
-  - ./gradlew :sbplugin-core:jar
-  - ./gradlew :sbplugin-spring-boot-starter:jar
+  - ./gradlew :sbp-core:jar
+  - ./gradlew :sbp-spring-boot-starter:jar
   - ./gradlew doMigration
   - ./gradlew buildApp
   - ./gradlew copyDependencies
