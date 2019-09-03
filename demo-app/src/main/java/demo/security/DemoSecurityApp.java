@@ -16,7 +16,7 @@
 package demo.security;
 
 import demo.sbp.shared.IdsConverter;
-import demo.sbp.shared.spring.ApplicationContextProvider;
+import org.laxture.sbp.utils.MultiApplicationContextProvider;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.NameTokenizers;
 import org.modelmapper.jooq.RecordValueReader;
@@ -41,8 +41,8 @@ public class DemoSecurityApp {
 
     @Bean
     @ConditionalOnMissingBean
-    public ApplicationContextProvider applicationContextProvider() {
-        return new ApplicationContextProvider();
+    public MultiApplicationContextProvider applicationContextProvider() {
+        return new MultiApplicationContextProvider();
     }
 
     @Bean

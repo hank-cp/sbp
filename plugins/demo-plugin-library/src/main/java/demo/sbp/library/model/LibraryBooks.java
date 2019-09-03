@@ -18,7 +18,8 @@ package demo.sbp.library.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import demo.sbp.api.model.Book;
 import demo.sbp.api.service.BookService;
-import demo.sbp.library.LibraryContextProvider;
+import demo.sbp.library.LibraryPlugin;
+import org.laxture.sbp.utils.MultiApplicationContextProvider;
 
 import javax.persistence.*;
 
@@ -45,7 +46,8 @@ public class LibraryBooks {
 
     @PostLoad
     private void postLoad() {
-        BookService bookService = LibraryContextProvider.getBean(BookService.class);
+        BookService bookService = MultiApplicationContextProvider
+                .getBean(LibraryPlugin.class, BookService.class);
         book = bookService.getBook(bookId);
     }
 }

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.laxture.sbp.spring.boot.utils;
+package org.laxture.sbp.utils;
 
 import org.pf4j.PluginManager;
 import org.slf4j.Logger;

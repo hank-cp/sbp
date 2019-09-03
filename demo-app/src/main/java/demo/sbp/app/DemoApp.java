@@ -16,7 +16,7 @@
 package demo.sbp.app;
 
 import demo.sbp.shared.IdsConverter;
-import demo.sbp.shared.spring.ApplicationContextProvider;
+import org.laxture.sbp.utils.MultiApplicationContextProvider;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.NameTokenizers;
 import org.modelmapper.jooq.RecordValueReader;
@@ -25,8 +25,12 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
+import org.springframework.context.event.ContextStartedEvent;
+import org.springframework.context.event.ContextStoppedEvent;
+import org.springframework.context.event.EventListener;
 
 /**
  * @author <a href="https://github.com/hank-cp">Hank CP</a>
@@ -44,10 +48,14 @@ public class DemoApp {
         builder.build().run();
     }
 
-    @Bean
-    @ConditionalOnMissingBean
-    public ApplicationContextProvider applicationContextProvider() {
-        return new ApplicationContextProvider();
+    @EventListener(classes = ContextStartedEvent.class)
+    public void onApplicationStarted(ApplicationContext applicationContext) {
+        MultiApplicationContextProvider.registerApplicationContext(applicationContext);
+    }
+
+    @EventListener(classes = ContextStoppedEvent.class)
+    public void onApplicationStopped(ApplicationContext applicationContext) {
+        MultiApplicationContextProvider.unregisterApplicationContext(applicationContext);
     }
 
     @Bean

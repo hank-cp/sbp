@@ -150,7 +150,7 @@ everything we need in the real project.
 
 ### Documentation
 * [How it works](docs/how_it_works.md)
-* [Coding Plugin](docs/coding_plugin.md)
+* [Tutorials](docs/tutorials.md)
 * [Configuration](docs/configuration.md)
 * [Persistence](docs/persistence.md)
 * [Security / AOP](docs/security_aop.md)

@@ -18,7 +18,7 @@ package demo.sbp.library;
 import demo.sbp.api.service.BookService;
 import demo.sbp.library.service.BookServiceMock;
 import demo.sbp.shared.IdsConverter;
-import demo.sbp.shared.spring.ApplicationContextProvider;
+import org.laxture.sbp.utils.MultiApplicationContextProvider;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.NameTokenizers;
 import org.modelmapper.jooq.RecordValueReader;
@@ -37,11 +37,6 @@ public class LibraryPluginStarter {
 
     public static void main(String[] args) {
         SpringApplication.run(LibraryPluginStarter.class, args);
-    }
-
-    @Bean
-    public ApplicationContextProvider applicationContextProvider() {
-        return new LibraryContextProvider();
     }
 
     @Bean

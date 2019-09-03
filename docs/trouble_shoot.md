@@ -4,6 +4,8 @@
 
 ##### I get `ClassCastException`
 
+##### Plugin modification is not compiled
+
 ## Misc.
 * Package name cannot start with `org.pf4j`, `java` or `javax`. 
 `PluginClassLoader` will treat them differently. 
