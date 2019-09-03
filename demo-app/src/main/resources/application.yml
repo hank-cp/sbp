@@ -30,6 +30,8 @@ spring:
         max-pool-size: 20
         min-pool-size: 5
         borrow-connection-timeout: 60
+  main:
+    allow-bean-definition-overriding: true
 
 logging:
   level:

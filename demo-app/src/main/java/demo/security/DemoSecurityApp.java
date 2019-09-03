@@ -16,13 +16,14 @@
 package demo.security;
 
 import demo.sbp.shared.IdsConverter;
-import org.laxture.sbp.utils.MultiApplicationContextProvider;
+import org.laxture.spring.util.ApplicationContextProvider;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.NameTokenizers;
 import org.modelmapper.jooq.RecordValueReader;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -40,9 +41,8 @@ public class DemoSecurityApp {
     }
 
     @Bean
-    @ConditionalOnMissingBean
-    public MultiApplicationContextProvider applicationContextProvider() {
-        return new MultiApplicationContextProvider();
+    public ApplicationContextAware multiApplicationContextProviderRegister() {
+        return ApplicationContextProvider::registerApplicationContext;
     }
 
     @Bean

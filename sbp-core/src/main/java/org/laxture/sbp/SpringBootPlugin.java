@@ -19,7 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.laxture.sbp.spring.boot.PluginRequestMappingHandlerMapping;
 import org.laxture.sbp.spring.boot.SharedDataSourceSpringBootstrap;
 import org.laxture.sbp.spring.boot.SpringBootstrap;
-import org.laxture.sbp.utils.MultiApplicationContextProvider;
+import org.laxture.spring.util.ApplicationContextProvider;
 import org.pf4j.Extension;
 import org.pf4j.Plugin;
 import org.pf4j.PluginManager;
@@ -107,7 +107,7 @@ public abstract class SpringBootPlugin extends Plugin {
             }
         }
 
-        MultiApplicationContextProvider.registerApplicationContext(applicationContext);
+        ApplicationContextProvider.registerApplicationContext(applicationContext);
     }
 
     @Override
@@ -130,7 +130,7 @@ public abstract class SpringBootPlugin extends Plugin {
         }
 
         getMainRequestMapping().unregisterControllers(this);
-        MultiApplicationContextProvider.unregisterApplicationContext(applicationContext);
+        ApplicationContextProvider.unregisterApplicationContext(applicationContext);
         ((ConfigurableApplicationContext) applicationContext).close();
 
         log.debug("Plugin {} is stopped", getWrapper().getPluginId());

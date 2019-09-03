@@ -18,7 +18,6 @@ package demo.sbp.library;
 import demo.sbp.api.service.BookService;
 import demo.sbp.library.service.BookServiceMock;
 import demo.sbp.shared.IdsConverter;
-import org.laxture.sbp.utils.MultiApplicationContextProvider;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.NameTokenizers;
 import org.modelmapper.jooq.RecordValueReader;

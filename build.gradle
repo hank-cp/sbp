@@ -91,8 +91,8 @@ subprojects {
 // Compile & Assemble
 //*************************************************************************
 
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
 
     tasks.withType(AbstractCompile) {
         options.encoding = 'UTF-8'
@@ -118,7 +118,7 @@ subprojects {
         }
     }
 
-    def lombokVersion = '1.16.20'
+    def lombokVersion = '1.18.8'
 
     dependencies {
         compile "org.projectlombok:lombok:${lombokVersion}"

@@ -21,12 +21,12 @@ artifacts {
 group = 'org.laxture.sbp'
 
 dependencies {
-    implementation "org.springframework.boot:spring-boot"
-    implementation "org.springframework:spring-webmvc"
+    implementation 'org.springframework.boot:spring-boot'
+    implementation 'org.springframework:spring-webmvc'
+    implementation 'org.apache.commons:commons-lang3'
+    compile 'com.github.hank-cp:spring-static-ctx:0.1.0'
 
     compile ('org.pf4j:pf4j:2.6.0') {
         exclude group: 'org.slf4j', module: 'slf4j-log4j12'
     }
-    
-    implementation "org.apache.commons:commons-lang3"
 }

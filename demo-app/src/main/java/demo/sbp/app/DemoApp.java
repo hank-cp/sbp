@@ -16,7 +16,7 @@
 package demo.sbp.app;
 
 import demo.sbp.shared.IdsConverter;
-import org.laxture.sbp.utils.MultiApplicationContextProvider;
+import org.laxture.spring.util.ApplicationContextProvider;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.NameTokenizers;
 import org.modelmapper.jooq.RecordValueReader;
@@ -26,11 +26,10 @@ import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfi
 import org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Profile;
-import org.springframework.context.event.ContextStartedEvent;
-import org.springframework.context.event.ContextStoppedEvent;
-import org.springframework.context.event.EventListener;
 
 /**
  * @author <a href="https://github.com/hank-cp">Hank CP</a>
@@ -48,19 +47,15 @@ public class DemoApp {
         builder.build().run();
     }
 
-    @EventListener(classes = ContextStartedEvent.class)
-    public void onApplicationStarted(ApplicationContext applicationContext) {
-        MultiApplicationContextProvider.registerApplicationContext(applicationContext);
-    }
-
-    @EventListener(classes = ContextStoppedEvent.class)
-    public void onApplicationStopped(ApplicationContext applicationContext) {
-        MultiApplicationContextProvider.unregisterApplicationContext(applicationContext);
+    @Bean
+    public ApplicationContextAware multiApplicationContextProviderRegister() {
+        return ApplicationContextProvider::registerApplicationContext;
     }
 
     @Bean
     @ConditionalOnMissingBean
-    public ModelMapper modelMapper() {
+    @DependsOn("multiApplicationContextProviderRegister")
+    public ModelMapper modelMapper(ApplicationContext applicationContext) {
         ModelMapper mapper = new ModelMapper();
         mapper.getConfiguration().setSourceNameTokenizer(NameTokenizers.CAMEL_CASE)
                 .addValueReader(new RecordValueReader());
