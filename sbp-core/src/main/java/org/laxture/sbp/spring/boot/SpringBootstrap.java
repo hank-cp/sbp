@@ -83,7 +83,7 @@ public class SpringBootstrap extends SpringApplication {
      * Generally new an instance and {@link #run(String...)} it
      * in {@link SpringBootPlugin#createSpringBootstrap()} method.
      *
-     * @param primarySources {@link SpringApplication} that annotated with {@link SpringBootApplication}
+     * @param primarySources {@link SpringApplication} that annotated with @SpringBootApplication
      */
     @SuppressWarnings("JavadocReference")
     public SpringBootstrap(SpringBootPlugin plugin,

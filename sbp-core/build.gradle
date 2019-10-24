@@ -3,28 +3,14 @@ plugins {
     id 'maven'
 }
 
-task sourcesJar(type: Jar, dependsOn: classes) {
-    archiveClassifier = 'sources'
-    from sourceSets.main.allSource
-}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    archiveClassifier = 'javadoc'
-    from javadoc.destinationDir
-}
-
-artifacts {
-    archives sourcesJar
-    archives javadocJar
-}
-
 group = 'org.laxture.sbp'
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot'
     implementation 'org.springframework:spring-webmvc'
     implementation 'org.apache.commons:commons-lang3'
-    compile 'com.github.hank-cp:spring-static-ctx:0.1.0'
+    compile 'javax.annotation:javax.annotation-api'
+    compile 'com.github.hank-cp:spring-static-ctx:0.1.1'
 
     compile ('org.pf4j:pf4j:2.6.0') {
         exclude group: 'org.slf4j', module: 'slf4j-log4j12'

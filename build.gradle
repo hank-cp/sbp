@@ -17,8 +17,12 @@ def isApplicationProject(String projectName) {
         && !projectName.endsWith('-security')
 }
 
+def isLibraryProject(String projectName) {
+    return projectName.startsWith('sbp-')
+}
+
 buildscript {
-    ext.springBootVersion = '2.1.6.RELEASE'
+    ext.springBootVersion = '2.1.9.RELEASE'
 
     repositories {
         jcenter()
@@ -27,7 +31,7 @@ buildscript {
     }
     dependencies {
         classpath "org.yaml:snakeyaml:1.19"
-        classpath 'ch.raffael.markdown-doclet:markdown-doclet:1.4'
+//        classpath 'ch.raffael.markdown-doclet:markdown-doclet:1.4' // TODO this plugin is not worked since JDK 11
         classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
     }
 }
@@ -63,7 +67,7 @@ subprojects {
 
     apply plugin: 'java'
     apply plugin: 'io.spring.dependency-management'
-    apply plugin: 'ch.raffael.markdown-doclet'
+//    apply plugin: 'ch.raffael.markdown-doclet'
     if (isApplicationProject(name)) {
         apply plugin: 'application'
         apply plugin: 'org.springframework.boot'
@@ -91,8 +95,8 @@ subprojects {
 // Compile & Assemble
 //*************************************************************************
 
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    sourceCompatibility = JavaVersion.VERSION_12
+    targetCompatibility = JavaVersion.VERSION_12
 
     tasks.withType(AbstractCompile) {
         options.encoding = 'UTF-8'
@@ -267,5 +271,28 @@ subprojects {
                 }
             }
         }
+
+    } else if (isLibraryProject(name)) {
+
+    //*************************************************************************
+    // Maven
+    //*************************************************************************
+
+        task sourcesJar(type: Jar, dependsOn: classes) {
+            archiveClassifier = 'sources'
+            from sourceSets.main.allSource
+        }
+
+        task javadocJar(type: Jar, dependsOn: javadoc) {
+            archiveClassifier = 'javadoc'
+            from javadoc.destinationDir
+        }
+
+        artifacts {
+            archives sourcesJar
+            archives javadocJar
+        }
+
+        group = 'org.laxture.skr'
     }
 }
