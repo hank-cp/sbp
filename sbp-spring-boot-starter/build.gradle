@@ -17,7 +17,7 @@ dependencies {
     implementation "org.apache.commons:commons-lang3"
     implementation "commons-codec:commons-codec"
 
-    implementation 'org.flywaydb:flyway-core:5.2.4'
+    implementation 'org.flywaydb:flyway-core'
 
     annotationProcessor "org.springframework.boot:spring-boot-autoconfigure-processor"
 }

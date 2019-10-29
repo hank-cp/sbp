@@ -16,6 +16,7 @@
 package org.laxture.sbp.spring.boot;
 
 import org.flywaydb.core.Flyway;
+import org.flywaydb.core.api.configuration.FluentConfiguration;
 import org.laxture.sbp.SpringBootPlugin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -60,8 +61,9 @@ public class FlywayClassLoaderConfiguration {
 
         @Override
         public void migrate(Flyway flyway) {
-            flyway.setClassLoader(plugin.getWrapper().getPluginClassLoader());
-            flyway.migrate();
+            FluentConfiguration alterConf = Flyway.configure(plugin.getWrapper().getPluginClassLoader());
+            alterConf.configuration(flyway.getConfiguration());
+            new Flyway(alterConf).migrate();
         }
     }
 }

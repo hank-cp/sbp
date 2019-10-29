@@ -16,5 +16,5 @@ dependencies {
     
     compile "org.apache.commons:commons-lang3:3.8.1"
 
-    compile 'org.flywaydb:flyway-core:5.2.4'
+    compile 'org.flywaydb:flyway-core'
 }

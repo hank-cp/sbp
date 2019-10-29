@@ -16,6 +16,7 @@
 package demo.sbp.shared.spring;
 
 import org.flywaydb.core.Flyway;
+import org.flywaydb.core.api.configuration.FluentConfiguration;
 import org.laxture.sbp.SpringBootPlugin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -56,8 +57,8 @@ public class CleanSchemaConfiguration {
 
         @Override
         public void migrate(Flyway flyway) {
-            try (Statement stat = flyway.getDataSource().getConnection().createStatement()) {
-                for (String schema : flyway.getSchemas()) {
+            try (Statement stat = flyway.getConfiguration().getDataSource().getConnection().createStatement()) {
+                for (String schema : flyway.getConfiguration().getSchemas()) {
                     stat.execute("DROP SCHEMA IF EXISTS "+schema + " CASCADE");
                 }
             } catch (SQLException e) {
@@ -65,9 +66,12 @@ public class CleanSchemaConfiguration {
             }
 
             if (plugin != null) {
-                flyway.setClassLoader(plugin.getWrapper().getPluginClassLoader());
+                FluentConfiguration alterConf = Flyway.configure(plugin.getWrapper().getPluginClassLoader());
+                alterConf.configuration(flyway.getConfiguration());
+                new Flyway(alterConf).migrate();
+            } else {
+                flyway.migrate();
             }
-            flyway.migrate();
         }
     }
 }

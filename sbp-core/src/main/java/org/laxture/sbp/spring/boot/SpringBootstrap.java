@@ -190,7 +190,7 @@ public class SpringBootstrap extends SpringApplication {
             if (bean != null) {
                 applicationContext.getBeanFactory().registerSingleton(beanName, bean);
                 applicationContext.getBeanFactory().autowireBean(bean);
-                log.info("Bean {} is register from main ApplicationContext", beanName);
+                log.info("Bean {} is registered from main ApplicationContext", beanName);
             } else {
                 log.warn("Bean {} is not found in main ApplicationContext", beanName);
             }

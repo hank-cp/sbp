@@ -22,7 +22,7 @@ def isLibraryProject(String projectName) {
 }
 
 buildscript {
-    ext.springBootVersion = '2.1.9.RELEASE'
+    ext.springBootVersion = '2.2.0.RELEASE'
 
     repositories {
         jcenter()
@@ -95,8 +95,8 @@ subprojects {
 // Compile & Assemble
 //*************************************************************************
 
-    sourceCompatibility = JavaVersion.VERSION_12
-    targetCompatibility = JavaVersion.VERSION_12
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
 
     tasks.withType(AbstractCompile) {
         options.encoding = 'UTF-8'

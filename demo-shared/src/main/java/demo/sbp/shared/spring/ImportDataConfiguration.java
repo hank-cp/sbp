@@ -18,6 +18,7 @@ package demo.sbp.shared.spring;
 import demo.sbp.shared.FlywayDataImporter;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.configuration.ClassicConfiguration;
+import org.flywaydb.core.api.configuration.FluentConfiguration;
 import org.laxture.sbp.SpringBootPlugin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -48,16 +49,14 @@ public class ImportDataConfiguration {
     @ConditionalOnProperty(prefix = "spring.flyway", name = "import-data")
     @DependsOn("flywayInitializer")
     public FlywayDataImporter flywayDataImporter() {
-        ClassicConfiguration importDataConf =
-                (ClassicConfiguration) flyway.getConfiguration();
-        importDataConf.setBaselineVersionAsString("0");
-        importDataConf.setBaselineOnMigrate(true);
-        importDataConf.setLocationsAsStrings("classpath:/db_data");
-        importDataConf.setTable("_db_data");
-        if (plugin != null) {
-            importDataConf.setClassLoader(plugin.getWrapper().getPluginClassLoader());
-        }
-        Flyway importDataFlyway = new Flyway(importDataConf);
+        FluentConfiguration flywayConf = plugin != null
+                ? Flyway.configure(plugin.getWrapper().getPluginClassLoader()) : Flyway.configure();
+        flywayConf.configuration(flyway.getConfiguration());
+        flywayConf.baselineVersion("0");
+        flywayConf.baselineOnMigrate(true);
+        flywayConf.locations("classpath:/db_data");
+        flywayConf.table("_db_data");
+        Flyway importDataFlyway = new Flyway(flywayConf);
         FlywayDataImporter importer = new FlywayDataImporter(importDataFlyway);
         importer.setOrder(Ordered.LOWEST_PRECEDENCE);
         return importer;

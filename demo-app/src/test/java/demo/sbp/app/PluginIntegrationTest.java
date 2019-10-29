@@ -62,7 +62,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "spring.autoconfigure.exclude=" +
                 "org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration," +
                 "org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration")
-@AutoConfigureMockMvc(secure = false)
+@AutoConfigureMockMvc
 @Rollback
 @ActiveProfiles("no_security")
 @Log

@@ -4,8 +4,6 @@ dependencies {
     compile project(':demo-plugin-author-api')
     compile project(':sbp-core')
 
-    implementation 'org.flywaydb:flyway-core:5.2.4'
-
     runtime "org.postgresql:postgresql"
 
     jooqRuntime "org.postgresql:postgresql"
