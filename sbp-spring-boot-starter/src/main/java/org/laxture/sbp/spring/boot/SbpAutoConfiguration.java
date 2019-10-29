@@ -105,27 +105,23 @@ public class SbpAutoConfiguration {
 		SpringBootPluginManager pluginManager = new SpringBootPluginManager(
 				new File(pluginsRoot).toPath()) {
 			@Override
-			protected void initialize() {
-				super.initialize();
-				if (properties.getClassesDirectories() != null && properties.getClassesDirectories().size() > 0) {
-					for (String classesDirectory : properties.getClassesDirectories()) {
-						pluginClasspath.addClassesDirectories(classesDirectory);
-					}
-				}
-				if (properties.getLibDirectories() != null && properties.getLibDirectories().size() > 0) {
-					for (String libDirectory : properties.getLibDirectories()) {
-						pluginClasspath.addLibDirectories(libDirectory);
-					}
-				}
-			}
-
-			@Override
 			protected PluginLoader createPluginLoader() {
 				return new CompoundPluginLoader()
-					.add(new DefaultPluginLoader(this, pluginClasspath) {
+					.add(new DefaultPluginLoader(this) {
+
 						@Override
 						protected PluginClassLoader createPluginClassLoader(Path pluginPath,
 																			PluginDescriptor pluginDescriptor) {
+							if (properties.getClassesDirectories() != null && properties.getClassesDirectories().size() > 0) {
+								for (String classesDirectory : properties.getClassesDirectories()) {
+									pluginClasspath.addClassesDirectories(classesDirectory);
+								}
+							}
+							if (properties.getLibDirectories() != null && properties.getLibDirectories().size() > 0) {
+								for (String libDirectory : properties.getLibDirectories()) {
+									pluginClasspath.addJarsDirectories(libDirectory);
+								}
+							}
 							return new SpringBootPluginClassLoader(pluginManager,
 									pluginDescriptor, getClass().getClassLoader());
 						}

@@ -39,7 +39,7 @@ public class SpringExtensionFactory implements ExtensionFactory {
     }
 
     @Override
-    public Object create(Class<?> extensionClass) {
+    public <T> T create(Class<T> extensionClass) {
         GenericApplicationContext pluginApplicationContext = getApplicationContext(extensionClass);
         Object extension = null;
         try {
@@ -51,7 +51,8 @@ public class SpringExtensionFactory implements ExtensionFactory {
                     extensionClass.getName(), extensionBean);
             extension = extensionBean;
         }
-        return extension;
+        //noinspection unchecked
+        return (T) extension;
     }
 
     public String getExtensionBeanName(Class<?> extensionClass) {
@@ -72,5 +73,4 @@ public class SpringExtensionFactory implements ExtensionFactory {
         SpringBootPlugin plugin = (SpringBootPlugin) pluginWrapper.getPlugin();
         return plugin.getApplicationContext();
     }
-
 }

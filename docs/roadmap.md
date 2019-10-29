@@ -2,7 +2,6 @@
 * [ ] Plugin standalone unit/integration test example
 * [ ] Front End modularization
 * [ ] Optimize ClassLoader performance
-* [ ] Cache (n+1 problem)
 * [ ] Plugin Management api / console
 * [ ] Plugin continuous Deployment
 * [ ] Log collecting
