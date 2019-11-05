@@ -82,7 +82,7 @@ public abstract class SpringBootPlugin extends Plugin {
     /**
      * Release plugin holding release on stop.
      */
-    public void releaseResource() {
+    protected void releaseResource() {
     }
 
     @Override
@@ -113,6 +113,7 @@ public abstract class SpringBootPlugin extends Plugin {
     @Override
     public void stop() {
         log.debug("Stopping plugin {} ......", getWrapper().getPluginId());
+        releaseResource();
         // register Extensions
         Set<String> extensionClassNames = getWrapper().getPluginManager()
                 .getExtensionClassNames(getWrapper().getPluginId());
