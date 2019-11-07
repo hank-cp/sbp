@@ -40,6 +40,8 @@ public class SpringBootPluginManager extends DefaultPluginManager
 
     private boolean autoStartPlugin = true;
 
+    private String[] profiles;
+
     public SpringBootPluginManager() {
         super();
     }
@@ -60,6 +62,14 @@ public class SpringBootPluginManager extends DefaultPluginManager
 
     public void setAutoStartPlugin(boolean autoStartPlugin) {
         this.autoStartPlugin = autoStartPlugin;
+    }
+
+    public void setProfiles(String[] profiles) {
+        this.profiles = profiles;
+    }
+
+    public String[] getProfiles() {
+        return profiles;
     }
 
     public void presetProperties(Map<String, Object> presetProperties) {

@@ -253,7 +253,9 @@ public class SpringBootstrap extends SpringApplication {
     protected void configurePropertySources(ConfigurableEnvironment environment,
                                             String[] args) {
         super.configurePropertySources(environment, args);
-        environment.setActiveProfiles("plugin");
+        String[] profiles = ((SpringBootPluginManager)
+                plugin.getWrapper().getPluginManager()).getProfiles();
+        environment.setActiveProfiles(profiles);
         environment.getPropertySources().addLast(new ExcludeConfigurations());
     }
 

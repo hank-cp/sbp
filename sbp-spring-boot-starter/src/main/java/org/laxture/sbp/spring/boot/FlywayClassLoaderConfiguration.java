@@ -48,22 +48,11 @@ public class FlywayClassLoaderConfiguration {
     @Bean
     @ConditionalOnMissingBean
     public FlywayMigrationStrategy migrationStrategy() {
-        return new FlywayClassLoaderPatch(plugin);
-    }
-
-    public static class FlywayClassLoaderPatch implements FlywayMigrationStrategy {
-
-        private SpringBootPlugin plugin;
-
-        public FlywayClassLoaderPatch(SpringBootPlugin plugin) {
-            this.plugin = plugin;
-        }
-
-        @Override
-        public void migrate(Flyway flyway) {
+        return flyway -> {
             FluentConfiguration alterConf = Flyway.configure(plugin.getWrapper().getPluginClassLoader());
             alterConf.configuration(flyway.getConfiguration());
             new Flyway(alterConf).migrate();
-        }
+        };
     }
+
 }

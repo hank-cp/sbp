@@ -18,6 +18,7 @@ package org.laxture.sbp.spring.boot;
 import lombok.Data;
 import org.pf4j.RuntimeMode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.ApplicationContext;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,10 +42,18 @@ public class SbpProperties {
 	 * Auto start plugin when main app is ready
 	 */
 	private boolean autoStartPlugin = true;
-	/** Plugin ids disabled by default */
+	/**
+	 * Plugins disabled by default
+	 */
 	private String[] disabledPlugins;
-	/** Plugin ids enabled by default, prior to `disabledPlugins` */
+	/**
+	 * Plugins enabled by default, prior to `disabledPlugins`
+	 */
 	private String[] enabledPlugins;
+	/**
+	 * Profile for plugin Spring {@link ApplicationContext}
+	 */
+	private String[] profiles = new String[] {"plugin"};
 	/**
 	 * Set to true to allow requires expression to be exactly x.y.z. The default is
 	 * false, meaning that using an exact version x.y.z will implicitly mean the

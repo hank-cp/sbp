@@ -113,12 +113,17 @@ public class SbpAutoConfiguration {
 		pluginManager.setExactVersionAllowed(properties.isExactVersionAllowed());
 		pluginManager.setSystemVersion(properties.getSystemVersion());
 		pluginManager.setAutoStartPlugin(properties.isAutoStartPlugin());
+		pluginManager.setProfiles(properties.getProfiles());
 
 		if (properties.getDisabledPlugins() != null) {
 			pluginManager.getPlugins().stream()
 					.filter(pluginWrapper -> ArrayUtils.contains(
 							properties.getDisabledPlugins(), pluginWrapper.getPluginId()))
 					.forEach(pluginWrapper -> pluginManager.disablePlugin(pluginWrapper.getPluginId()));
+			pluginManager.getPlugins().stream()
+					.filter(pluginWrapper -> !ArrayUtils.contains(
+							properties.getDisabledPlugins(), pluginWrapper.getPluginId()))
+					.forEach(pluginWrapper -> pluginManager.enablePlugin(pluginWrapper.getPluginId()));
 		}
 
 		if (properties.getEnabledPlugins() != null) {
@@ -126,6 +131,10 @@ public class SbpAutoConfiguration {
 					.filter(pluginWrapper -> ArrayUtils.contains(
 							properties.getEnabledPlugins(), pluginWrapper.getPluginId()))
 					.forEach(pluginWrapper -> pluginManager.enablePlugin(pluginWrapper.getPluginId()));
+			pluginManager.getPlugins().stream()
+					.filter(pluginWrapper -> !ArrayUtils.contains(
+							properties.getEnabledPlugins(), pluginWrapper.getPluginId()))
+					.forEach(pluginWrapper -> pluginManager.disablePlugin(pluginWrapper.getPluginId()));
 		}
 
 		return pluginManager;
