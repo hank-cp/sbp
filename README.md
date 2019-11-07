@@ -150,11 +150,10 @@ everything we need in the real project.
 
 ### Documentation
 * [How it works](docs/how_it_works.md)
-* [Tutorials](docs/tutorials.md)
 * [Configuration](docs/configuration.md)
 * [Persistence](docs/persistence.md)
 * [Security / AOP](docs/security_aop.md)
-* [Deployment]()
+* [Deployment(TODO)]()
 * [Trouble Shoot & Misc](docs/how_it_works.md)
 * [About demo proejct](docs/trouble_shoot.md)
 * [Road map](docs/roadmap.md)

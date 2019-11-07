@@ -22,7 +22,31 @@ public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, B
 package referred a lot 3rd party classed directly, which should be loaded
 by our `PluginClassloader` in our case. 
 
-##### Plugin modification is not compiled.
+##### Irrelevant beans get inject to plugin `ApplicationContext`
+* You need to find out which `AutoConfiguration` introduce those
+beans, and add it by `getExcluceConfigurations`.
+```java
+    @Override
+    protected SpringBootstrap createSpringBootstrap() {
+        return new SharedDataSourceSpringBootstrap(this, MdSimplePluginStarter.class) {
+            @Override
+            protected String[] getExcludeConfigurations() {
+                return ArrayUtils.addAll(super.getExcludeConfigurations(),
+                        "graphql.spring.web.servlet.GraphQLEndpointConfiguration");
+            }
+        }
+        .addSharedBeanName("extensionRegisterService");
+    }
+```
+
+##### Plugin is not compiled after I changed code.
+* If you try to run your app with plugin from IDE, mostly the IDE will only
+compile the app project/module only. Therefore you have to tell the 
+IDE compile everything including plugin code. for IDEA, you could use this 
+setting of Run/Debug Configuration:
+![](build_all.png)
+
+#####
 
 ## Misc.
 * Package name cannot start with `org.pf4j`, `java` or `javax`. 
