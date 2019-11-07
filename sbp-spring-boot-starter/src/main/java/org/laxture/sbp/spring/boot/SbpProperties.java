@@ -41,6 +41,10 @@ public class SbpProperties {
 	 * Auto start plugin when main app is ready
 	 */
 	private boolean autoStartPlugin = true;
+	/** Plugin ids disabled by default */
+	private String[] disabledPlugins;
+	/** Plugin ids enabled by default, prior to `disabledPlugins` */
+	private String[] enabledPlugins;
 	/**
 	 * Set to true to allow requires expression to be exactly x.y.z. The default is
 	 * false, meaning that using an exact version x.y.z will implicitly mean the

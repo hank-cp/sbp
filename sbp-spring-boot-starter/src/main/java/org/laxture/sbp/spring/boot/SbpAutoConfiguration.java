@@ -16,6 +16,7 @@
 package org.laxture.sbp.spring.boot;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ArrayUtils;
 import org.laxture.sbp.SpringBootPluginClassLoader;
 import org.laxture.sbp.SpringBootPluginManager;
 import org.pf4j.*;
@@ -112,6 +113,20 @@ public class SbpAutoConfiguration {
 		pluginManager.setExactVersionAllowed(properties.isExactVersionAllowed());
 		pluginManager.setSystemVersion(properties.getSystemVersion());
 		pluginManager.setAutoStartPlugin(properties.isAutoStartPlugin());
+
+		if (properties.getDisabledPlugins() != null) {
+			pluginManager.getPlugins().stream()
+					.filter(pluginWrapper -> ArrayUtils.contains(
+							properties.getDisabledPlugins(), pluginWrapper.getPluginId()))
+					.forEach(pluginWrapper -> pluginManager.disablePlugin(pluginWrapper.getPluginId()));
+		}
+
+		if (properties.getEnabledPlugins() != null) {
+			pluginManager.getPlugins().stream()
+					.filter(pluginWrapper -> ArrayUtils.contains(
+							properties.getEnabledPlugins(), pluginWrapper.getPluginId()))
+					.forEach(pluginWrapper -> pluginManager.enablePlugin(pluginWrapper.getPluginId()));
+		}
 
 		return pluginManager;
 	}
