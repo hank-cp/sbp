@@ -15,6 +15,7 @@
  */
 package org.laxture.sbp.spring.boot;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.laxture.sbp.SpringBootPlugin;
 import org.laxture.sbp.SpringBootPluginClassLoader;
 import org.laxture.sbp.SpringBootPluginManager;
@@ -22,10 +23,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-import org.springframework.boot.Banner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
@@ -37,6 +38,7 @@ import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Field;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Base plugin {@link ApplicationContext} bootstrap class like {@link SpringApplication}
@@ -54,16 +56,146 @@ public class SpringBootstrap extends SpringApplication {
 
     public static final String[] DEFAULT_EXCLUDE_CONFIGURATIONS = {
             "org.laxture.sbp.spring.boot.SbpAutoConfiguration",
+            // Spring Web MVC
             "org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration",
             "org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration",
             "org.springframework.boot.actuate.autoconfigure.metrics.web.servlet.WebMvcMetricsAutoConfiguration",
             "org.springframework.boot.autoconfigure.web.embedded.EmbeddedWebServerFactoryCustomizerAutoConfiguration",
             "org.springframework.boot.autoconfigure.web.servlet.HttpEncodingAutoConfiguration",
             "org.springframework.boot.autoconfigure.websocket.servlet.WebSocketServletAutoConfiguration",
+            // Actuator/JMX
+            "org.springframework.boot.actuate.autoconfigure.amqp.RabbitHealthContributorAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.audit.AuditAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.audit.AuditEventsEndpointAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.beans.BeansEndpointAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.cache.CachesEndpointAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.cassandra.CassandraHealthContributorAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.cassandra.CassandraReactiveHealthContributorAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.cloudfoundry.servlet.CloudFoundryActuatorAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.cloudfoundry.reactive.ReactiveCloudFoundryActuatorAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.condition.ConditionsReportEndpointAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.context.properties.ConfigurationPropertiesReportEndpointAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.context.ShutdownEndpointAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.couchbase.CouchbaseHealthContributorAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.couchbase.CouchbaseReactiveHealthContributorAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.elasticsearch.ElasticSearchClientHealthContributorAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.elasticsearch.ElasticSearchJestHealthContributorAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.elasticsearch.ElasticSearchRestHealthContributorAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.endpoint.jmx.JmxEndpointAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.env.EnvironmentEndpointAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.flyway.FlywayEndpointAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.influx.InfluxDbHealthContributorAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.info.InfoContributorAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.info.InfoEndpointAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.integration.IntegrationGraphEndpointAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.jdbc.DataSourceHealthContributorAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.jms.JmsHealthContributorAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.jolokia.JolokiaEndpointAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.ldap.LdapHealthContributorAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.liquibase.LiquibaseEndpointAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.logging.LogFileWebEndpointAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.logging.LoggersEndpointAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.mail.MailHealthContributorAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.management.HeapDumpWebEndpointAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.management.ThreadDumpEndpointAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegistryAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.metrics.JvmMetricsAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.metrics.KafkaMetricsAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.metrics.Log4J2MetricsAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.metrics.LogbackMetricsAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.metrics.MetricsEndpointAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.metrics.SystemMetricsAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.metrics.amqp.RabbitMetricsAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.metrics.cache.CacheMetricsAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.metrics.export.appoptics.AppOpticsMetricsExportAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.metrics.export.atlas.AtlasMetricsExportAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.metrics.export.datadog.DatadogMetricsExportAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.metrics.export.dynatrace.DynatraceMetricsExportAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.metrics.export.elastic.ElasticMetricsExportAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.metrics.export.ganglia.GangliaMetricsExportAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.metrics.export.graphite.GraphiteMetricsExportAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.metrics.export.humio.HumioMetricsExportAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.metrics.export.influx.InfluxMetricsExportAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.metrics.export.jmx.JmxMetricsExportAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.metrics.export.kairos.KairosMetricsExportAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.metrics.export.newrelic.NewRelicMetricsExportAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.metrics.export.prometheus.PrometheusMetricsExportAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.metrics.export.signalfx.SignalFxMetricsExportAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.metrics.export.statsd.StatsdMetricsExportAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.metrics.export.wavefront.WavefrontMetricsExportAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.metrics.jdbc.DataSourcePoolMetricsAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.metrics.jersey.JerseyServerMetricsAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.metrics.orm.jpa.HibernateMetricsAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.metrics.web.client.HttpClientMetricsAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.metrics.web.jetty.JettyMetricsAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.metrics.web.reactive.WebFluxMetricsAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.metrics.web.servlet.WebMvcMetricsAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.metrics.web.tomcat.TomcatMetricsAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.mongo.MongoHealthContributorAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.mongo.MongoReactiveHealthContributorAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.neo4j.Neo4jHealthContributorAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.redis.RedisHealthContributorAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.redis.RedisReactiveHealthContributorAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.scheduling.ScheduledTasksEndpointAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.security.reactive.ReactiveManagementWebSecurityAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.session.SessionsEndpointAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.solr.SolrHealthContributorAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.system.DiskSpaceHealthContributorAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.trace.http.HttpTraceAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.trace.http.HttpTraceEndpointAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.web.mappings.MappingsEndpointAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.web.reactive.ReactiveManagementContextAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration",
+            "org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementContextAutoConfiguration",
             "org.springframework.boot.autoconfigure.admin.SpringApplicationAdminJmxAutoConfiguration",
             "org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration",
-            "org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration",
+            // Spring Security
             "org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration",
+            "org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration",
+            "org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration",
+            "org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration",
+            "org.springframework.boot.autoconfigure.security.reactive.ReactiveUserDetailsServiceAutoConfiguration",
+            "org.springframework.boot.autoconfigure.security.rsocket.RSocketSecurityAutoConfiguration",
+            "org.springframework.boot.autoconfigure.security.saml2.Saml2RelyingPartyAutoConfiguration",
+            "org.springframework.boot.autoconfigure.sendgrid.SendGridAutoConfiguration",
+            "org.springframework.boot.autoconfigure.session.SessionAutoConfiguration",
+            "org.springframework.boot.autoconfigure.security.oauth2.client.servlet.OAuth2ClientAutoConfiguration",
+            "org.springframework.boot.autoconfigure.security.oauth2.client.reactive.ReactiveOAuth2ClientAutoConfiguration",
+            "org.springframework.boot.autoconfigure.security.oauth2.resource.servlet.OAuth2ResourceServerAutoConfiguration",
+            "org.springframework.boot.autoconfigure.security.oauth2.resource.reactive.ReactiveOAuth2ResourceServerAutoConfiguration",
+            // Spring Cloud
+            "org.springframework.cloud.netflix.archaius.ArchaiusAutoConfiguration",
+            "org.springframework.cloud.consul.config.ConsulConfigAutoConfiguration",
+            "org.springframework.cloud.autoconfigure.ConfigurationPropertiesRebinderAutoConfiguration",
+            "org.springframework.cloud.autoconfigure.LifecycleMvcEndpointAutoConfiguration",
+            "org.springframework.cloud.autoconfigure.RefreshAutoConfiguration",
+            "org.springframework.cloud.autoconfigure.RefreshEndpointAutoConfiguration",
+            "org.springframework.cloud.autoconfigure.WritableEnvironmentEndpointAutoConfiguration",
+            "org.springframework.cloud.loadbalancer.config.LoadBalancerAutoConfiguration",
+            "org.springframework.cloud.loadbalancer.config.BlockingLoadBalancerClientAutoConfiguration",
+            "org.springframework.cloud.loadbalancer.config.LoadBalancerCacheAutoConfiguration",
+            "org.springframework.cloud.consul.discovery.RibbonConsulAutoConfiguration",
+            "org.springframework.cloud.consul.discovery.configclient.ConsulConfigServerAutoConfiguration",
+            "org.springframework.cloud.consul.serviceregistry.ConsulAutoServiceRegistrationAutoConfiguration",
+            "org.springframework.cloud.consul.serviceregistry.ConsulServiceRegistryAutoConfiguration",
+            "org.springframework.cloud.consul.discovery.ConsulDiscoveryClientConfiguration",
+            "org.springframework.cloud.consul.discovery.reactive.ConsulReactiveDiscoveryClientConfiguration",
+            "org.springframework.cloud.consul.discovery.ConsulCatalogWatchAutoConfiguration",
+            "org.springframework.cloud.consul.support.ConsulHeartbeatAutoConfiguration",
+    };
+
+    public static final String[] DEFAULT_EXCLUDE_APPLICATION_LISTENERS = {
+            "org.springframework.cloud.bootstrap.BootstrapApplicationListener",
+            "org.springframework.cloud.bootstrap.LoggingSystemShutdownListener",
+            "org.springframework.cloud.context.restart.RestartListener",
     };
 
     private final SpringBootPlugin plugin;
@@ -97,7 +229,6 @@ public class SpringBootstrap extends SpringApplication {
         if (presetProperties != null) this.presetProperties.putAll(presetProperties);
         this.presetProperties.put(PROPERTY_NAME_AUTOCONFIGURE_EXCLUDE,
                 getExcludeConfigurations());
-        setBannerMode(Banner.Mode.OFF);
     }
 
     /**
@@ -145,6 +276,19 @@ public class SpringBootstrap extends SpringApplication {
     /** Override this methods to customize excluded spring boot configuration */
     protected String[] getExcludeConfigurations() {
         return DEFAULT_EXCLUDE_CONFIGURATIONS;
+    }
+
+    protected String[] getExcludeApplicationListeners() {
+        return DEFAULT_EXCLUDE_APPLICATION_LISTENERS;
+    }
+
+    @Override
+    public void setListeners(Collection<? extends ApplicationListener<?>> listeners) {
+        super.setListeners(listeners
+                .stream()
+                .filter(listener -> !ArrayUtils.contains(
+                        getExcludeApplicationListeners(), listener.getClass().getName()))
+                .collect(Collectors.toList()));
     }
 
     @Override

@@ -76,13 +76,13 @@ public abstract class SpringBootPlugin extends Plugin {
 
     private PluginRequestMappingHandlerMapping getMainRequestMapping() {
         return (PluginRequestMappingHandlerMapping)
-                getMainApplicationContext().getBean(RequestMappingHandlerMapping.class);
+                getMainApplicationContext().getBean("requestMappingHandlerMapping");
     }
 
     /**
      * Release plugin holding release on stop.
      */
-    protected void releaseResource() {
+    public void releaseResource() {
     }
 
     @Override

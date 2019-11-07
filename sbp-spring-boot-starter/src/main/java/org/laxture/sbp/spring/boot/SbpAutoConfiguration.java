@@ -15,11 +15,11 @@
  */
 package org.laxture.sbp.spring.boot;
 
+import lombok.extern.slf4j.Slf4j;
 import org.laxture.sbp.SpringBootPluginClassLoader;
 import org.laxture.sbp.SpringBootPluginManager;
 import org.pf4j.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -28,9 +28,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StringUtils;
-import org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver;
-import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
-import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -48,40 +45,21 @@ import java.util.function.Consumer;
 @ConditionalOnClass({ PluginManager.class, SpringBootPluginManager.class })
 @ConditionalOnProperty(prefix = SbpProperties.PREFIX, value = "enabled", havingValue = "true")
 @EnableConfigurationProperties({SbpProperties.class, SbpPluginProperties.class})
+@Slf4j
 public class SbpAutoConfiguration {
 
-	private Logger logger = LoggerFactory.getLogger(SbpAutoConfiguration.class);
+	@Autowired
+	private WebMvcRegistrations mvcRegistrations;
 
 	@Bean
 	@ConditionalOnMissingBean(PluginStateListener.class)
 	public PluginStateListener pluginStateListener() {
 		return event -> {
 			PluginDescriptor descriptor = event.getPlugin().getDescriptor();
-			if (logger.isDebugEnabled()) {
-				logger.debug(String.format("Plugin [%s（%s）](%s) %s", descriptor.getPluginId(),
-						descriptor.getVersion().toString(), descriptor.getPluginDescription(),
-						event.getPluginState().toString()));
-			}
-		};
-	}
-
-	@Bean
-	@ConditionalOnMissingBean(WebMvcRegistrations.class)
-	public WebMvcRegistrations mvcRegistrations() {
-		return new WebMvcRegistrations() {
-			@Override
-			public RequestMappingHandlerMapping getRequestMappingHandlerMapping() {
-				return new PluginRequestMappingHandlerMapping();
-			}
-
-			@Override
-			public RequestMappingHandlerAdapter getRequestMappingHandlerAdapter() {
-				return null;
-			}
-
-			@Override
-			public ExceptionHandlerExceptionResolver getExceptionHandlerExceptionResolver() {
-				return null;
+			if (log.isDebugEnabled()) {
+				log.debug("Plugin [{}（{}）]({}) {}", descriptor.getPluginId(),
+						descriptor.getVersion(), descriptor.getPluginDescription(),
+						event.getPluginState().toString());
 			}
 		};
 	}

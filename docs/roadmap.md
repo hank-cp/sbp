@@ -10,7 +10,6 @@
 * [x] Change project name to sbp
 * [x] Distributed Transaction Support
 * [x] Skr Integration
-* [ ] Actuator support
 
 ### 0.1.1
 * [x] Upgrade to Spring Boot 2.1.6
