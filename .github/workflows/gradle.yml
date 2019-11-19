@@ -21,4 +21,4 @@ jobs:
     - run: ./gradlew doMigration
     - run: ./gradlew buildApp
     - run: ./gradlew copyDependencies
-    - run: ./gradlew install
+    - run: ./gradlew check install
