@@ -21,21 +21,13 @@ then
   docker_run="$docker_run -v '$INIT_DB_DIR:/docker-entrypoint-initdb.d'"
 fi
 
-if [ ! -z "$INPUT_POSTGRESQL_CONF_FILE" ]
-then
-  PWD=`pwd`
-  CONF_FILE="$PWD/$INPUT_POSTGRESQL_CONF_FILE"
-  echo "$(ls -l $CONF_FILE)"
-  
-  [ ! -d "$CONF_FILE" ] && echo "WARNING: conf file $CONF_FILE DOES NOT exist"
+docker_run="$docker_run -p 5432:5432 postgres:$INPUT_POSTGRESQL_VERSION"
 
-  docker_run="$docker_run -v '$CONF_FILE:/etc/postgresql/postgresql.conf'"
+if [ ! -z "$INPUT_POSTGRES_CONF" ]
+then
+  docker_run="$docker_run -c '$INPUT_POSTGRES_CONF'"
 fi
 
-docker_run="$docker_run -d -p 5432:5432 postgres:$INPUT_POSTGRESQL_VERSION"
-
 sh -c "$docker_run"
-
-echo "$(ls -l `pwd`)"
 
 echo "$docker_run"

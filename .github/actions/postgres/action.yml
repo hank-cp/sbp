@@ -27,8 +27,8 @@ inputs:
     description: 'POSTGRES_INIT_SCRIPTS - directory containing DB init scripts'
     required: false
     default: ''
-  postgresql conf file:
-    description: 'POSTGRES_CONF_FILE - postgres.conf file to use'
+  postgresql conf:
+    description: 'POSTGRES_CONF - postgres configurations'
     required: false
     default: ''
 runs:
