@@ -19,8 +19,8 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 11
-    - run: docker exec -it postgres psql -c 'create database "sbp";' -U postgres
-    - run: docker exec -it postgres psql -c 'create database "sbp-test";' -U postgres
+#    - run: docker exec -it postgres psql -c 'create database "sbp";' -U postgres
+#    - run: docker exec -it postgres psql -c 'create database "sbp-test";' -U postgres
     - run: ./gradlew :sbp-core:jar
     - run: ./gradlew :sbp-spring-boot-starter:jar
     - run: ./gradlew doMigration
