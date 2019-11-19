@@ -14,6 +14,7 @@ if [ ! -z "$INPUT_POSTGRESQL_INIT_SCRIPTS" ]
 then
   PWD=`pwd`
   INIT_DB_DIR="$PWD/$INPUT_POSTGRESQL_INIT_SCRIPTS"
+  echo "$(ls -l INIT_DB_DIR)"
   
   [ ! -d "$INIT_DB_DIR" ] && echo "WARNING: directory $INIT_DB_DIR DOES NOT exist"
 
@@ -24,6 +25,7 @@ if [ ! -z "$INPUT_POSTGRESQL_CONF_FILE" ]
 then
   PWD=`pwd`
   CONF_FILE="$PWD/$INPUT_POSTGRESQL_CONF_FILE"
+  echo "$(ls -l $CONF_FILE)"
   
   [ ! -d "$CONF_FILE" ] && echo "WARNING: conf file $CONF_FILE DOES NOT exist"
 
