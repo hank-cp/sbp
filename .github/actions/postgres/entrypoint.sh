@@ -23,10 +23,10 @@ fi
 
 docker_run="$docker_run -p 5432:5432 postgres:$INPUT_POSTGRESQL_VERSION"
 
-echo "$INPUT_POSTGRES_CONF"
-if [ ! -z "$INPUT_POSTGRES_CONF" ]
+echo "$INPUT_POSTGRESQL_CONF"
+if [ ! -z "$INPUT_POSTGRESQL_CONF" ]
 then
-  docker_run="$docker_run -c '$INPUT_POSTGRES_CONF'"
+  docker_run="$docker_run -c '$INPUT_POSTGRESQL_CONF'"
 fi
 
 ls /docker-entrypoint-initdb.d
