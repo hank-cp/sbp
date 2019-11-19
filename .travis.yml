@@ -1,7 +1,6 @@
 language: java
 jdk:
-  - oraclejdk8
-  - openjdk8
+  - openjdk11
 before_install:
   - psql -c 'create database "sbp";' -U postgres
   - psql -c 'create database "sbp-test";' -U postgres
@@ -11,6 +10,7 @@ install:
   - ./gradlew doMigration
   - ./gradlew buildApp
   - ./gradlew copyDependencies
+  - ./gradlew clean test
 services:
   - postgresql
 addons:
