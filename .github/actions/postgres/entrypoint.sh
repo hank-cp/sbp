@@ -8,8 +8,8 @@ docker_run="$docker_run -e POSTGRES_PASSWORD=$INPUT_POSTGRESQL_PASSWORD"
 if [ ! -z "$INPUT_POSTGRESQL_INIT_SCRIPTS" ]
 then
 #  PWD=`pwd`
-  PWD="/Users/hank/Projects/Lolth/sbp"
-#  PWD="/home/runner/work/sbp/sbp"
+#  PWD="/Users/hank/Projects/Lolth/sbp"
+  PWD="/home/runner/work/sbp/sbp"
   INIT_DB_DIR="$PWD/$INPUT_POSTGRESQL_INIT_SCRIPTS"
 
   [ ! -d "$INIT_DB_DIR" ] && echo "WARNING: directory $INIT_DB_DIR DOES NOT exist"
