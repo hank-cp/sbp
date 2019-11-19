@@ -1,11 +1,8 @@
-[![GitHub release](https://img.shields.io/github/release/hank-cp/pf4j-spring-boot.svg)](https://github.com/hank-cp/pf4j-spring-boot/releases)
-[![](https://jitpack.io/v/hank-cp/pf4j-spring-boot.svg)](https://jitpack.io/#hank-cp/pf4j-spring-boot)
-[![Travis (.org)](https://img.shields.io/travis/hank-cp/pf4j-spring-boot.svg)](https://travis-ci.org/hank-cp/pf4j-spring-boot)
-![GitHub](https://img.shields.io/github/license/hank-cp/pf4j-spring-boot.svg)
-![GitHub last commit](https://img.shields.io/github/last-commit/hank-cp/pf4j-spring-boot.svg)
-<!--
-[![](https://jitpack.io/v/hank-cp/pf4j-spring-boot.svg)](https://jitpack.io/#hank-cp/pf4j-spring-boot)
--->
+[![GitHub release](https://img.shields.io/github/release/hank-cp/sbp.svg)](https://github.com/hank-cp/sbp/releases)
+[![](https://jitpack.io/v/hank-cp/sbp.svg)](https://jitpack.io/#hank-cp/sbp)
+[![Github Actions](https://github.com/hank-cp/sbp/workflows/Java%20CI/badge.svg)](https://github.com/hank-cp/sbp/actions)
+![GitHub](https://img.shields.io/github/license/hank-cp/sbp.svg)
+![GitHub last commit](https://img.shields.io/github/last-commit/hank-cp/sbp.svg)
 
 
 pf4j-spring-boot introduce plugin oriented programming to Spring Boot. It is inspired and builds 
