@@ -10,7 +10,6 @@ install:
   - ./gradlew doMigration
   - ./gradlew buildApp
   - ./gradlew copyDependencies
-  - ./gradlew clean test
 services:
   - postgresql
 addons:
