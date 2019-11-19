@@ -13,4 +13,8 @@ install:
 services:
   - postgresql
 addons:
-  postgresql: "9.6"
+  postgresql: "12"
+  apt:
+    packages:
+      - postgresql-12
+      - postgresql-client-12
