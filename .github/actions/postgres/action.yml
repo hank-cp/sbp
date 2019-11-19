@@ -4,6 +4,36 @@ author: 'hank-cp'
 branding:
   icon: 'database'
   color: 'blue'
+inputs:
+  # See https://hub.docker.com/_/postgres for supported versions
+  # and further details on input environment variables
+  postgresql version:
+    description: 'Version of PostgreSQL to use'
+    required: false
+    default: 'latest'
+  postgresql db:
+    description: 'POSTGRES_DB - name for the default database that is created'
+    required: false
+    default: ''
+  postgresql user:
+    description: 'POSTGRES_USER - create the specified user with superuser power'
+    required: false
+    default: ''
+  postgresql password:
+    description: 'POSTGRES_PASSWORD - superuser password'
+    required: false
+    default: ''
+  postgresql init scripts:
+    description: 'POSTGRES_INIT_SCRIPTS - directory containing DB init scripts'
+    required: false
+    default: ''
+  postgresql conf file:
+    description: 'POSTGRES_CONF_FILE - postgres.conf file to use'
+    required: false
+    default: ''
+outputs:
+  innerCmd:
+    description: 'd o c k e r'
 runs:
   using: 'docker'
   image: 'Dockerfile'
