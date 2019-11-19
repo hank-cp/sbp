@@ -1,0 +1,9 @@
+name: 'Setup PostgreSQL'
+description: 'Setup a PostgreSQL database'
+author: 'hank-cp'
+branding:
+  icon: 'database'
+  color: 'blue'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
