@@ -5,6 +5,7 @@
 
 FROM docker:stable
 
+COPY init-db /docker-entrypoint-initdb.d
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
