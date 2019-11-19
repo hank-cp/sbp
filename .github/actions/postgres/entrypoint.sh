@@ -34,4 +34,6 @@ docker_run="$docker_run -d -p 5432:5432 postgres:$INPUT_POSTGRESQL_VERSION"
 
 sh -c "$docker_run"
 
+echo "$(ls -l `pwd`)"
+
 echo "$docker_run"

@@ -31,9 +31,6 @@ inputs:
     description: 'POSTGRES_CONF_FILE - postgres.conf file to use'
     required: false
     default: ''
-outputs:
-  innerCmd:
-    description: 'd o c k e r'
 runs:
   using: 'docker'
   image: 'Dockerfile'
