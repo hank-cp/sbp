@@ -8,20 +8,15 @@ docker_run="$docker_run -e POSTGRES_PASSWORD=$INPUT_POSTGRESQL_PASSWORD"
 if [ ! -z "$INPUT_POSTGRESQL_INIT_SCRIPTS" ]
 then
 #  PWD=`pwd`
-#  PWD="/Users/hank/Projects/Lolth/sbp"
   PWD="/home/runner/work/sbp/sbp"
   INIT_DB_DIR="$PWD/$INPUT_POSTGRESQL_INIT_SCRIPTS"
 
   [ ! -d "$INIT_DB_DIR" ] && echo "WARNING: directory $INIT_DB_DIR DOES NOT exist"
 
-  echo "workspace :: $GITHUB_WORKSPACE"
-  ls -l $GITHUB_WORKSPACE
-  echo "init_db_dir :: $INIT_DB_DIR"
-  ls -l "$INIT_DB_DIR"
   docker_run="$docker_run -v $INIT_DB_DIR:/docker-entrypoint-initdb.d"
 fi
 
-docker_run="$docker_run --rm -p 5432:5432 postgres:$INPUT_POSTGRESQL_VERSION"
+docker_run="$docker_run -d --rm -p 5432:5432 postgres:$INPUT_POSTGRESQL_VERSION"
 
 if [ ! -z "$INPUT_POSTGRESQL_CONF" ]
 then
