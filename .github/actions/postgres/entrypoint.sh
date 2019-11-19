@@ -28,6 +28,8 @@ then
   docker_run="$docker_run -c '$INPUT_POSTGRES_CONF'"
 fi
 
+ls -l "$INIT_DB_DIR"
+echo "$docker_run"
+
 sh -c "$docker_run"
 
-echo "$docker_run"
