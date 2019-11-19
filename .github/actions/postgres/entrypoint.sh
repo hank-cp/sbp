@@ -14,7 +14,7 @@ then
 
   echo "$INIT_DB_DIR"
   ls -l "$INIT_DB_DIR"
-  docker_run="$docker_run -v $INIT_DB_DIR:/docker-entrypoint-initdb.d"
+  docker_run="$docker_run -v \"$INIT_DB_DIR\":\"/docker-entrypoint-initdb.d\""
 fi
 
 docker_run="$docker_run --rm -p 5432:5432 postgres:$INPUT_POSTGRESQL_VERSION"
