@@ -18,7 +18,7 @@ then
   [ ! -d "$INIT_DB_DIR" ] && echo "WARNING: directory $INIT_DB_DIR DOES NOT exist"
 
 #  docker_run="$docker_run -v '$INIT_DB_DIR:/docker-entrypoint-initdb.d'"
-  docker_run="$docker_run -v '/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d'"
+  docker_run="$docker_run -v '/docker-entrypoint-initdb.d':'/docker-entrypoint-initdb.d'"
 fi
 
 docker_run="$docker_run -p 5432:5432 postgres:$INPUT_POSTGRESQL_VERSION"
