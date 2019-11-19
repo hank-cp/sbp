@@ -3,7 +3,7 @@ name: Java CI
 on: [push]
 
 jobs:
-  openjdk8:
+  openjdk11:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
@@ -14,8 +14,10 @@ jobs:
     - uses: hank-cp/postgresql-action@v1
       with:
         postgresql version: '11'
-    - run: docker-psql -c 'create database "sbp";' -U postgres
-    - run: docker-psql -c 'create database "sbp-test";' -U postgres
+        postgresql docker name: 'postgres'
+        postgresql conf file: 'postgresql.conf'
+    - run: docker exec -it postgres psql -c 'create database "sbp";' -U postgres
+    - run: docker exec -it postgres psql -c 'create database "sbp-test";' -U postgres
     - run: ./gradlew :sbp-core:jar
     - run: ./gradlew :sbp-spring-boot-starter:jar
     - run: ./gradlew doMigration
