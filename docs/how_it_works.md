@@ -1,9 +1,11 @@
 ### Plugin loading
-different from original pf4j implementation, pf4j-spring-boot 
-change the class loading mechanism a little bit.
 ![ClassLoader](classloader.png?raw=true)
 
+**NOTICE**: If you have ever used [pf4j](https://pf4j.org/), please note that 
+although **sbp** is based on pf4j, but **sbp** rewrites classloading 
+behavior that will be quite different from original pf4j does.
+
 ### Get involved with Spring `ApplicationContext` initialization process.
-pf4j-spring-boot extends `SpringApplication` from Spring Boot, which is 
-`SpringBootstrap` to work with pf4j together. 
+**sbp** extends `SpringApplication` from Spring Boot, which is 
+`SpringBootstrap` to work with extend plugin loading capabilities. 
 ![ApplicationContext](applicationContext.png?raw=true)

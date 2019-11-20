@@ -6,13 +6,13 @@
 [![](https://jitpack.io/v/hank-cp/pf4j-spring-boot.svg)](https://jitpack.io/#hank-cp/pf4j-spring-boot)
 -->
 
-pf4j-spring-boot为Spring Boot带来面向插件开发设计的能力. 它受到开源项目[Pf4j](https://pf4j.org/)的启发, 并构建在其基础之上. 
+sbp为Spring Boot带来面向插件开发设计的能力. 它受到开源项目[Pf4j](https://pf4j.org/)的启发, 并构建在其基础之上. 
 
 ### 为什么我们需要插件化的Spring Boot?
 * Spring Boot很棒棒，但它是单体架构。这意味着每次代码修改您必须交付整个应用程序.
 * 我们需要一个更具灵活性和可扩展性的现代框架，可以快速为复杂的业务场景提供灵活解决方案. 
 * 并非所有项目都需要在开始阶段需要考虑线性扩展问题。
-* 使用pf4j-spring-boot，我们在仅使用Spring Boot的前提下以微服务架构的方式来考虑问题，
+* 使用sbp，我们在仅使用Spring Boot的前提下以微服务架构的方式来考虑问题，
 但不必过多花费心思在“云原生”问题上，如服务发现，流量控制等.
 * 它是一个介于单体Spring Boot应用和分布式Spring Cloud架构之间的中间过渡方案.
 

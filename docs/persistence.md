@@ -1,17 +1,17 @@
-pf4j-spring-boot supports each plugin run as individual application, of
+**sbp** supports each plugin run as individual application, of
 course, with individual persistence layer setting. You could choose shared
 a single database for app and all of its plugins, or setup separate database
 for plugin.
 
 ### Approach 1: Single shared dataSource / Same persistence middle-ware  
 Choose any persistence middle-ware as you like, like JDBC template/Jooq/
-Mybatis/Spring Data JPA(Hibernate). With pf4j-spring-boot bean management, 
+Mybatis/Spring Data JPA(Hibernate). With **sbp** bean management, 
 you could shared database connection resource from app to plugin with local
 transaction support. This is recommended since it's the simplest way.
 
 ![](persistence_1.png?raw=true)
 
-See [SharedDataSourceSpringBootstrap](../pf4j-spring-boot-support/src/main/java/org/pf4j/spring/boot/SharedDataSourceSpringBootstrap.java).
+See [SharedDataSourceSpringBootstrap](../sbp-core/src/main/java/org/sbp/spring/boot/SharedDataSourceSpringBootstrap.java).
 
 ### Approach 2: Single shared dataSource / Multiple persistence middle-ware
 It's possible to mix JPA and other simple RMDB mapping tools like Jooq/Mybatis,
@@ -70,11 +70,11 @@ will be thrown.
    ```
    spring.jta.atomikos.datasource.beanName: dataSource-[plugin]
    ``` 
-5. Use [SharedJtaSpringBootstrap](../pf4j-spring-boot-support/src/main/java/org/pf4j/spring/boot/SharedJtaSpringBootstrap.java)
+5. Use [SharedJtaSpringBootstrap](../sbp-core/src/main/java/org/laxture/sbp/spring/boot/SharedJtaSpringBootstrap.java)
 to start your plugin.
 6. **!!! IMPORTANT !!!** Atomikos `JtaTransactionManager` manage distribution transaction with static reference 
 and file system. So you will have to release `XADataSrouce` on plugin stopping. 
-See [LibraryPlugin](../plugins/demo-plugin-library/src/main/java/demo/pf4j/library/LibraryPlugin.java).  
+See [LibraryPlugin](../plugins/demo-plugin-library/src/main/java/demo/sbp/library/LibraryPlugin.java).  
 
 See [demo-plugin-library](../plugins/demo-plugin-library) project for more example.
 
@@ -84,6 +84,6 @@ management across multiple database.
 ![](persistence_4.png?raw=true)
 
 ### NoSQL (MongoDB / Redis)
-TBD. So far we haven't test _pf4j-spring-boot_ with NoSQL persistence
+TBD. So far we haven't test **sbp** with NoSQL persistence
 tools like MongoDB, redis. Compare to RMDBs, NoSQL tools are generally
 much more straight forward to integrate.

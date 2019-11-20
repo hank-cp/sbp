@@ -2,7 +2,7 @@
 
 Configurations for main app (not plugin) to control PluginManager behavior.
 
-* `spring.sbp.enabled`: set to true to enable Pf4j. Default false.
+* `spring.sbp.enabled`: set to true to enable sbp. Default false.
 * `spring.sbp.autoStartPlugin`: auto start plugin when main app is ready. Default true
 * `spring.sbp.disabledPlugins`: Plugins disabled by default 
 * `spring.sbp.enabledPlugins`: Plugins enabled by default, prior to `disabledPlugins`
