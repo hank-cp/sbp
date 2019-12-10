@@ -85,7 +85,9 @@ subprojects {
 //*************************************************************************
 
     Properties localProp = new Properties()
-    localProp.load(project.rootProject.file('local.properties').newDataInputStream())
+    try {
+        localProp.load(project.rootProject.file('local.properties').newDataInputStream())
+    } catch(Exception ignored) {}
     ext.sonatypeUsername = localProp.getProperty('sonatypeUsername')
     ext.sonatypePassword = localProp.getProperty('sonatypePassword')
     ext."signing.keyId" = localProp.getProperty('signing.keyId')
