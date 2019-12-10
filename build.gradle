@@ -23,6 +23,8 @@ def isLibraryProject(String projectName) {
 
 buildscript {
     ext.springBootVersion = '2.2.0.RELEASE'
+    ext.lombokVersion = '1.18.8'
+    ext.pf4jVersion = '3.1.0'
 
     repositories {
         jcenter()
@@ -73,17 +75,22 @@ subprojects {
         apply plugin: 'org.springframework.boot'
         apply plugin: 'nu.studer.jooq'
         apply plugin: 'org.flywaydb.flyway'
+    } else {
+        apply plugin: 'maven-publish'
+        apply plugin: 'signing'
     }
 
 //*************************************************************************
 // Properties
 //*************************************************************************
 
-    Properties verProp = new Properties()
-    verProp.load(project.rootProject.file('version.properties').newDataInputStream())
-    ext.mainVersion = (verProp.get(("${project.name}" + '.ver' ).toString()) ?: '0.0.1').toString()
-    ext.buildNumber = (verProp.get(("${project.name}" + '.build').toString()) ?: '1').toString()
-    version = "${mainVersion}"  //.${buildNumber}"
+    Properties localProp = new Properties()
+    localProp.load(project.rootProject.file('local.properties').newDataInputStream())
+    ext.sonatypeUsername = localProp.getProperty('sonatypeUsername')
+    ext.sonatypePassword = localProp.getProperty('sonatypePassword')
+    ext."signing.keyId" = localProp.getProperty('signing.keyId')
+    ext."signing.password" = localProp.getProperty('signing.password')
+    ext."signing.secretKeyRingFile" = localProp.getProperty('signing.secretKeyRingFile')
 
     task setProperties {
         doFirst {
@@ -103,13 +110,16 @@ subprojects {
     }
     tasks.withType(Javadoc) {
         options.encoding = 'UTF-8'
+        if(JavaVersion.current().isJava9Compatible()) {
+            options.addBooleanOption('html5', true)
+        }
     }
 
     jar {
         manifest.attributes provider: 'gradle'
         enabled true
         doFirst {
-            archiveFileName = "$project.name-$version.${archiveExtension.get()}"
+            archiveFileName = "$project.name-${archiveVersion.get()}.${archiveExtension.get()}"
         }
     }
 
@@ -122,14 +132,12 @@ subprojects {
         }
     }
 
-    def lombokVersion = '1.18.8'
-
     dependencies {
-        compile "org.projectlombok:lombok:${lombokVersion}"
+        implementation "org.projectlombok:lombok:${lombokVersion}"
         annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
-        annotationProcessor "org.pf4j:pf4j:3.1.0"
+        annotationProcessor "org.pf4j:pf4j:${pf4jVersion}"
         testAnnotationProcessor "org.projectlombok:lombok:${lombokVersion}"
-        testAnnotationProcessor "org.pf4j:pf4j:3.1.0"
+        testAnnotationProcessor "org.pf4j:pf4j:${pf4jVersion}"
     }
 
 //*************************************************************************
@@ -279,20 +287,76 @@ subprojects {
     //*************************************************************************
 
         task sourcesJar(type: Jar, dependsOn: classes) {
-            archiveClassifier = 'sources'
+            archiveClassifier.set('sources')
             from sourceSets.main.allSource
         }
 
         task javadocJar(type: Jar, dependsOn: javadoc) {
-            archiveClassifier = 'javadoc'
+            archiveClassifier.set('javadoc')
             from javadoc.destinationDir
         }
 
         artifacts {
+            archives jar
             archives sourcesJar
             archives javadocJar
         }
 
         group = 'org.laxture'
+
+        publishing {
+            publications {
+                mavenJava(MavenPublication) {
+                    groupId = project.getGroup()
+                    from components.java
+                    artifact sourcesJar
+                    artifact javadocJar
+                    pom {
+                        name = project.name
+                        description = 'sbp introduce plugin oriented programming to Spring Boot'
+                        url = 'https://github.com/hank-cp/sbp'
+                        organization {
+                            name = 'org.laxture'
+                            url = 'https://laxture.org'
+                        }
+                        issueManagement {
+                            system = 'GitHub'
+                            url = 'https://github.com/hank-cp/sbp/issues'
+                        }
+                        license {
+                            name = 'Apache License 3.0'
+                            url = 'https://github.com/hank-cp/sbp/blob/master/LICENSE'
+                            distribution = 'repo'
+                        }
+                        scm {
+                            url = 'https://github.com/hank-cp/sbp'
+                            connection = 'scm:git:git://github.com/hank-cp/sbp.git'
+                            developerConnection = 'scm:git:ssh://git@github.com:hank-cp/sbp.git'
+                        }
+                        developers {
+                            developer {
+                                name = 'Hank CP'
+                                email = 'true.cp@gmail.com'
+                            }
+                        }
+                    }
+                    repositories {
+                        maven {
+                            def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots"
+                            def stagingRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+                            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : stagingRepoUrl
+                            credentials {
+                                username sonatypeUsername
+                                password sonatypePassword
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        signing {
+            sign publishing.publications.mavenJava
+        }
     }
 }

@@ -1,5 +1,5 @@
 [![GitHub release](https://img.shields.io/github/release/hank-cp/sbp.svg)](https://github.com/hank-cp/sbp/releases)
-[![](https://jitpack.io/v/hank-cp/sbp.svg)](https://jitpack.io/#hank-cp/sbp)
+![Maven Central](https://img.shields.io/maven-central/v/org.laxture/sbp-core)
 [![Github Actions](https://github.com/hank-cp/sbp/workflows/Java%20CI/badge.svg)](https://github.com/hank-cp/sbp/actions)
 ![GitHub](https://img.shields.io/github/license/hank-cp/sbp.svg)
 ![GitHub last commit](https://img.shields.io/github/last-commit/hank-cp/sbp.svg)
@@ -59,30 +59,16 @@ application, just like any single service provider node in Spring Cloud network.
 2. Introduce `sbp-spring-boot-starter` to dependencies.
     * Maven
         ```
-        <repositories>
-            <repository>
-                <id>jitpack.io</id>
-                <url>https://jitpack.io</url>
-            </repository>
-        </repositories>
-         
         <dependency>
-            <groupId>com.github.hank-cp.sbp.sbp-spring-boot-starter</groupId>
+            <groupId>org.laxture</groupId>
             <artifactId>sbp-spring-boot-starter</artifactId>
             <version>0.1.2</version>
         </dependency>
         ```
     * Gradle
         ```
-        allprojects {
-            repositories {
-                ...
-                maven { url 'https://jitpack.io' }
-            }
-        }
-        	
         dependencies {
-            implementation 'com.github.hank-cp.sbp:sbp-spring-boot-starter:0.1.2'
+            implementation 'org.laxture:sbp-spring-boot-starter:0.1.2'
         }
         ```
 3. Add belows to `application.properties`.
@@ -108,30 +94,16 @@ application, just like any single service provider node in Spring Cloud network.
 3. Introduce `sbp-core` to dependencies.
     * Maven
         ```
-        <repositories>
-            <repository>
-                <id>jitpack.io</id>
-                <url>https://jitpack.io</url>
-            </repository>
-        </repositories>
-         
         <dependency>
-            <groupId>com.github.hank-cp.sbp.sbp-core</groupId>
-            <artifactId>sbp-spring-boot-starter</artifactId>
+            <groupId>org.laxture</groupId>
+            <artifactId>sbp-core</artifactId>
             <version>0.1.2</version>
         </dependency>
         ```
     * Gradle
         ```
-        allprojects {
-            repositories {
-                ...
-                maven { url 'https://jitpack.io' }
-            }
-        }
-        	
         dependencies {
-                implementation 'com.github.hank-cp.sbp:sbp-core:0.1.2'
+            implementation 'org.laxture:sbp-core:0.1.2'
         }
         ```
 4. Add Plugin class
