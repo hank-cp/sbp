@@ -1,10 +1,8 @@
-![GitHub release](https://img.shields.io/github/release/hank-cp/pf4j-spring-boot.svg)
-![Travis (.org)](https://img.shields.io/travis/hank-cp/pf4j-spring-boot.svg)
-![GitHub](https://img.shields.io/github/license/hank-cp/pf4j-spring-boot.svg)
-![GitHub last commit](https://img.shields.io/github/last-commit/hank-cp/pf4j-spring-boot.svg)
-<!---
-[![](https://jitpack.io/v/hank-cp/pf4j-spring-boot.svg)](https://jitpack.io/#hank-cp/pf4j-spring-boot)
--->
+[![GitHub release](https://img.shields.io/github/release/hank-cp/sbp.svg)](https://github.com/hank-cp/sbp/releases)
+![Maven Central](https://img.shields.io/maven-central/v/org.laxture/sbp-core)
+[![Github Actions](https://github.com/hank-cp/sbp/workflows/Test/badge.svg)](https://github.com/hank-cp/sbp/actions)
+![GitHub](https://img.shields.io/github/license/hank-cp/sbp.svg)
+![GitHub last commit](https://img.shields.io/github/last-commit/hank-cp/sbp.svg)
 
 sbp为Spring Boot带来面向插件开发设计的能力. 它受到开源项目[Pf4j](https://pf4j.org/)的启发, 并构建在其基础之上. 
 

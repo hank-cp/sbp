@@ -1,4 +1,4 @@
-name: Java CI
+name: Test
 
 on: [push]
 
@@ -22,4 +22,4 @@ jobs:
     - run: ./gradlew doMigration
     - run: ./gradlew buildApp
     - run: ./gradlew copyDependencies
-    - run: ./gradlew check install
+    - run: ./gradlew check
