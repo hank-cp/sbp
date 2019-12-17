@@ -16,7 +16,6 @@
 package org.laxture.sbp.spring.boot;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.ArrayUtils;
 import org.laxture.sbp.SpringBootPluginClassLoader;
 import org.laxture.sbp.SpringBootPluginManager;
 import org.pf4j.*;
@@ -107,6 +106,14 @@ public class SbpAutoConfiguration {
 					})
 					.add(new JarPluginLoader(this));
 			}
+
+			@Override
+			protected PluginStatusProvider createPluginStatusProvider() {
+				if (PropertyPluginStatusProvider.isPropertySet(properties)) {
+					return new PropertyPluginStatusProvider(properties);
+				}
+				return super.createPluginStatusProvider();
+			}
 		};
 
 		pluginManager.presetProperties(flatProperties(pluginProperties.properties));
@@ -114,28 +121,6 @@ public class SbpAutoConfiguration {
 		pluginManager.setSystemVersion(properties.getSystemVersion());
 		pluginManager.setAutoStartPlugin(properties.isAutoStartPlugin());
 		pluginManager.setProfiles(properties.getProfiles());
-
-		if (properties.getDisabledPlugins() != null) {
-			pluginManager.getPlugins().stream()
-					.filter(pluginWrapper -> ArrayUtils.contains(
-							properties.getDisabledPlugins(), pluginWrapper.getPluginId()))
-					.forEach(pluginWrapper -> pluginManager.disablePlugin(pluginWrapper.getPluginId()));
-			pluginManager.getPlugins().stream()
-					.filter(pluginWrapper -> !ArrayUtils.contains(
-							properties.getDisabledPlugins(), pluginWrapper.getPluginId()))
-					.forEach(pluginWrapper -> pluginManager.enablePlugin(pluginWrapper.getPluginId()));
-		}
-
-		if (properties.getEnabledPlugins() != null) {
-			pluginManager.getPlugins().stream()
-					.filter(pluginWrapper -> ArrayUtils.contains(
-							properties.getEnabledPlugins(), pluginWrapper.getPluginId()))
-					.forEach(pluginWrapper -> pluginManager.enablePlugin(pluginWrapper.getPluginId()));
-			pluginManager.getPlugins().stream()
-					.filter(pluginWrapper -> !ArrayUtils.contains(
-							properties.getEnabledPlugins(), pluginWrapper.getPluginId()))
-					.forEach(pluginWrapper -> pluginManager.disablePlugin(pluginWrapper.getPluginId()));
-		}
 
 		return pluginManager;
 	}
