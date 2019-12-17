@@ -17,6 +17,7 @@ package org.laxture.sbp.spring.boot;
 
 import org.pf4j.PluginStatusProvider;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -29,8 +30,10 @@ public class PropertyPluginStatusProvider implements PluginStatusProvider {
     private List<String> disabledPlugins;
 
     public PropertyPluginStatusProvider(SbpProperties sbpProperties) {
-        this.enabledPlugins = Arrays.asList(sbpProperties.getEnabledPlugins());
-        this.disabledPlugins = Arrays.asList(sbpProperties.getDisabledPlugins());
+        this.enabledPlugins = sbpProperties.getEnabledPlugins() != null
+                ? Arrays.asList(sbpProperties.getEnabledPlugins()) : new ArrayList<>();
+        this.disabledPlugins = sbpProperties.getDisabledPlugins() != null
+                ? Arrays.asList(sbpProperties.getDisabledPlugins()) : new ArrayList<>();
     }
 
     public static boolean isPropertySet(SbpProperties sbpProperties) {
