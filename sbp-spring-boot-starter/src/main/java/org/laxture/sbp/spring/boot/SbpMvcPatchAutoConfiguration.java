@@ -16,6 +16,7 @@
 package org.laxture.sbp.spring.boot;
 
 import org.laxture.sbp.SpringBootPluginManager;
+import org.laxture.sbp.internal.PluginRequestMappingHandlerMapping;
 import org.pf4j.PluginManager;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;

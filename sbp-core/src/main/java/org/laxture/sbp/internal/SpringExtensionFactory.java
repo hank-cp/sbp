@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.laxture.sbp;
+package org.laxture.sbp.internal;
 
+import org.laxture.sbp.SpringBootPlugin;
+import org.laxture.sbp.SpringBootPluginManager;
 import org.pf4j.ExtensionFactory;
 import org.pf4j.PluginWrapper;
 import org.slf4j.Logger;
@@ -56,8 +58,9 @@ public class SpringExtensionFactory implements ExtensionFactory {
     }
 
     public String getExtensionBeanName(Class<?> extensionClass) {
-        String[] beanNames = getApplicationContext(extensionClass).getBeanNamesForType(extensionClass);
-        return (beanNames != null && beanNames.length > 0) ? beanNames[0] : null;
+        String[] beanNames = getApplicationContext(extensionClass)
+                .getBeanNamesForType(extensionClass);
+        return beanNames.length > 0 ? beanNames[0] : null;
     }
 
     private Object createWithoutSpring(Class<?> extensionClass) {

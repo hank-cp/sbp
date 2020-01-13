@@ -17,12 +17,14 @@ package org.laxture.sbp.spring.boot;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.laxture.sbp.SpringBootPlugin;
-import org.laxture.sbp.SpringBootPluginClassLoader;
+import org.laxture.sbp.internal.SpringBootPluginClassLoader;
 import org.laxture.sbp.SpringBootPluginManager;
+import org.laxture.sbp.internal.PluginListableBeanFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.context.ApplicationContext;
@@ -50,7 +52,8 @@ public class SpringBootstrap extends SpringApplication {
 
     private final static Logger log = LoggerFactory.getLogger(SpringBootstrap.class);
 
-    public final static String PLUGIN_BEAN_NAME = "pf4j.plugin";
+    public final static String BEAN_PLUGIN = "pf4j.plugin";
+    public final static String BEAN_IMPORTED_BEAN_NAMES = "sharedBeanNames";
 
     private static final String PROPERTY_NAME_AUTOCONFIGURE_EXCLUDE = "spring.autoconfigure.exclude";
 
@@ -206,6 +209,8 @@ public class SpringBootstrap extends SpringApplication {
 
     private final HashSet<String> sharedBeanNames = new HashSet<>();
 
+    private final HashSet<String> importedBeanNames = new HashSet<>();
+
     private final Map<String, Object> presetProperties = new HashMap<>();
 
     private List<String> pluginFirstClasses;
@@ -302,7 +307,7 @@ public class SpringBootstrap extends SpringApplication {
         hackBeanFactory(applicationContext);
         applicationContext.setClassLoader(pluginClassLoader);
 
-        applicationContext.getBeanFactory().registerSingleton(PLUGIN_BEAN_NAME, plugin);
+        applicationContext.getBeanFactory().registerSingleton(BEAN_PLUGIN, plugin);
         applicationContext.getBeanFactory().autowireBean(plugin);
 
         if (!CollectionUtils.isEmpty(sharedBeanNames)) {
@@ -310,7 +315,13 @@ public class SpringBootstrap extends SpringApplication {
                 registerBeanFromMainContext(applicationContext, beanName);
             }
         }
+
         return applicationContext;
+    }
+
+    @Override
+    protected void afterRefresh(ConfigurableApplicationContext context, ApplicationArguments args) {
+        context.getBeanFactory().registerSingleton(BEAN_IMPORTED_BEAN_NAMES, importedBeanNames);
     }
 
     private void hackBeanFactory(ApplicationContext applicationContext) {
@@ -333,13 +344,11 @@ public class SpringBootstrap extends SpringApplication {
                                                String beanName) {
         try {
             Object bean = mainApplicationContext.getBean(beanName);
-            if (bean != null) {
-                applicationContext.getBeanFactory().registerSingleton(beanName, bean);
-                applicationContext.getBeanFactory().autowireBean(bean);
-                log.info("Bean {} is registered from main ApplicationContext", beanName);
-            } else {
-                log.warn("Bean {} is not found in main ApplicationContext", beanName);
-            }
+            applicationContext.getBeanFactory().registerSingleton(beanName, bean);
+            applicationContext.getBeanFactory().autowireBean(bean);
+            importedBeanNames.add(beanName);
+            log.info("Bean {} is registered from main ApplicationContext", beanName);
+
         } catch (NoSuchBeanDefinitionException ex) {
             log.warn("Bean {} is not found in main ApplicationContext", beanName);
         }

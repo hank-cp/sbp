@@ -16,13 +16,15 @@
 package org.laxture.sbp;
 
 import org.apache.commons.lang3.StringUtils;
-import org.laxture.sbp.spring.boot.PluginRequestMappingHandlerMapping;
+import org.laxture.sbp.internal.PluginRequestMappingHandlerMapping;
+import org.laxture.sbp.internal.SpringExtensionFactory;
+import org.laxture.sbp.spring.boot.SbpPluginRestartedEvent;
+import org.laxture.sbp.spring.boot.SbpPluginStoppedEvent;
 import org.laxture.sbp.spring.boot.SharedDataSourceSpringBootstrap;
 import org.laxture.sbp.spring.boot.SpringBootstrap;
 import org.laxture.spring.util.ApplicationContextProvider;
 import org.pf4j.Extension;
 import org.pf4j.Plugin;
-import org.pf4j.PluginManager;
 import org.pf4j.PluginWrapper;
 import org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
@@ -31,7 +33,6 @@ import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import java.util.Set;
 
@@ -108,6 +109,10 @@ public abstract class SpringBootPlugin extends Plugin {
         }
 
         ApplicationContextProvider.registerApplicationContext(applicationContext);
+
+        if (getPluginManager().isMainApplicationStarted()) {
+            applicationContext.publishEvent(new SbpPluginRestartedEvent(applicationContext));
+        }
     }
 
     @Override
@@ -131,6 +136,7 @@ public abstract class SpringBootPlugin extends Plugin {
         }
 
         getMainRequestMapping().unregisterControllers(this);
+        applicationContext.publishEvent(new SbpPluginStoppedEvent(applicationContext));
         ApplicationContextProvider.unregisterApplicationContext(applicationContext);
         ((ConfigurableApplicationContext) applicationContext).close();
 
@@ -143,10 +149,12 @@ public abstract class SpringBootPlugin extends Plugin {
         return (GenericApplicationContext) applicationContext;
     }
 
+    public SpringBootPluginManager getPluginManager() {
+        return (SpringBootPluginManager) getWrapper().getPluginManager();
+    }
+
     public GenericApplicationContext getMainApplicationContext() {
-        PluginManager pluginManager = getWrapper().getPluginManager();
-        return (GenericApplicationContext) ((SpringBootPluginManager) pluginManager)
-                .getMainApplicationContext();
+        return (GenericApplicationContext) getPluginManager().getMainApplicationContext();
     }
 
     public void registerBeanToMainContext(String beanName, Object bean) {

@@ -15,25 +15,15 @@
  */
 package org.laxture.sbp.spring.boot;
 
-import org.springframework.beans.factory.support.DefaultListableBeanFactory;
-import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationEvent;
 
 /**
  * @author <a href="https://github.com/hank-cp">Hank CP</a>
  */
-public class PluginListableBeanFactory extends DefaultListableBeanFactory {
+public class SbpPluginRestartedEvent extends ApplicationEvent {
 
-    private ClassLoader classLoader;
-
-    public PluginListableBeanFactory(ClassLoader classLoader) {
-        this.classLoader = classLoader;
+    public SbpPluginRestartedEvent(ApplicationContext pluginApplicationContext) {
+        super(pluginApplicationContext);
     }
-
-    protected Class<?> predictBeanType(String beanName, RootBeanDefinition mbd, Class<?>... typesToMatch) {
-        try {
-            return classLoader.loadClass(beanName);
-        } catch (ClassNotFoundException ignored) {}
-        return super.predictBeanType(beanName, mbd, typesToMatch);
-    }
-
 }

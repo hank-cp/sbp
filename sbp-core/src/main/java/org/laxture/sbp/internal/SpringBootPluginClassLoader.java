@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.laxture.sbp;
+package org.laxture.sbp.internal;
 
 import org.pf4j.PluginClassLoader;
 import org.pf4j.PluginDescriptor;

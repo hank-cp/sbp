@@ -15,6 +15,7 @@
  */
 package org.laxture.sbp;
 
+import org.laxture.sbp.internal.SpringExtensionFactory;
 import org.pf4j.DefaultPluginManager;
 import org.pf4j.ExtensionFactory;
 import org.springframework.beans.BeansException;
@@ -33,6 +34,8 @@ import java.util.Map;
  */
 public class SpringBootPluginManager extends DefaultPluginManager
         implements ApplicationContextAware {
+
+    private boolean mainApplicationStarted;
 
     private ApplicationContext mainApplicationContext;
 
@@ -64,6 +67,10 @@ public class SpringBootPluginManager extends DefaultPluginManager
         this.autoStartPlugin = autoStartPlugin;
     }
 
+    public void setMainApplicationStarted(boolean mainApplicationStarted) {
+        this.mainApplicationStarted = mainApplicationStarted;
+    }
+
     public void setProfiles(String[] profiles) {
         this.profiles = profiles;
     }
@@ -86,6 +93,10 @@ public class SpringBootPluginManager extends DefaultPluginManager
 
     public ApplicationContext getMainApplicationContext() {
         return mainApplicationContext;
+    }
+
+    public boolean isMainApplicationStarted() {
+        return mainApplicationStarted;
     }
 
     /**

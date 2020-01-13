@@ -16,8 +16,10 @@
 package org.laxture.sbp.spring.boot;
 
 import lombok.extern.slf4j.Slf4j;
-import org.laxture.sbp.SpringBootPluginClassLoader;
 import org.laxture.sbp.SpringBootPluginManager;
+import org.laxture.sbp.internal.MainAppReadyListener;
+import org.laxture.sbp.internal.MainAppStartedListener;
+import org.laxture.sbp.internal.SpringBootPluginClassLoader;
 import org.pf4j.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -27,6 +29,7 @@ import org.springframework.boot.autoconfigure.web.servlet.WebMvcRegistrations;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.util.StringUtils;
 
 import java.io.File;
@@ -45,6 +48,7 @@ import java.util.function.Consumer;
 @ConditionalOnClass({ PluginManager.class, SpringBootPluginManager.class })
 @ConditionalOnProperty(prefix = SbpProperties.PREFIX, value = "enabled", havingValue = "true")
 @EnableConfigurationProperties({SbpProperties.class, SbpPluginProperties.class})
+@Import({MainAppStartedListener.class, MainAppReadyListener.class})
 @Slf4j
 public class SbpAutoConfiguration {
 
@@ -66,11 +70,11 @@ public class SbpAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public PluginManager pluginManager(SbpProperties properties,
+	public SpringBootPluginManager pluginManager(SbpProperties properties,
 									   SbpPluginProperties pluginProperties) {
 		// Setup RuntimeMode
 		System.setProperty("pf4j.mode", properties.getRuntimeMode().toString());
-		
+
 		// Setup Plugin folder
 		String pluginsRoot = StringUtils.hasText(properties.getPluginsRoot()) ? properties.getPluginsRoot() : "plugins";
 		System.setProperty("pf4j.pluginsDir", pluginsRoot);

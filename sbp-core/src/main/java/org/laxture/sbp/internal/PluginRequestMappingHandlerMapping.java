@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.laxture.sbp.spring.boot;
+package org.laxture.sbp.internal;
 
 import org.laxture.sbp.SpringBootPlugin;
+import org.laxture.sbp.spring.boot.SpringBootstrap;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,6 +24,9 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 
 import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author <a href="https://github.com/hank-cp">Hank CP</a>
@@ -38,11 +42,7 @@ public class PluginRequestMappingHandlerMapping extends RequestMappingHandlerMap
     }
 
     public void registerControllers(SpringBootPlugin springBootPlugin) {
-        LinkedHashSet<Object> beans = new LinkedHashSet<>();
-        ApplicationContext applicationContext = springBootPlugin.getApplicationContext();
-        beans.addAll(applicationContext.getBeansWithAnnotation(Controller.class).values());
-        beans.addAll(applicationContext.getBeansWithAnnotation(RestController.class).values());
-        beans.forEach(bean -> registerController(springBootPlugin, bean));
+        getControllerBeans(springBootPlugin).forEach(bean -> registerController(springBootPlugin, bean));
     }
 
     private void registerController(SpringBootPlugin springBootPlugin, Object controller) {
@@ -54,11 +54,22 @@ public class PluginRequestMappingHandlerMapping extends RequestMappingHandlerMap
     }
 
     public void unregisterControllers(SpringBootPlugin springBootPlugin) {
+        getControllerBeans(springBootPlugin).forEach(bean -> unregisterController(springBootPlugin, bean));
+    }
+
+    public Set<Object> getControllerBeans(SpringBootPlugin springBootPlugin) {
         LinkedHashSet<Object> beans = new LinkedHashSet<>();
         ApplicationContext applicationContext = springBootPlugin.getApplicationContext();
-        beans.addAll(applicationContext.getBeansWithAnnotation(Controller.class).values());
-        beans.addAll(applicationContext.getBeansWithAnnotation(RestController.class).values());
-        beans.forEach(bean -> unregisterController(springBootPlugin, bean));
+        //noinspection unchecked
+        Set<String> sharedBeanNames = (Set<String>) applicationContext.getBean(
+                SpringBootstrap.BEAN_IMPORTED_BEAN_NAMES);
+        beans.addAll(applicationContext.getBeansWithAnnotation(Controller.class)
+                .entrySet().stream().filter(beanEntry -> !sharedBeanNames.contains(beanEntry.getKey()))
+                .map(Map.Entry::getValue).collect(Collectors.toList()));
+        beans.addAll(applicationContext.getBeansWithAnnotation(RestController.class)
+                .entrySet().stream().filter(beanEntry -> !sharedBeanNames.contains(beanEntry.getKey()))
+                .map(Map.Entry::getValue).collect(Collectors.toList()));
+        return beans;
     }
 
     private void unregisterController(SpringBootPlugin springBootPlugin, Object controller) {
