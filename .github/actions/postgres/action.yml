@@ -26,11 +26,11 @@ inputs:
   postgresql init scripts:
     description: 'POSTGRES_INIT_SCRIPTS - directory containing DB init scripts'
     required: false
-    default: ''
+    default: 'init-db'
   postgresql conf:
     description: 'POSTGRES_CONF - postgres configurations'
     required: false
-    default: ''
+    default: 'max_prepared_transactions=100'
 runs:
   using: 'docker'
   image: 'Dockerfile'
