@@ -17,7 +17,7 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-          -c max_prepared_transactions=100
+          -c 'max_connections=200'
 
     steps:
     - uses: actions/checkout@v2
