@@ -7,12 +7,8 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres
-        env:
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_HOST_AUTH_METHOD: trust
+        image: hankcp/postgres-test:latest
         options: >-
-          --entrypoint docker-entrypoint.sh -c 'max_prepared_transactions=100'
           --health-cmd pg_isready
           --health-interval 10s
           --health-timeout 5s
