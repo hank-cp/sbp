@@ -8,8 +8,6 @@ jobs:
     services:
       postgres:
         image: postgres
-        env:
-        # Set health checks to wait until postgres has started
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
