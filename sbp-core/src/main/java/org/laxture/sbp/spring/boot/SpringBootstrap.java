@@ -33,6 +33,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.util.CollectionUtils;
@@ -274,8 +275,7 @@ public class SpringBootstrap extends SpringApplication {
         String pluginFirstClassesProp = null;
         int i = 0;
         do {
-            pluginFirstClassesProp = environment.getProperty(
-                    String.format("plugin.pluginFirstClasses[%s]", i++));
+            pluginFirstClassesProp = getProperties(environment, "plugin.pluginFirstClasses", i++);
             if (pluginFirstClassesProp != null) {
                 pluginFirstClasses.add(pluginFirstClassesProp);
             }
@@ -285,8 +285,7 @@ public class SpringBootstrap extends SpringApplication {
         String pluginOnlyResourcesProp = null;
         i = 0;
         do {
-            pluginOnlyResourcesProp = environment.getProperty(
-                    String.format("plugin.pluginOnlyResources[%s]", i++));
+            pluginOnlyResourcesProp = getProperties(environment, "plugin.pluginOnlyResources", i++);
             if (pluginOnlyResourcesProp != null) {
                 pluginOnlyResources.add(pluginOnlyResourcesProp);
             }
@@ -368,6 +367,12 @@ public class SpringBootstrap extends SpringApplication {
         } catch (NoSuchBeanDefinitionException ex) {
             log.warn("Bean {} is not found in main ApplicationContext", beanName);
         }
+    }
+
+    private String getProperties(Environment env, String propName, int index) {
+        String prop = env.getProperty(String.format("propName[%s]", index));
+        if (prop == null) prop = env.getProperty(String.format("propName.%s", index));
+        return prop;
     }
 
     public class ExcludeConfigurations extends MapPropertySource {
