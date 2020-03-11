@@ -11,6 +11,10 @@ spring:
   jooq:
     sql-dialect: postgres
 
+plugin:
+  pluginOnlyResources:
+    - plugin_only
+
 logging:
   level:
     org.hibernate.tool.schema.internal.ExceptionHandlerLoggedImpl: ERROR

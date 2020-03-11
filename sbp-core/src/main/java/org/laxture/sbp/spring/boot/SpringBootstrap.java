@@ -215,6 +215,8 @@ public class SpringBootstrap extends SpringApplication {
 
     private List<String> pluginFirstClasses;
 
+    private List<String> pluginOnlyResources;
+
     /**
      * Constructor should be the only thing need to take care for this Class.
      * Generally new an instance and {@link #run(String...)} it
@@ -278,6 +280,17 @@ public class SpringBootstrap extends SpringApplication {
                 pluginFirstClasses.add(pluginFirstClassesProp);
             }
         } while (pluginFirstClassesProp != null);
+
+        pluginOnlyResources = new ArrayList<>();
+        String pluginOnlyResourcesProp = null;
+        i = 0;
+        do {
+            pluginOnlyResourcesProp = environment.getProperty(
+                    String.format("plugin.pluginOnlyResources[%s]", i++));
+            if (pluginOnlyResourcesProp != null) {
+                pluginOnlyResources.add(pluginOnlyResourcesProp);
+            }
+        } while (pluginOnlyResourcesProp != null);
     }
 
     /** Override this methods to customize excluded spring boot configuration */
@@ -325,10 +338,13 @@ public class SpringBootstrap extends SpringApplication {
     }
 
     private void hackBeanFactory(ApplicationContext applicationContext) {
-        if (pluginFirstClasses != null
-                && pluginClassLoader instanceof SpringBootPluginClassLoader) {
-            ((SpringBootPluginClassLoader) pluginClassLoader)
-                    .setPluginFirstClasses(pluginFirstClasses);
+        if (pluginClassLoader instanceof SpringBootPluginClassLoader) {
+            if (pluginFirstClasses != null) {
+                ((SpringBootPluginClassLoader) pluginClassLoader).setPluginFirstClasses(pluginFirstClasses);
+            }
+            if (pluginOnlyResources != null) {
+                ((SpringBootPluginClassLoader) pluginClassLoader).setPluginOnlyResources(pluginOnlyResources);
+            }
         }
 
         BeanFactory beanFactory = new PluginListableBeanFactory(pluginClassLoader);

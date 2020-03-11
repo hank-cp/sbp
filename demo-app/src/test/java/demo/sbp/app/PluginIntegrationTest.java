@@ -23,11 +23,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import demo.sbp.api.service.BookService;
 import lombok.extern.java.Log;
+import org.flywaydb.core.internal.util.UrlUtils;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.laxture.sbp.SpringBootPlugin;
 import org.laxture.sbp.SpringBootPluginManager;
+import org.pf4j.util.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -41,11 +43,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
+import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.List;
+import java.nio.file.Path;
+import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -193,7 +194,7 @@ public class PluginIntegrationTest {
     }
 
     @Test
-    public void verifyClassLoader() throws Exception {
+    public void loadClassFromParentFirst() throws Exception {
         // class should be loaded from app and parent plugin first
         SpringBootPlugin authorPlugin = (SpringBootPlugin)
                 pluginManager.getPlugin("demo-plugin-author").getPlugin();
@@ -219,7 +220,7 @@ public class PluginIntegrationTest {
     }
 
     @Test
-    public void verifyResourceLoader() {
+    public void loadResourceFromPluginFirst() throws IOException {
         // resource should be loaded from plugin first
         // class should be loaded from app and parent plugin first
         SpringBootPlugin authorPlugin = (SpringBootPlugin)
@@ -230,14 +231,37 @@ public class PluginIntegrationTest {
                 pluginManager.getPlugin("demo-plugin-shelf").getPlugin();
         assertThat(shelfPlugin, notNullValue());
 
-        URL authorRes = authorPlugin.getWrapper().getPluginClassLoader()
-                .getResource("res.txt");
+        URL authorRes = authorPlugin.getWrapper().getPluginClassLoader().getResource("res.txt");
         assertThat(authorRes, notNullValue());
         assertThat(authorRes.getPath(), stringContainsInOrder(Arrays.asList("plugins", "demo-plugin-author")));
+        List<String> contents = FileUtils.readLines(Path.of(authorRes.getPath()), true);
+        assertThat(contents, hasItem("author"));
 
-        URL shelfRes = shelfPlugin.getWrapper().getPluginClassLoader()
-                .getResource("res.txt");
-        assertThat(shelfRes, nullValue());
+        URL shelfRes = shelfPlugin.getWrapper().getPluginClassLoader().getResource("res.txt");
+        assertThat(shelfRes, notNullValue());
+        contents = FileUtils.readLines(Path.of(shelfRes.getPath()), true);
+        assertThat(contents, hasItem("app"));
+    }
+
+    @Test
+    public void loadResourceFromPluginOnly() throws IOException {
+        // resource should be loaded from plugin first
+        // class should be loaded from app and parent plugin first
+        SpringBootPlugin authorPlugin = (SpringBootPlugin)
+                pluginManager.getPlugin("demo-plugin-author").getPlugin();
+        assertThat(authorPlugin, notNullValue());
+
+        SpringBootPlugin shelfPlugin = (SpringBootPlugin)
+                pluginManager.getPlugin("demo-plugin-shelf").getPlugin();
+        assertThat(shelfPlugin, notNullValue());
+
+        List<URL> urls = Collections.list(
+                authorPlugin.getWrapper().getPluginClassLoader().getResources("plugin_only"));
+        assertThat(urls, hasSize(1)); // resource form plugin only
+
+        urls = Collections.list(
+                shelfPlugin.getWrapper().getPluginClassLoader().getResources("plugin_only"));
+        assertThat(urls, hasSize(1)); // resources from app
     }
 
     @Test

@@ -15,6 +15,7 @@
  */
 package org.laxture.sbp.internal;
 
+import lombok.NonNull;
 import org.pf4j.PluginClassLoader;
 import org.pf4j.PluginDescriptor;
 import org.pf4j.PluginManager;
@@ -22,8 +23,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.ReflectionUtils;
 
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,14 +39,25 @@ public class SpringBootPluginClassLoader extends PluginClassLoader {
 
     private List<String> pluginFirstClasses;
 
+    private List<String> pluginOnlyResources;
+
     public SpringBootPluginClassLoader(PluginManager pluginManager, PluginDescriptor pluginDescriptor, ClassLoader parent) {
         // load class from parent first to avoid same class loaded by different classLoader,
         // so Spring could autowired bean by type correctly.
         super(pluginManager, pluginDescriptor, parent, true);
     }
 
-    public void setPluginFirstClasses(List<String> pluginFirstClasses) {
+    public void setPluginFirstClasses(@NonNull List<String> pluginFirstClasses) {
         this.pluginFirstClasses = pluginFirstClasses.stream()
+                .map(pluginFirstClass -> pluginFirstClass
+                        .replaceAll(".", "[$0]")
+                        .replace("[*]", ".*?")
+                        .replace("[?]", ".?"))
+                .collect(Collectors.toList());
+    }
+
+    public void setPluginOnlyResources(@NonNull List<String> pluginOnlyResources) {
+        this.pluginOnlyResources = pluginOnlyResources.stream()
                 .map(pluginFirstClass -> pluginFirstClass
                         .replaceAll(".", "[$0]")
                         .replace("[*]", ".*?")
@@ -66,10 +80,15 @@ public class SpringBootPluginClassLoader extends PluginClassLoader {
     }
 
     @Override
+    public Enumeration<URL> getResources(String name) throws IOException {
+        return isPluginOnlyResources(name) ? findResources(name) : super.getResources(name);
+    }
+
+    @Override
     public Class<?> loadClass(String className) throws ClassNotFoundException {
         try {
             // if specified, try to load from plugin classpath first
-            if (pluginFirstClasses != null && testClassNameInWildcard(className)) {
+            if (isPluginFirstClass(className)) {
                 try {
                     return loadClassFromPlugin(className);
                 } catch (ClassNotFoundException ignored) {}
@@ -82,9 +101,18 @@ public class SpringBootPluginClassLoader extends PluginClassLoader {
         return loadClassFromDependencies(className);
     }
 
-    private boolean testClassNameInWildcard(String className) {
+    private boolean isPluginFirstClass(String name) {
+        if (pluginFirstClasses == null || pluginFirstClasses.size() <= 0) return false;
         for (String pluginFirstClass : pluginFirstClasses) {
-            if (className.matches(pluginFirstClass)) return true;
+            if (name.matches(pluginFirstClass)) return true;
+        }
+        return false;
+    }
+
+    private boolean isPluginOnlyResources(String name) {
+        if (pluginOnlyResources == null || pluginOnlyResources.size() <= 0) return false;
+        for (String pluginOnlyResource : pluginOnlyResources) {
+            if (name.matches(pluginOnlyResource)) return true;
         }
         return false;
     }
