@@ -7,12 +7,13 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres
-        env:
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_HOST_AUTH_METHOD: trust
+        image: hankcp/postgres-test:latest
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
         ports: ["5432:5432"]
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
 
     steps:
     - uses: actions/checkout@v2
@@ -20,30 +21,22 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 11
-    - name: Install PostgreSQL 11 client required for loading structure.sql
+    - name: Install PostgreSQL 11 client
       run: |
         sudo apt update
         sudo bash -c "echo deb http://apt.postgresql.org/pub/repos/apt/ bionic-pgdg main >> /etc/apt/sources.list.d/pgdg.list"
         wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
         sudo apt-get update
         sudo apt-get -yqq install libpq-dev postgresql-client-11
-    - run: psql -c 'create database "sbp";' -U postgres
-      env:
-        PGHOST: localhost
-        PGUSER: postgres
-    - run: psql -c 'create database "sbp-test";' -U postgres
+    - run: |
+        psql -c 'create database "sbp";' -U postgres
+        psql -c 'create database "sbp-test";' -U postgres
       env:
         PGHOST: localhost
         PGUSER: postgres
     - run: ./gradlew :sbp-core:jar
     - run: ./gradlew :sbp-spring-boot-starter:jar
     - run: ./gradlew doMigration
-      env:
-        PGHOST: localhost
-        PGUSER: postgres
     - run: ./gradlew buildApp
     - run: ./gradlew copyDependencies
     - run: ./gradlew check
-      env:
-        PGHOST: localhost
-        PGUSER: postgres
