@@ -370,8 +370,8 @@ public class SpringBootstrap extends SpringApplication {
     }
 
     private String getProperties(Environment env, String propName, int index) {
-        String prop = env.getProperty(String.format("propName[%s]", index));
-        if (prop == null) prop = env.getProperty(String.format("propName.%s", index));
+        String prop = env.getProperty(String.format("%s[%s]", propName, index));
+        if (prop == null) prop = env.getProperty(String.format("%s.%s", propName, index));
         return prop;
     }
 
