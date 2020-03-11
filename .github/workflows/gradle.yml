@@ -11,7 +11,7 @@ jobs:
         image: postgres
         # Provide the password for postgres
         env:
-          POSTGRES_PORT: 5432
+          POSTGRES_PASSWORD: postgres
         # Set health checks to wait until postgres has started
         options: >-
           --health-cmd pg_isready
@@ -32,8 +32,16 @@ jobs:
     - run: ./gradlew :sbp-core:jar
     - run: ./gradlew :sbp-spring-boot-starter:jar
     - run: psql -c 'create database "sbp";' -U postgres
+      env:
+        PGPASSWORD: postgres
     - run: psql -c 'create database "sbp-test";' -U postgres
+      env:
+        PGPASSWORD: postgres
     - run: ./gradlew doMigration
+      env:
+        PGPASSWORD: postgres
     - run: ./gradlew buildApp
     - run: ./gradlew copyDependencies
     - run: ./gradlew check
+      env:
+        PGPASSWORD: postgres
