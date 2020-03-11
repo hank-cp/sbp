@@ -7,20 +7,9 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        # Docker Hub image
         image: postgres
-        # Provide the password for postgres
-        env:
-          POSTGRES_USER: postgres
-        # Set health checks to wait until postgres has started
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          # Maps tcp port 5432 on service container to the host
-          - 5432:5432
+        ports: ["5432:5432"]
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
 
     steps:
     - uses: actions/checkout@v2
@@ -28,11 +17,23 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 11
-    - run: docker ps --all
-    - run: ./gradlew :sbp-core:jar
-    - run: ./gradlew :sbp-spring-boot-starter:jar
+    - name: Install PostgreSQL 11 client required for loading structure.sql
+      run: |
+        sudo apt update
+        sudo bash -c "echo deb http://apt.postgresql.org/pub/repos/apt/ bionic-pgdg main >> /etc/apt/sources.list.d/pgdg.list"
+        wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+        sudo apt-get update
+        sudo apt-get -yqq install libpq-dev postgresql-client-11
     - run: psql -c 'create database "sbp";' -U postgres
+      env:
+        PGHOST: localhost
+        PGUSER: postgres
     - run: psql -c 'create database "sbp-test";' -U postgres
+    - run: ./gradlew :sbp-core:jar
+      env:
+        PGHOST: localhost
+        PGUSER: postgres
+    - run: ./gradlew :sbp-spring-boot-starter:jar
     - run: ./gradlew doMigration
     - run: ./gradlew buildApp
     - run: ./gradlew copyDependencies
