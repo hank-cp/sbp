@@ -12,7 +12,7 @@ jobs:
           POSTGRES_PASSWORD: postgres
           POSTGRES_HOST_AUTH_METHOD: trust
         options: >-
-          -c 'max_connections=200'
+          --entrypoint postgres -c 'max_prepared_transactions=100'
           --health-cmd pg_isready
           --health-interval 10s
           --health-timeout 5s
@@ -25,7 +25,7 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 11
-    - name: Install PostgreSQL 11 client required for loading structure.sql
+    - name: Install PostgreSQL 11 client
       run: |
         sudo apt update
         sudo bash -c "echo deb http://apt.postgresql.org/pub/repos/apt/ bionic-pgdg main >> /etc/apt/sources.list.d/pgdg.list"
