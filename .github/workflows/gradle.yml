@@ -10,7 +10,7 @@ jobs:
     - uses: ./.github/actions/postgres
       id: postgres
       with:
-        postgresql version: 12
+        postgresql version: 11
         postgresql init scripts: 'init-db'
         postgresql conf: 'max_prepared_transactions=100'
     - name: Set up JDK 11

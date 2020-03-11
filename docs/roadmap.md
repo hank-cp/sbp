@@ -6,6 +6,11 @@
 * [ ] Plugin continuous Deployment
 * [ ] Log collecting
 
+### 0.1.3
+* [x] add `pluginOnlyResources` properties
+* [x] send events via spring event system
+* [x] various bug fixing
+
 ### 0.1.2
 * [x] Change project name to sbp
 * [x] Distributed Transaction Support
