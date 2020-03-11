@@ -12,7 +12,7 @@ jobs:
           POSTGRES_PASSWORD: postgres
           POSTGRES_HOST_AUTH_METHOD: trust
         options: >-
-          --entrypoint postgres -c 'max_prepared_transactions=100'
+          --entrypoint "docker-entrypoint.sh -c 'max_prepared_transactions=100'"
           --health-cmd pg_isready
           --health-interval 10s
           --health-timeout 5s
