@@ -17,9 +17,9 @@ package org.laxture.sbp.spring.boot;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.laxture.sbp.SpringBootPlugin;
-import org.laxture.sbp.internal.SpringBootPluginClassLoader;
 import org.laxture.sbp.SpringBootPluginManager;
 import org.laxture.sbp.internal.PluginListableBeanFactory;
+import org.laxture.sbp.internal.SpringBootPluginClassLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanFactory;
@@ -366,6 +366,22 @@ public class SpringBootstrap extends SpringApplication {
 
         } catch (NoSuchBeanDefinitionException ex) {
             log.warn("Bean {} is not found in main ApplicationContext", beanName);
+        }
+    }
+
+    protected void registerBeanFromMainContext(AbstractApplicationContext applicationContext,
+                                               Class<?> beanClass) {
+        try {
+            Map<String, ?> beans = mainApplicationContext.getBeansOfType(beanClass);
+            for (String beanName : beans.keySet()) {
+                Object bean = beans.get(beanName);
+                applicationContext.getBeanFactory().registerSingleton(beanName, bean);
+                importedBeanNames.add(beanName);
+                applicationContext.getBeanFactory().autowireBean(bean);
+            }
+            log.info("Bean {} is registered from main ApplicationContext", beanClass.getSimpleName());
+        } catch (NoSuchBeanDefinitionException ex) {
+            log.warn("Bean {} is not found in main ApplicationContext", beanClass.getSimpleName());
         }
     }
 
