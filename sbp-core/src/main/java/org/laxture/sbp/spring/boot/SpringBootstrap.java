@@ -374,6 +374,7 @@ public class SpringBootstrap extends SpringApplication {
         try {
             Map<String, ?> beans = mainApplicationContext.getBeansOfType(beanClass);
             for (String beanName : beans.keySet()) {
+                if (applicationContext.containsBean(beanName)) continue;
                 Object bean = beans.get(beanName);
                 applicationContext.getBeanFactory().registerSingleton(beanName, bean);
                 importedBeanNames.add(beanName);
