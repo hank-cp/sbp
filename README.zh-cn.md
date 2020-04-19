@@ -1,6 +1,6 @@
 [![GitHub release](https://img.shields.io/github/release/hank-cp/sbp.svg)](https://github.com/hank-cp/sbp/releases)
 ![Maven Central](https://img.shields.io/maven-central/v/org.laxture/sbp-core)
-[![Github Actions](https://github.com/hank-cp/sbp/workflows/Test/badge.svg)](https://github.com/hank-cp/sbp/actions)
+![Test](https://github.com/hank-cp/sbp/workflows/CI%20Test/badge.svg)
 ![GitHub](https://img.shields.io/github/license/hank-cp/sbp.svg)
 ![GitHub last commit](https://img.shields.io/github/last-commit/hank-cp/sbp.svg)
 

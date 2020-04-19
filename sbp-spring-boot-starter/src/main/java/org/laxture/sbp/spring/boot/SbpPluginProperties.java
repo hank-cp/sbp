@@ -38,5 +38,10 @@ public class SbpPluginProperties {
 	 * Load these classes from plugin classpath first,
 	 * e.g Spring Boot AutoConfiguration used in plugin only.
 	 */
-	private String[] pluginFirstClasses = {};
+	public String[] pluginFirstClasses = {};
+
+	/**
+	 * Load these resource from plugin classpath only
+	 */
+	public String[] pluginOnlyResources = {};
 }

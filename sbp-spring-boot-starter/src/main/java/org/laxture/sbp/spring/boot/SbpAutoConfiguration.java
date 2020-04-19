@@ -90,7 +90,6 @@ public class SbpAutoConfiguration {
 			protected PluginLoader createPluginLoader() {
 				return new CompoundPluginLoader()
 					.add(new DefaultPluginLoader(this) {
-
 						@Override
 						protected PluginClassLoader createPluginClassLoader(Path pluginPath,
 																			PluginDescriptor pluginDescriptor) {
@@ -108,7 +107,14 @@ public class SbpAutoConfiguration {
 									pluginDescriptor, getClass().getClassLoader());
 						}
 					})
-					.add(new JarPluginLoader(this));
+					.add(new JarPluginLoader(this) {
+						@Override
+						public ClassLoader loadPlugin(Path pluginPath, PluginDescriptor pluginDescriptor) {
+							PluginClassLoader pluginClassLoader = new SpringBootPluginClassLoader(pluginManager, pluginDescriptor, getClass().getClassLoader());
+							pluginClassLoader.addFile(pluginPath.toFile());
+							return pluginClassLoader;
+						}
+					});
 			}
 
 			@Override
