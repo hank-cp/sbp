@@ -40,4 +40,4 @@ jobs:
     - run: ./gradlew buildApp
     - run: ./gradlew copyDependencies
     - run: ./gradlew check
-    - run: ./gradlew publish -Pversion=-SNAPSHOT -Psigning.keyId=${{ secrets.signingKeyId }} -Psigning.password=${{ secrets.signingPassword }} -PsonatypeUsername=${{ secrets.sonatypeUsername }} -PsonatypePassword=${{ secrets.sonatypePassword }}
+    - run: ./gradlew publish -Pversion=-SNAPSHOT -P'signing.keyId=${{ secrets.signingKeyId }}' -P'signing.password=${{ secrets.signingPassword }}' -P'sonatypeUsername=${{ secrets.sonatypeUsername }}' -P'sonatypePassword=${{ secrets.sonatypePassword }}'

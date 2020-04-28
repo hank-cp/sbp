@@ -90,6 +90,7 @@ subprojects {
     for (String propKey in localProp.keys()) {
         ext.set(propKey, localProp.get(propKey))
     }
+    ext."signing.secretKeyRingFile" = rootProject.file('publish.gpg')
 
     task setProperties {
         doFirst {
@@ -266,6 +267,10 @@ subprojects {
         }
 
         group = 'org.laxture'
+
+        println "${property('signing.keyId')}"
+        println "${property('signing.password')}"
+        println "${property('signing.secretKeyRingFile')}"
 
         publishing {
             publications {
