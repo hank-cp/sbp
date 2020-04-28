@@ -18,6 +18,7 @@ package org.laxture.sbp.spring.boot;
 import org.laxture.sbp.SpringBootPluginManager;
 import org.laxture.sbp.spring.boot.model.PluginInfo;
 import org.pf4j.PluginDescriptor;
+import org.pf4j.PluginRuntimeException;
 import org.pf4j.PluginState;
 import org.pf4j.PluginWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,8 +47,11 @@ public class PluginManagerController {
 
         List<PluginInfo> plugins = loadedPlugins.stream().map(pluginWrapper -> {
                     PluginDescriptor descriptor = pluginWrapper.getDescriptor();
-                    PluginDescriptor latestDescriptor = pluginManager.getPluginDescriptorFinder()
-                            .find(pluginWrapper.getPluginPath());
+                    PluginDescriptor latestDescriptor = null;
+                    try {
+                        latestDescriptor = pluginManager.getPluginDescriptorFinder()
+                                .find(pluginWrapper.getPluginPath());
+                    } catch (PluginRuntimeException ignored) {}
                     String newVersion = null;
                     if (latestDescriptor != null && !descriptor.getVersion().equals(latestDescriptor.getVersion())) {
                         newVersion = latestDescriptor.getVersion();

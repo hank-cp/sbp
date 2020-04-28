@@ -1,0 +1,18 @@
+name: Release
+
+on:
+  release:
+    types: published
+
+jobs:
+  openjdk11:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up JDK 11
+      uses: actions/setup-java@v1
+      with:
+        java-version: 11
+    - run: ./gradlew :sbp-core:jar
+    - run: ./gradlew :sbp-spring-boot-starter:jar
+    - run: ./gradlew publish -Pversion=$GITHUB_REF -Dsigning.keyId=${{ secrets.signingKeyId }} -Dsigning.password=${{ secrets.signingPassword }} -DsonatypeUsername=${{ secrets.sonatypeUsername }} -DsonatypePassword=${{ secrets.sonatypePassword }}
