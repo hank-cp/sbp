@@ -309,8 +309,8 @@ subprojects {
                             def stagingRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2"
                             url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : stagingRepoUrl
                             credentials {
-                                username getPropertyOrElse('sonatypeUsername', '')
-                                password getPropertyOrElse('sonatypePassword', '')
+                                username getPropertyOrElse(project, 'sonatypeUsername', '')
+                                password getPropertyOrElse(project, 'sonatypePassword', '')
                             }
                         }
                     }
