@@ -268,10 +268,6 @@ subprojects {
 
         group = 'org.laxture'
 
-        println "${property('signing.keyId')}"
-        println "${property('signing.password')}"
-        println "${property('signing.secretKeyRingFile')}"
-
         publishing {
             publications {
                 mavenJava(MavenPublication) {
