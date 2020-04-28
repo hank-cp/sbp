@@ -1,12 +1,11 @@
-
-def checkProperty(String propName) {
+def checkProperty(Project project, String propName) {
     if (!project.hasProperty(propName)) return false
     String prop = project.property(propName)
     return prop != null && prop.length() > 0
 }
 
-def getPropertyOrElse(String propName, String alternative) {
-    if (!checkProperty(propName)) return alternative
+def getPropertyOrElse(Project project, String propName, String alternative) {
+    if (!checkProperty(project, propName)) return alternative
     return project.property(propName)
 }
 
@@ -166,42 +165,6 @@ subprojects {
             }
         }
 
-//*************************************************************************
-// Application & Distribution
-//*************************************************************************
-
-        startScripts {
-            dependsOn setProperties
-            doFirst {
-                it.setApplicationName("$executable")
-                it.defaultJvmOpts.add("-Dserver.port=$http_port")
-            }
-            startScripts.defaultJvmOpts.add("-XX:NewSize=192m")
-            startScripts.defaultJvmOpts.add("-XX:+UseParallelOldGC")
-            startScripts.defaultJvmOpts.add("-XX:+UseAdaptiveSizePolicy")
-            startScripts.defaultJvmOpts.add("-XX:MaxGCPauseMillis=1000")
-            startScripts.defaultJvmOpts.add("-Dfile.encoding=UTF-8")
-            startScripts.defaultJvmOpts.add("-Djava.security.egd=file:/dev/./urandom")
-
-            if (checkProperty('java_max_memory')) {
-                startScripts.defaultJvmOpts.add("-Xmx$java_max_memory")
-            }
-            if (checkProperty('java_min_memory')) {
-                startScripts.defaultJvmOpts.add("-Xms$java_min_memory")
-            }
-
-            if (checkProperty("jmx_host")) {
-                startScripts.defaultJvmOpts.add("-Dcom.sun.management.jmxremote")
-                startScripts.defaultJvmOpts.add("-Dcom.sun.management.jmxremote.authenticate=false")
-                startScripts.defaultJvmOpts.add("-Dcom.sun.management.jmxremote.ssl=false")
-                startScripts.defaultJvmOpts.add("-Dcom.sun.management.jmxremote.local.only=false")
-                startScripts.defaultJvmOpts.add("-Djava.rmi.server.hostname=$jmx_host")
-                if (checkProperty("jmx_port")) {
-                    startScripts.defaultJvmOpts.add("-Dcom.sun.management.jmxremote.port=$jmx_port")
-                }
-            }
-        }
-
         if (project.hasProperty("db.url")) {
 
 //*************************************************************************
@@ -346,8 +309,8 @@ subprojects {
                             def stagingRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2"
                             url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : stagingRepoUrl
                             credentials {
-                                username sonatypeUsername
-                                password sonatypePassword
+                                username getPropertyOrElse('sonatypeUsername', '')
+                                password getPropertyOrElse('sonatypePassword', '')
                             }
                         }
                     }
