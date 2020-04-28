@@ -15,4 +15,4 @@ jobs:
         java-version: 11
     - run: ./gradlew :sbp-core:jar
     - run: ./gradlew :sbp-spring-boot-starter:jar
-    - run: ./gradlew publish -Pversion=$GITHUB_REF -P'signing.keyId=${{ secrets.signingKeyId }}' -P'signing.password=${{ secrets.signingPassword }}' -P'sonatypeUsername=${{ secrets.sonatypeUsername }}' -P'sonatypePassword=${{ secrets.sonatypePassword }}'
+    - run: ./gradlew publish -Pversion=${GITHUB_REF##*/} -P'signing.keyId=${{ secrets.signingKeyId }}' -P'signing.password=${{ secrets.signingPassword }}' -P'sonatypeUsername=${{ secrets.sonatypeUsername }}' -P'sonatypePassword=${{ secrets.sonatypePassword }}'
