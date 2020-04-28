@@ -27,6 +27,8 @@ private boolean  = false;
 Default `plusins`
 * `spring.sbp.plugins`: absolute path of plugins.
 * `spring.sbp.systemVersion`: The system version used for comparisons to the plugin requires attribute.
+* `spring.sbp.controller.base-path`: If this property is set, `PluginController` will be registered to 
+help manage plugin via REST api. 
 
 Check [Demo](../demo-app/src/main/resources/application.yml) for example. 
 
@@ -42,5 +44,11 @@ plugin classpath at the same time, `PluginClassLoader` will try to load it
 from plugin classpath first. This will cause `ClassCastException` when classes from
 different classloader working together. Use this setting to load classes from 
 plugin classpath first to make sure classes come from same classloader. 
-e.g. Spring Boot AutoConfiguration used in plugin only. Check 
+e.g. Spring Boot AutoConfiguration used in plugin only. See
 [JPA example](../plugins/demo-plugin-library/src/main/resources/application.yml).
+* `sbp-plugin.pluginOnlyResources`: If a resources file (including resource) existed 
+in app classpath and plugin classpath at the same time, `PluginClassLoader` scan all of
+them out when performing `ClassLoader.loadResources()`. This will potentially cause
+unexpected errors, e.g. loading wrong configuration file from the wrong place. Use this 
+setting making sure resources are only loaded from plugin classpath.
+

@@ -18,6 +18,8 @@ package org.laxture.sbp;
 import org.laxture.sbp.internal.SpringExtensionFactory;
 import org.pf4j.DefaultPluginManager;
 import org.pf4j.ExtensionFactory;
+import org.pf4j.PluginDescriptorFinder;
+import org.pf4j.PluginRepository;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -36,14 +38,11 @@ public class SpringBootPluginManager extends DefaultPluginManager
         implements ApplicationContextAware {
 
     private boolean mainApplicationStarted;
-
     private ApplicationContext mainApplicationContext;
-
     public Map<String, Object> presetProperties = new HashMap<>();
-
     private boolean autoStartPlugin = true;
-
     private String[] profiles;
+    private PluginRepository pluginRepository;
 
     public SpringBootPluginManager() {
         super();
@@ -61,6 +60,21 @@ public class SpringBootPluginManager extends DefaultPluginManager
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.mainApplicationContext = applicationContext;
+    }
+
+    @Override
+    public PluginDescriptorFinder getPluginDescriptorFinder() {
+        return super.getPluginDescriptorFinder();
+    }
+
+    @Override
+    protected PluginRepository createPluginRepository() {
+        this.pluginRepository = super.createPluginRepository();
+        return this.pluginRepository;
+    }
+
+    public PluginRepository getPluginRepository() {
+        return pluginRepository;
     }
 
     public void setAutoStartPlugin(boolean autoStartPlugin) {

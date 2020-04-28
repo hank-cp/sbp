@@ -69,6 +69,13 @@ public class SbpAutoConfiguration {
 	}
 
 	@Bean
+	@ConditionalOnMissingBean(PluginManagerController.class)
+	@ConditionalOnProperty(name = "spring.sbp.controller.base-path")
+	public PluginManagerController pluginManagerController() {
+		return new PluginManagerController();
+	}
+
+	@Bean
 	@ConditionalOnMissingBean
 	public SpringBootPluginManager pluginManager(SbpProperties properties,
 									   SbpPluginProperties pluginProperties) {

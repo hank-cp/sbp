@@ -16,6 +16,7 @@
 package org.laxture.sbp.spring.boot;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.laxture.sbp.SpringBootPlugin;
 import org.laxture.sbp.SpringBootPluginManager;
 import org.laxture.sbp.internal.PluginListableBeanFactory;
@@ -389,6 +390,10 @@ public class SpringBootstrap extends SpringApplication {
     private String getProperties(Environment env, String propName, int index) {
         String prop = env.getProperty(String.format("%s[%s]", propName, index));
         if (prop == null) prop = env.getProperty(String.format("%s.%s", propName, index));
+        if (prop == null) prop = env.getProperty(String.format("%s[%s]",
+                String.join("-", StringUtils.splitByCharacterTypeCamelCase(propName)).toLowerCase(), index));
+        if (prop == null) prop = env.getProperty(String.format("%s.%s",
+                String.join("-", StringUtils.splitByCharacterTypeCamelCase(propName)).toLowerCase(), index));
         return prop;
     }
 
