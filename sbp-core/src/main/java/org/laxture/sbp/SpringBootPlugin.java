@@ -25,6 +25,7 @@ import org.laxture.sbp.spring.boot.SpringBootstrap;
 import org.laxture.spring.util.ApplicationContextProvider;
 import org.pf4j.Extension;
 import org.pf4j.Plugin;
+import org.pf4j.PluginState;
 import org.pf4j.PluginWrapper;
 import org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
@@ -88,6 +89,8 @@ public abstract class SpringBootPlugin extends Plugin {
 
     @Override
     public void start() {
+        if (getWrapper().getPluginState() == PluginState.STARTED) return;
+
         applicationContext = springBootstrap.run();
         getMainRequestMapping().registerControllers(this);
 
@@ -117,6 +120,8 @@ public abstract class SpringBootPlugin extends Plugin {
 
     @Override
     public void stop() {
+        if (getWrapper().getPluginState() != PluginState.STARTED) return;
+
         log.debug("Stopping plugin {} ......", getWrapper().getPluginId());
         releaseResource();
         // register Extensions
