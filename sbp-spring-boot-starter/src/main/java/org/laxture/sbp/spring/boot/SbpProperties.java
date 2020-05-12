@@ -78,10 +78,6 @@ public class SbpProperties {
 	 */
 	private String pluginsRoot = "plugins";
 	/**
-	 * Plugin address: absolute address
-	 */
-	private List<String> plugins = new ArrayList<>();
-	/**
 	 * The system version used for comparisons to the plugin requires attribute.
 	 */
 	private String systemVersion = "0.0.0";

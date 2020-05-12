@@ -62,15 +62,16 @@ application, just like any single service provider node in Spring Cloud network.
         <dependency>
             <groupId>org.laxture</groupId>
             <artifactId>sbp-spring-boot-starter</artifactId>
-            <version>0.1.3</version>
+            <version>0.1.4</version>
         </dependency>
         ```
     * Gradle
         ```
         dependencies {
-            implementation 'org.laxture:sbp-spring-boot-starter:0.1.3'
+            implementation 'org.laxture:sbp-spring-boot-starter:0.1.4'
         }
         ```
+    * Latest master code is always available with version `-SNAPSHOT`
 3. Add belows to `application.properties`.
     ```
     spring.sbp.runtimeMode = development
