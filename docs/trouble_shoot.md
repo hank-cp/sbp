@@ -46,7 +46,10 @@ IDE compile everything including plugin code. for IDEA, you could use this
 setting of Run/Debug Configuration:
 ![](build_all.png)
 
-#####
+##### Autowire PluginManager carefully
+* Since plugin injects beans from main app, you'd better always use `@Lazy`
+with `@Autowire` for `PluginManager` together to make sure Spring instantiates 
+all needed beans before it starts to load plugin.
 
 ## Misc.
 * Package name cannot start with `org.pf4j`, `java` or `javax`. 
