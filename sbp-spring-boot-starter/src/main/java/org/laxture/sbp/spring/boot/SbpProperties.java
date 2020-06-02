@@ -21,7 +21,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Properties for Sbp main app
@@ -51,10 +53,6 @@ public class SbpProperties {
 	 */
 	private String[] enabledPlugins;
 	/**
-	 * Profile for plugin Spring {@link ApplicationContext}
-	 */
-	private String[] profiles = new String[] {"plugin"};
-	/**
 	 * Set to true to allow requires expression to be exactly x.y.z. The default is
 	 * false, meaning that using an exact version x.y.z will implicitly mean the
 	 * same as >=x.y.z
@@ -77,6 +75,15 @@ public class SbpProperties {
 	 * should be an absolute directory address
 	 */
 	private String pluginsRoot = "plugins";
+	/**
+	 * Profile for plugin Spring {@link ApplicationContext}
+	 */
+	private String[] pluginProfiles = new String[] {"plugin"};
+	/**
+	 * properties define under this property will be passed to
+	 * plugin `ApplicationContext` environment.
+	 */
+	Map<String, Object> pluginProperties = new HashMap<>();
 	/**
 	 * The system version used for comparisons to the plugin requires attribute.
 	 */

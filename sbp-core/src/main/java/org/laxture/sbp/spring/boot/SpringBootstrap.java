@@ -276,7 +276,7 @@ public class SpringBootstrap extends SpringApplication {
         String pluginFirstClassesProp = null;
         int i = 0;
         do {
-            pluginFirstClassesProp = getProperties(environment, "plugin.pluginFirstClasses", i++);
+            pluginFirstClassesProp = getProperties(environment, "pluginFirstClasses", i++);
             if (pluginFirstClassesProp != null) {
                 pluginFirstClasses.add(pluginFirstClassesProp);
             }
@@ -286,7 +286,7 @@ public class SpringBootstrap extends SpringApplication {
         String pluginOnlyResourcesProp = null;
         i = 0;
         do {
-            pluginOnlyResourcesProp = getProperties(environment, "plugin.pluginOnlyResources", i++);
+            pluginOnlyResourcesProp = getProperties(environment, "pluginOnlyResources", i++);
             if (pluginOnlyResourcesProp != null) {
                 pluginOnlyResources.add(pluginOnlyResourcesProp);
             }
@@ -388,11 +388,11 @@ public class SpringBootstrap extends SpringApplication {
     }
 
     private String getProperties(Environment env, String propName, int index) {
-        String prop = env.getProperty(String.format("%s[%s]", propName, index));
-        if (prop == null) prop = env.getProperty(String.format("%s.%s", propName, index));
-        if (prop == null) prop = env.getProperty(String.format("%s[%s]",
+        String prop = env.getProperty(String.format("sbp-plugin.%s[%s]", propName, index));
+        if (prop == null) prop = env.getProperty(String.format("sbp-plugin.%s.%s", propName, index));
+        if (prop == null) prop = env.getProperty(String.format("sbp-plugin.%s[%s]",
                 String.join("-", StringUtils.splitByCharacterTypeCamelCase(propName)).toLowerCase(), index));
-        if (prop == null) prop = env.getProperty(String.format("%s.%s",
+        if (prop == null) prop = env.getProperty(String.format("sbp-plugin.%s.%s",
                 String.join("-", StringUtils.splitByCharacterTypeCamelCase(propName)).toLowerCase(), index));
         return prop;
     }

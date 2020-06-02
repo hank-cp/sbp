@@ -23,8 +23,8 @@ spring:
       datasource:
         beanName: dataSource-library
 
-plugin:
-  pluginFirstClasses:
+sbp-plugin:
+  plugin-first-classes:
     - org.springframework.boot.autoconfigure.data.*
     - org.springframework.boot.autoconfigure.orm.*
     - org.springframework.boot.orm.jpa.*

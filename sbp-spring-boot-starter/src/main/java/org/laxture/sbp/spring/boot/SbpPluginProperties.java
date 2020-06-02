@@ -17,6 +17,7 @@ package org.laxture.sbp.spring.boot;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.ApplicationContext;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -32,14 +33,11 @@ public class SbpPluginProperties {
 
 	public static final String PREFIX = "sbp-plugin";
 
-	Map<String, Object> properties = new HashMap<>();
-
 	/**
 	 * Load these classes from plugin classpath first,
 	 * e.g Spring Boot AutoConfiguration used in plugin only.
 	 */
 	public String[] pluginFirstClasses = {};
-
 	/**
 	 * Load these resource from plugin classpath only
 	 */

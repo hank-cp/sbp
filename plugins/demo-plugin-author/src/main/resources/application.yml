@@ -11,8 +11,8 @@ spring:
   jooq:
     sql-dialect: postgres
 
-plugin:
-  pluginOnlyResources:
+sbp-plugin:
+  plugin-only-resources:
     - plugin_only
 
 logging:

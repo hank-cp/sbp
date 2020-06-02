@@ -1,23 +1,20 @@
 ### SbpProperties
 
-Configurations for main app (not plugin) to control PluginManager behavior.
+Configurations for main application's PluginManager.
 
 ##### `spring.sbp.enabled`
 set to true to enable sbp. Default false.
 
-##### `spring.sbp.autoStartPlugin`
+##### `spring.sbp.auto-start-plugin`
 auto start plugin when main app is ready. Default true
 
-##### `spring.sbp.disabledPlugins`
+##### `spring.sbp.disabled-plugins`
 Plugins disabled by default 
 
-##### `spring.sbp.enabledPlugins`
-Plugins enabled by default, prior to `disabledPlugins`
+##### `spring.sbp.enabled-plugins`
+Plugins enabled by default, prior to `disabled-plugins`
 
-##### `spring.sbp.profiles`: 
-Specify Spring profiles to be used to create plugins' `ApplicationContext`. 
-
-##### `spring.sbp.classesDirectories`
+##### `spring.sbp.classes-directories`
 where to load plugin classes, relative to plugin folder.
     * for IDEA
     ```
@@ -27,19 +24,29 @@ where to load plugin classes, relative to plugin folder.
         - "out/production/classes"
         - "out/production/resources"
     ```
-##### `spring.sbp.libDirectories`
+##### `spring.sbp.lib-directories`
 where to load jar libs, relative to plugin folder.
 
-##### `spring.sbp.runtimeMode`
+##### `spring.sbp.runtime-mode`
 with two options
     * DEPLOYMENT: load plugin in jar/zip format.
     * DEVELOPMENT: load plugin from build folder with Java class file.
 
-##### `spring.sbp.pluginsRoot`
+##### `spring.sbp.plugins-root`
 plugins home folder, relative to project working DIR. 
 Default `plusins`
 
-##### `spring.sbp.systemVersion`
+##### `spring.sbp.plugin-profiles`: 
+Specify Spring profiles to be used when creating plugins' `ApplicationContext` environment. With profile `plugin` by default. 
+You could use it to config plugin globally.
+Check [Demo](../demo-app/src/main/resources/application.yml) for example.
+
+##### `spring.sbp.plugin-properties`
+Specify properties to be used when creating plugins' `ApplicationContext` environment. 
+You could use it to config plugin globally.
+Check [Demo](../demo-app/src/main/resources/application.yml) for example.
+
+##### `spring.sbp.system-version`
 The system version used for comparisons to the plugin requires attribute.
 
 ##### `spring.sbp.controller.base-path`
@@ -50,14 +57,9 @@ Check [Demo](../demo-app/src/main/resources/application.yml) for example.
 
 ### SbpPluginProperties
 
-Configurations to control how plugins are loaded by PluginManager.
+Configurations for individual plugins.
 
-##### `sbp-plugin.properties`
-properties define under this property will be passed to
-plugin `ApplicationContext` environment. You could use it to passed global plugin
-properties. Check [Demo](../demo-app/src/main/resources/application.yml) for example.
-
-##### `sbp-plugin.pluginFirstClasses`
+##### `sbp-plugin.plugin-first-classes`
 If a class file existed in app classpath and 
 plugin classpath at the same time, `PluginClassLoader` will try to load it
 from plugin classpath first. This will cause `ClassCastException` when classes from
@@ -66,8 +68,8 @@ plugin classpath first to make sure classes come from same classloader.
 e.g. Spring Boot AutoConfiguration used in plugin only. See
 [JPA example](../plugins/demo-plugin-library/src/main/resources/application.yml).
 
-##### `sbp-plugin.pluginOnlyResources`
-If a resources file (including resource) existed 
+##### `sbp-plugin.plugin-only-resources`
+If a resource file (including resource) existed 
 in app classpath and plugin classpath at the same time, `PluginClassLoader` scan all of
 them out when performing `ClassLoader.loadResources()`. This will potentially cause
 unexpected errors, e.g. loading wrong configuration file from the wrong place. Use this 

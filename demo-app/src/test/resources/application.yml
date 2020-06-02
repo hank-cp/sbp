@@ -13,6 +13,17 @@ spring:
       - "build/resources/main"
     lib-directories:
       - "libs"
+    plugin-properties:
+      spring:
+        flyway:
+          import-data: true
+          clean-before-migrate: true
+        jpa:
+          properties:
+            hibernate:
+              temp:
+                use_jdbc_metadata_defaults: false
+          database-platform: org.hibernate.dialect.PostgreSQL9Dialect
   flyway:
     schemas:
       - demo_app
@@ -36,16 +47,3 @@ logging:
     org.hibernate.tool.schema.internal.ExceptionHandlerLoggedImpl: ERROR
 #    org.jooq: DEBUG
     org.jooq.Constants: ERROR
-
-sbp-plugin:
-  properties:
-    spring:
-      flyway:
-        import-data: true
-        clean-before-migrate: true
-      jpa:
-        properties:
-          hibernate:
-            temp:
-              use_jdbc_metadata_defaults: false
-        database-platform: org.hibernate.dialect.PostgreSQL9Dialect

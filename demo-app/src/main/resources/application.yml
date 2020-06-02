@@ -4,13 +4,21 @@ spring:
     username: postgres
     driver-class-name: "org.postgresql.Driver"
   sbp:
-    runtimeMode: development
+    runtime-mode: development
     enabled: true
     classes-directories:
       - "out/production/classes"
       - "out/production/resources"
     lib-directories:
       - "libs"
+    plugin-properties:
+      spring:
+        jpa:
+          properties:
+            hibernate:
+              temp:
+                use_jdbc_metadata_defaults: false
+          database-platform: org.hibernate.dialect.PostgreSQL9Dialect
   flyway:
     schemas:
       - demo_app
@@ -38,13 +46,3 @@ logging:
     org.hibernate.tool.schema.internal.ExceptionHandlerLoggedImpl: ERROR
     org.jooq: DEBUG
     org.jooq.Constants: ERROR
-
-sbp-plugin:
-  properties:
-    spring:
-      jpa:
-        properties:
-          hibernate:
-            temp:
-              use_jdbc_metadata_defaults: false
-        database-platform: org.hibernate.dialect.PostgreSQL9Dialect

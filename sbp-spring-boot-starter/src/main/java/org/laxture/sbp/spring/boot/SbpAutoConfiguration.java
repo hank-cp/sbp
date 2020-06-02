@@ -77,8 +77,7 @@ public class SbpAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public SpringBootPluginManager pluginManager(SbpProperties properties,
-									   SbpPluginProperties pluginProperties) {
+	public SpringBootPluginManager pluginManager(SbpProperties properties) {
 		// Setup RuntimeMode
 		System.setProperty("pf4j.mode", properties.getRuntimeMode().toString());
 
@@ -133,11 +132,11 @@ public class SbpAutoConfiguration {
 			}
 		};
 
-		pluginManager.presetProperties(flatProperties(pluginProperties.properties));
+		pluginManager.setProfiles(properties.getPluginProfiles());
+		pluginManager.presetProperties(flatProperties(properties.getPluginProperties()));
 		pluginManager.setExactVersionAllowed(properties.isExactVersionAllowed());
 		pluginManager.setSystemVersion(properties.getSystemVersion());
 		pluginManager.setAutoStartPlugin(properties.isAutoStartPlugin());
-		pluginManager.setProfiles(properties.getProfiles());
 
 		return pluginManager;
 	}
