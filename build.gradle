@@ -20,6 +20,10 @@ def isLibraryProject(String projectName) {
     return projectName.startsWith('sbp-')
 }
 
+def isPluginProject(Project project) {
+    return project.hasProperty("plugin")
+}
+
 buildscript {
     ext.springBootVersion = '2.2.0.RELEASE'
     ext.lombokVersion = '1.18.8'
@@ -132,7 +136,13 @@ subprojects {
         }
     }
 
+    configurations {
+        localLibs
+        compile.extendsFrom(localLibs)
+    }
+
     dependencies {
+        localLibs fileTree(dir: 'libs', include: '**')
         implementation "org.projectlombok:lombok:${lombokVersion}"
         annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
         annotationProcessor "org.pf4j:pf4j:${pf4jVersion}"
@@ -146,6 +156,40 @@ subprojects {
 
     task("buildApp") {
         finalizedBy jar
+    }
+
+//*************************************************************************
+// Plugin
+//*************************************************************************
+
+    if (isPluginProject(project)) {
+
+        Properties pluginProp = new Properties()
+        pluginProp.load(file('plugin.properties').newDataInputStream())
+
+        task buildPlugin(type: Jar) {
+            group 'build'
+            dependsOn build
+            manifest.attributes(
+                    "Plugin-Id": pluginProp.get("plugin.id"),
+                    "Plugin-Class": pluginProp.get("plugin.class"),
+                    "Plugin-Version": pluginProp.get("plugin.version"),
+                    "Plugin-Provider": pluginProp.get("plugin.provider"),
+                    "Plugin-Dependencies": pluginProp.get("plugin.dependencies"))
+            from configurations.localLibs.asFileTree.files.collect { zipTree(it) } // flatten all lib classes into a fat Jar
+//            from configurations.localLibs.asFileTree.files
+            with jar
+            doLast {
+                // Deploy built plugins...
+            }
+        }
+
+        task deployPluginToLocal(type: Copy) {
+            group 'build'
+            dependsOn buildPlugin
+            from "$buildDir/libs/"
+            into "$rootDir/path/to/plugins/${plugin}/"
+        }
     }
 
 //*************************************************************************

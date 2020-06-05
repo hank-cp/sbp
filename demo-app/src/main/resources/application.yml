@@ -46,3 +46,12 @@ logging:
     org.hibernate.tool.schema.internal.ExceptionHandlerLoggedImpl: ERROR
     org.jooq: DEBUG
     org.jooq.Constants: ERROR
+
+---
+spring:
+  profiles: docker
+  sbp:
+    runtime-mode: deployment
+    plugins-root: plugins
+    plugin-profiles:
+      - docker
