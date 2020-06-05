@@ -152,7 +152,7 @@ everything we need in the real project.
 * [Configuration](docs/configuration.md)
 * [Persistence](docs/persistence.md)
 * [Security / AOP](docs/security_aop.md)
-* [Deployment(TODO)]()
+* [Deployment](docs/deployment.md)
 * [Trouble Shoot & Misc](docs/how_it_works.md)
 * [About demo proejct](docs/trouble_shoot.md)
 * [Road map](docs/roadmap.md)

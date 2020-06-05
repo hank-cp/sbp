@@ -3,7 +3,7 @@
 * [ ] Template engine based web app demo
 * [ ] Front End modularization
 * [ ] Optimize ClassLoader performance
-* [ ] Plugin continuous Deployment
+* [ ] Plugin continuous deployment
 * [ ] Log collecting
 
 ### 0.1.4
