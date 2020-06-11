@@ -76,6 +76,10 @@ public class SbpProperties {
 	 */
 	private String pluginsRoot = "plugins";
 	/**
+	 * Allows to provide custom plugin loaders
+	 */
+	private Class<?>[] customPluginLoaders;
+	/**
 	 * Profile for plugin Spring {@link ApplicationContext}
 	 */
 	private String[] pluginProfiles = new String[] {"plugin"};

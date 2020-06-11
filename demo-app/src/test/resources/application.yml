@@ -24,6 +24,8 @@ spring:
               temp:
                 use_jdbc_metadata_defaults: false
           database-platform: org.hibernate.dialect.PostgreSQL9Dialect
+    custom-plugin-loaders:
+      - demo.sbp.app.CustomPluginLoader
   flyway:
     schemas:
       - demo_app

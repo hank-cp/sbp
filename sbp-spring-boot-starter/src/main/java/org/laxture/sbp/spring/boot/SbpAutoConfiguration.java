@@ -33,7 +33,9 @@ import org.springframework.context.annotation.Import;
 import org.springframework.util.StringUtils;
 
 import java.io.File;
+import java.lang.reflect.Constructor;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
@@ -94,7 +96,7 @@ public class SbpAutoConfiguration {
 				new File(pluginsRoot).toPath()) {
 			@Override
 			protected PluginLoader createPluginLoader() {
-				return new CompoundPluginLoader()
+				CompoundPluginLoader pluginLoader = new CompoundPluginLoader()
 					.add(new DefaultPluginLoader(this) {
 						@Override
 						protected PluginClassLoader createPluginClassLoader(Path pluginPath,
@@ -112,7 +114,7 @@ public class SbpAutoConfiguration {
 							return new SpringBootPluginClassLoader(pluginManager,
 									pluginDescriptor, getClass().getClassLoader());
 						}
-					})
+					}, this::isDevelopment)
 					.add(new JarPluginLoader(this) {
 						@Override
 						public ClassLoader loadPlugin(Path pluginPath, PluginDescriptor pluginDescriptor) {
@@ -120,7 +122,22 @@ public class SbpAutoConfiguration {
 							pluginClassLoader.addFile(pluginPath.toFile());
 							return pluginClassLoader;
 						}
+					}, this::isNotDevelopment);
+
+				if (properties.getCustomPluginLoaders() != null) {
+					SpringBootPluginManager that = this;
+					Arrays.stream(properties.getCustomPluginLoaders()).forEach(clazz -> {
+						try {
+							Constructor<?> constructor = clazz.getConstructor(PluginManager.class);
+							pluginLoader.add((PluginLoader) constructor.newInstance(that));
+						} catch (Exception ex) {
+							throw new IllegalArgumentException(String.format("Create custom PluginLoader %s failed. Make sure" +
+									"there is a constructor with one argument that accepts PluginLoader", clazz.getName()));
+						}
 					});
+				}
+
+				return pluginLoader;
 			}
 
 			@Override

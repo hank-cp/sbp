@@ -36,6 +36,10 @@ with two options
 plugins home folder, relative to project working DIR. 
 Default `plusins`
 
+##### `spring.sbp.custom-plugin-loaders`
+Allows to provide custom plugin loaders. Provided custom `PluginLoader` should have
+a constructor with one argument that accepts `PluginManager`.
+
 ##### `spring.sbp.plugin-profiles`: 
 Specify Spring profiles to be used when creating plugins' `ApplicationContext` environment. With profile `plugin` by default. 
 You could use it to config plugin globally.
