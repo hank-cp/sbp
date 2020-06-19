@@ -11,7 +11,7 @@ transaction support. This is recommended since it's the simplest way.
 
 ![](persistence_1.png?raw=true)
 
-See [SharedDataSourceSpringBootstrap](../sbp-core/src/main/java/org/sbp/spring/boot/SharedDataSourceSpringBootstrap.java).
+See [SharedDataSourceSpringBootstrap](../sbp-core/src/main/java/org/laxture/sbp/spring/boot/SharedDataSourceSpringBootstrap.java).
 
 ### Approach 2: Single shared dataSource / Multiple persistence middle-ware
 It's possible to mix JPA and other simple RMDB mapping tools like Jooq/Mybatis,
@@ -31,8 +31,8 @@ on a single DataSource, no matter whether JPA or JDBC access.
 However, if we choose to use `DataSourceTransactionManager` in app 
 (JPA is good for Domain-Driven-Design, but it lost advance control for database) 
 and JPA in plugin, it's important to instantiate `transactionManager` appropriately
-and inject to the right `applicationContext`. It works but, transactions could be joined
-any more across different `transactionManager`s. In other words, we partially lost 
+and inject to the right `applicationContext`. It works but, transactions couldn't be joined
+anymore across different `transactionManager`s. In other words, we partially lost 
 [ACID](https://en.wikipedia.org/wiki/ACID).
 
 ![](persistence_2.png?raw=true)
