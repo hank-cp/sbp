@@ -16,6 +16,7 @@
 package org.laxture.sbp.spring.boot;
 
 import lombok.Data;
+import org.pf4j.PluginLoader;
 import org.pf4j.RuntimeMode;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.ApplicationContext;
@@ -78,7 +79,7 @@ public class SbpProperties {
 	/**
 	 * Allows to provide custom plugin loaders
 	 */
-	private Class<?>[] customPluginLoaders;
+	private Class<PluginLoader> customPluginLoader;
 	/**
 	 * Profile for plugin Spring {@link ApplicationContext}
 	 */

@@ -176,7 +176,7 @@ subprojects {
                     "Plugin-Version": pluginProp.get("plugin.version"),
                     "Plugin-Provider": pluginProp.get("plugin.provider"),
                     "Plugin-Dependencies": pluginProp.get("plugin.dependencies"))
-            from configurations.localLibs.asFileTree.files.collect { zipTree(it) } // flatten all lib classes into a fat Jar
+            from configurations.localLibs.asFileTree.files.collect { zipTree(it) } // flat all lib classes into a fat Jar
 //            from configurations.localLibs.asFileTree.files
             with jar
             doLast {

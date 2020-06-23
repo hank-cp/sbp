@@ -35,7 +35,6 @@ import org.springframework.util.StringUtils;
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
@@ -96,48 +95,44 @@ public class SbpAutoConfiguration {
 				new File(pluginsRoot).toPath()) {
 			@Override
 			protected PluginLoader createPluginLoader() {
-				CompoundPluginLoader pluginLoader = new CompoundPluginLoader()
-					.add(new DefaultPluginLoader(this) {
-						@Override
-						protected PluginClassLoader createPluginClassLoader(Path pluginPath,
-																			PluginDescriptor pluginDescriptor) {
-							if (properties.getClassesDirectories() != null && properties.getClassesDirectories().size() > 0) {
-								for (String classesDirectory : properties.getClassesDirectories()) {
-									pluginClasspath.addClassesDirectories(classesDirectory);
+				if (properties.getCustomPluginLoader() != null) {
+					Class<PluginLoader> clazz = properties.getCustomPluginLoader();
+					try {
+						Constructor<?> constructor = clazz.getConstructor(PluginManager.class);
+						return (PluginLoader) constructor.newInstance(this);
+					} catch (Exception ex) {
+						throw new IllegalArgumentException(String.format("Create custom PluginLoader %s failed. Make sure" +
+								"there is a constructor with one argument that accepts PluginLoader", clazz.getName()));
+					}
+				} else {
+					return new CompoundPluginLoader()
+							.add(new DefaultPluginLoader(this) {
+								@Override
+								protected PluginClassLoader createPluginClassLoader(Path pluginPath,
+																					PluginDescriptor pluginDescriptor) {
+									if (properties.getClassesDirectories() != null && properties.getClassesDirectories().size() > 0) {
+										for (String classesDirectory : properties.getClassesDirectories()) {
+											pluginClasspath.addClassesDirectories(classesDirectory);
+										}
+									}
+									if (properties.getLibDirectories() != null && properties.getLibDirectories().size() > 0) {
+										for (String libDirectory : properties.getLibDirectories()) {
+											pluginClasspath.addJarsDirectories(libDirectory);
+										}
+									}
+									return new SpringBootPluginClassLoader(pluginManager,
+											pluginDescriptor, getClass().getClassLoader());
 								}
-							}
-							if (properties.getLibDirectories() != null && properties.getLibDirectories().size() > 0) {
-								for (String libDirectory : properties.getLibDirectories()) {
-									pluginClasspath.addJarsDirectories(libDirectory);
+							}, this::isDevelopment)
+							.add(new JarPluginLoader(this) {
+								@Override
+								public ClassLoader loadPlugin(Path pluginPath, PluginDescriptor pluginDescriptor) {
+									PluginClassLoader pluginClassLoader = new SpringBootPluginClassLoader(pluginManager, pluginDescriptor, getClass().getClassLoader());
+									pluginClassLoader.addFile(pluginPath.toFile());
+									return pluginClassLoader;
 								}
-							}
-							return new SpringBootPluginClassLoader(pluginManager,
-									pluginDescriptor, getClass().getClassLoader());
-						}
-					}, this::isDevelopment)
-					.add(new JarPluginLoader(this) {
-						@Override
-						public ClassLoader loadPlugin(Path pluginPath, PluginDescriptor pluginDescriptor) {
-							PluginClassLoader pluginClassLoader = new SpringBootPluginClassLoader(pluginManager, pluginDescriptor, getClass().getClassLoader());
-							pluginClassLoader.addFile(pluginPath.toFile());
-							return pluginClassLoader;
-						}
-					}, this::isNotDevelopment);
-
-				if (properties.getCustomPluginLoaders() != null) {
-					SpringBootPluginManager that = this;
-					Arrays.stream(properties.getCustomPluginLoaders()).forEach(clazz -> {
-						try {
-							Constructor<?> constructor = clazz.getConstructor(PluginManager.class);
-							pluginLoader.add((PluginLoader) constructor.newInstance(that));
-						} catch (Exception ex) {
-							throw new IllegalArgumentException(String.format("Create custom PluginLoader %s failed. Make sure" +
-									"there is a constructor with one argument that accepts PluginLoader", clazz.getName()));
-						}
-					});
+							}, this::isNotDevelopment);
 				}
-
-				return pluginLoader;
 			}
 
 			@Override
