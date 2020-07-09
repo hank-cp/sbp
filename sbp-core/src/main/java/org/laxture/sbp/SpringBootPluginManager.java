@@ -15,17 +15,16 @@
  */
 package org.laxture.sbp;
 
+import lombok.extern.slf4j.Slf4j;
 import org.laxture.sbp.internal.SpringExtensionFactory;
-import org.pf4j.DefaultPluginManager;
-import org.pf4j.ExtensionFactory;
-import org.pf4j.PluginDescriptorFinder;
-import org.pf4j.PluginRepository;
+import org.pf4j.*;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
 import javax.annotation.PostConstruct;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -34,6 +33,7 @@ import java.util.Map;
  *
  * @author <a href="https://github.com/hank-cp">Hank CP</a>
  */
+@Slf4j
 public class SpringBootPluginManager extends DefaultPluginManager
         implements ApplicationContextAware {
 
@@ -122,4 +122,11 @@ public class SpringBootPluginManager extends DefaultPluginManager
         if (autoStartPlugin) startPlugins();
     }
 
+    @Override
+    public void startPlugins() {
+        long ts = System.currentTimeMillis();
+        super.startPlugins();
+        log.info("[SBP] {} plugins are started in {}ms. {} failed'", getPlugins().size(),
+                System.currentTimeMillis() - ts, getPlugins(PluginState.STOPPED).size());
+    }
 }
