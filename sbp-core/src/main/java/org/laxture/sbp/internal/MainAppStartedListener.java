@@ -39,6 +39,10 @@ public class MainAppStartedListener implements ApplicationListener<ApplicationSt
 
     @Override
     public void onApplicationEvent(ApplicationStartedEvent event) {
+        if (pluginManager.isAutoStartPlugin()) {
+            pluginManager.startPlugins();
+        }
+
         pluginManager.getPlugins(PluginState.STARTED).forEach(pluginWrapper -> {
             SpringBootPlugin springBootPlugin = (SpringBootPlugin) pluginWrapper.getPlugin();
             ApplicationContext pluginAppCtx = springBootPlugin.getApplicationContext();

@@ -17,6 +17,8 @@ package org.laxture.sbp;
 
 import lombok.extern.slf4j.Slf4j;
 import org.laxture.sbp.internal.SpringExtensionFactory;
+import org.laxture.sbp.spring.boot.PluginStartingError;
+import org.laxture.sbp.spring.boot.SbpPluginStateChangedEvent;
 import org.pf4j.*;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -24,9 +26,7 @@ import org.springframework.context.ApplicationContextAware;
 
 import javax.annotation.PostConstruct;
 import java.nio.file.Path;
-import java.time.Duration;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * PluginManager to hold the main ApplicationContext
@@ -43,6 +43,7 @@ public class SpringBootPluginManager extends DefaultPluginManager
     private boolean autoStartPlugin = true;
     private String[] profiles;
     private PluginRepository pluginRepository;
+    private final Map<String, PluginStartingError> startingErrors = new HashMap<>();
 
     public SpringBootPluginManager() {
         super();
@@ -79,6 +80,10 @@ public class SpringBootPluginManager extends DefaultPluginManager
 
     public void setAutoStartPlugin(boolean autoStartPlugin) {
         this.autoStartPlugin = autoStartPlugin;
+    }
+
+    public boolean isAutoStartPlugin() {
+        return autoStartPlugin;
     }
 
     public void setMainApplicationStarted(boolean mainApplicationStarted) {
@@ -119,14 +124,163 @@ public class SpringBootPluginManager extends DefaultPluginManager
     @PostConstruct
     public void init() {
         loadPlugins();
-        if (autoStartPlugin) startPlugins();
+    }
+
+    public PluginStartingError getPluginStartingError(String pluginId) {
+        return startingErrors.get(pluginId);
+    }
+
+    //*************************************************************************
+    // Plugin State Manipulation
+    //*************************************************************************
+
+    private void doStartPlugins() {
+        startingErrors.clear();
+        long ts = System.currentTimeMillis();
+
+        for (PluginWrapper pluginWrapper : resolvedPlugins) {
+            PluginState pluginState = pluginWrapper.getPluginState();
+            if ((PluginState.DISABLED != pluginState) && (PluginState.STARTED != pluginState)) {
+                try {
+                    pluginWrapper.getPlugin().start();
+                    pluginWrapper.setPluginState(PluginState.STARTED);
+                    startedPlugins.add(pluginWrapper);
+
+                    firePluginStateEvent(new PluginStateEvent(this, pluginWrapper, pluginState));
+                } catch (Exception e) {
+                    log.error(e.getMessage(), e);
+                    startingErrors.put(pluginWrapper.getPluginId(), PluginStartingError.of(
+                            pluginWrapper.getPluginId(), e.getMessage(), e.toString()));
+                }
+            }
+        }
+
+        log.info("[SBP] {} plugins are started in {}ms. {} failed", getPlugins().size(),
+                System.currentTimeMillis() - ts, startingErrors.size());
+    }
+
+    private void doStopPlugins() {
+        startingErrors.clear();
+        // stop started plugins in reverse order
+        Collections.reverse(startedPlugins);
+        Iterator<PluginWrapper> itr = startedPlugins.iterator();
+        while (itr.hasNext()) {
+            PluginWrapper pluginWrapper = itr.next();
+            PluginState pluginState = pluginWrapper.getPluginState();
+            if (PluginState.STARTED == pluginState) {
+                try {
+                    log.info("Stop plugin '{}'", getPluginLabel(pluginWrapper.getDescriptor()));
+                    pluginWrapper.getPlugin().stop();
+                    pluginWrapper.setPluginState(PluginState.STOPPED);
+                    itr.remove();
+
+                    firePluginStateEvent(new PluginStateEvent(this, pluginWrapper, pluginState));
+                } catch (PluginRuntimeException e) {
+                    log.error(e.getMessage(), e);
+                    startingErrors.put(pluginWrapper.getPluginId(), PluginStartingError.of(
+                            pluginWrapper.getPluginId(), e.getMessage(), e.toString()));
+                }
+            }
+        }
+    }
+
+    private PluginState doStartPlugin(String pluginId, boolean sendEvent) {
+        PluginWrapper plugin = getPlugin(pluginId);
+        try {
+            PluginState pluginState = super.startPlugin(pluginId);
+            if (sendEvent) mainApplicationContext.publishEvent(new SbpPluginStateChangedEvent(mainApplicationContext));
+            return pluginState;
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            startingErrors.put(plugin.getPluginId(), PluginStartingError.of(
+                    plugin.getPluginId(), e.getMessage(), e.toString()));
+        }
+        return plugin.getPluginState();
+    }
+
+    private PluginState doStopPlugin(String pluginId, boolean sendEvent) {
+        PluginWrapper plugin = getPlugin(pluginId);
+        try {
+            PluginState pluginState = super.stopPlugin(pluginId);
+            if (sendEvent) mainApplicationContext.publishEvent(new SbpPluginStateChangedEvent(mainApplicationContext));
+            return pluginState;
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            startingErrors.put(plugin.getPluginId(), PluginStartingError.of(
+                    plugin.getPluginId(), e.getMessage(), e.toString()));
+        }
+        return plugin.getPluginState();
     }
 
     @Override
     public void startPlugins() {
-        long ts = System.currentTimeMillis();
-        super.startPlugins();
-        log.info("[SBP] {} plugins are started in {}ms. {} failed'", getPlugins().size(),
-                System.currentTimeMillis() - ts, getPlugins(PluginState.STOPPED).size());
+        doStartPlugins();
+        mainApplicationContext.publishEvent(new SbpPluginStateChangedEvent(mainApplicationContext));
     }
+
+    @Override
+    public PluginState startPlugin(String pluginId) {
+        return doStartPlugin(pluginId, true);
+    }
+
+    @Override
+    public void stopPlugins() {
+        doStopPlugins();
+        mainApplicationContext.publishEvent(new SbpPluginStateChangedEvent(mainApplicationContext));
+    }
+
+    @Override
+    public PluginState stopPlugin(String pluginId) {
+        return doStopPlugin(pluginId, true);
+    }
+
+    public void restartPlugins() {
+        doStopPlugins();
+        startPlugins();
+    }
+
+    public PluginState restartPlugin(String pluginId) {
+        PluginState pluginState = doStopPlugin(pluginId, false);
+        if (pluginState != PluginState.STARTED) doStartPlugin(pluginId, false);
+        doStartPlugin(pluginId, false);
+        mainApplicationContext.publishEvent(new SbpPluginStateChangedEvent(mainApplicationContext));
+        return pluginState;
+    }
+
+    public void reloadPlugins(boolean restartStartedOnly) {
+        doStopPlugins();
+        List<String> startedPluginIds = new ArrayList<>();
+        getPlugins().forEach(plugin -> {
+            if (plugin.getPluginState() == PluginState.STARTED) {
+                startedPluginIds.add(plugin.getPluginId());
+            }
+            unloadPlugin(plugin.getPluginId());
+        });
+        loadPlugins();
+        if (restartStartedOnly) {
+            startedPluginIds.forEach(pluginId -> {
+                // restart started plugin
+                if (getPlugin(pluginId) != null) {
+                    doStartPlugin(pluginId, false);
+                }
+            });
+            mainApplicationContext.publishEvent(new SbpPluginStateChangedEvent(mainApplicationContext));
+        } else {
+            startPlugins();
+        }
+    }
+
+    public PluginState reloadPlugins(String pluginId) {
+        PluginWrapper plugin = getPlugin(pluginId);
+        doStopPlugin(pluginId, false);
+        unloadPlugin(pluginId);
+        try {
+            loadPlugin(plugin.getPluginPath());
+        } catch (Exception ex) {
+            return null;
+        }
+
+        return doStartPlugin(pluginId, true);
+    }
+
 }

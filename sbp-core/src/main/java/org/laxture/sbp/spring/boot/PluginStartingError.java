@@ -15,21 +15,21 @@
  */
 package org.laxture.sbp.spring.boot;
 
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationEvent;
+import lombok.AllArgsConstructor;
+
+import java.io.Serializable;
 
 /**
- * This event will be published to <b>plugin application context</b> once plugin is restarted.
- *
- * Note that this event will not be fired duaring <b>main app application context</b> starting phase.
- *
  * @author <a href="https://github.com/hank-cp">Hank CP</a>
  */
-public class SbpPluginRestartedEvent extends ApplicationEvent {
+@AllArgsConstructor(staticName = "of")
+public class PluginStartingError implements Serializable {
 
-    private static final long serialVersionUID = 1651490578605729784L;
+    private static final long serialVersionUID = -153864270345999338L;
 
-    public SbpPluginRestartedEvent(ApplicationContext pluginApplicationContext) {
-        super(pluginApplicationContext);
-    }
+    public String pluginId;
+
+    public String errorMessage;
+
+    public String errorDetail;
 }

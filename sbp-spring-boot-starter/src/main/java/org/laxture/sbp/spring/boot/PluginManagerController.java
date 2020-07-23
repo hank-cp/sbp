@@ -28,7 +28,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -45,6 +44,7 @@ public class PluginManagerController {
     public List<PluginInfo> list() {
         List<PluginWrapper> loadedPlugins = pluginManager.getPlugins();
 
+        // loaded plugins
         List<PluginInfo> plugins = loadedPlugins.stream().map(pluginWrapper -> {
                     PluginDescriptor descriptor = pluginWrapper.getDescriptor();
                     PluginDescriptor latestDescriptor = null;
@@ -59,16 +59,18 @@ public class PluginManagerController {
 
                     return PluginInfo.build(descriptor,
                             pluginWrapper.getPluginState(), newVersion,
+                            pluginManager.getPluginStartingError(pluginWrapper.getPluginId()),
                             latestDescriptor == null);
                 }).collect(Collectors.toList());
 
+        // yet not loaded plugins
         List<Path> pluginPaths = pluginManager.getPluginRepository().getPluginPaths();
         plugins.addAll(pluginPaths.stream().filter(path ->
             loadedPlugins.stream().noneMatch(plugin -> plugin.getPluginPath().equals(path))
         ).map(path -> {
             PluginDescriptor descriptor = pluginManager
                     .getPluginDescriptorFinder().find(path);
-            return PluginInfo.build(descriptor, null, null, false);
+            return PluginInfo.build(descriptor, null, null, null, false);
         }).collect(Collectors.toList()));
 
         return plugins;
@@ -86,33 +88,15 @@ public class PluginManagerController {
         return 0;
     }
 
-    @PostMapping(value = "${spring.sbp.controller.base-path:/sbp}/restart/{pluginId}")
-    public int restart(@PathVariable String pluginId) {
-        PluginWrapper plugin = pluginManager.getPlugin(pluginId);
-        if (plugin == null) return -1;
-        pluginManager.unloadPlugin(pluginId);
-        String newPluginId = pluginManager.loadPlugin(plugin.getPluginPath());
-        pluginManager.startPlugin(newPluginId);
-        return 0;
+    @PostMapping(value = "${spring.sbp.controller.base-path:/sbp}/reload/{pluginId}")
+    public int reload(@PathVariable String pluginId) {
+        PluginState pluginState = pluginManager.reloadPlugins(pluginId);
+        return pluginState == PluginState.STARTED ? 0 : 1;
     }
 
-    @PostMapping(value = "${spring.sbp.controller.base-path:/sbp}/restart-all")
-    public int restartAll() {
-        List<String> startedPluginIds = new ArrayList<>();
-        List<PluginWrapper> loadedPlugins = pluginManager.getPlugins();
-        loadedPlugins.forEach(plugin -> {
-            if (plugin.getPluginState() == PluginState.STARTED) {
-                startedPluginIds.add(plugin.getPluginId());
-            }
-            pluginManager.unloadPlugin(plugin.getPluginId());
-        });
-        pluginManager.loadPlugins();
-        startedPluginIds.forEach(pluginId -> {
-            // restart started plugin
-            if (pluginManager.getPlugin(pluginId) != null) {
-                pluginManager.startPlugin(pluginId);
-            }
-        });
+    @PostMapping(value = "${spring.sbp.controller.base-path:/sbp}/reload-all")
+    public int reloadAll() {
+        pluginManager.reloadPlugins(false );
         return 0;
     }
 

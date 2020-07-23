@@ -19,9 +19,13 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEvent;
 
 /**
+ * This event will be published to plugin application context once main app is started.
+ *
  * @author <a href="https://github.com/hank-cp">Hank CP</a>
  */
 public class SbpMainAppStartedEvent extends ApplicationEvent {
+
+    private static final long serialVersionUID = 6638140452437569228L;
 
     public SbpMainAppStartedEvent(ApplicationContext mainApplicationContext) {
         super(mainApplicationContext);

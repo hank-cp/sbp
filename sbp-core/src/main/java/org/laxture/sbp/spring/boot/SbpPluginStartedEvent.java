@@ -19,17 +19,15 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEvent;
 
 /**
- * This event will be published to <b>plugin application context</b> once plugin is restarted.
- *
- * Note that this event will not be fired duaring <b>main app application context</b> starting phase.
+ * This event will be published to <b>plugin application context</b> once plugin application context is started.
  *
  * @author <a href="https://github.com/hank-cp">Hank CP</a>
  */
-public class SbpPluginRestartedEvent extends ApplicationEvent {
+public class SbpPluginStartedEvent extends ApplicationEvent {
 
     private static final long serialVersionUID = 1651490578605729784L;
 
-    public SbpPluginRestartedEvent(ApplicationContext pluginApplicationContext) {
+    public SbpPluginStartedEvent(ApplicationContext pluginApplicationContext) {
         super(pluginApplicationContext);
     }
 }

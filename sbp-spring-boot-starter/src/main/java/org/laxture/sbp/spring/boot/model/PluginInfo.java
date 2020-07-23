@@ -16,6 +16,7 @@
 package org.laxture.sbp.spring.boot.model;
 
 import lombok.Getter;
+import org.laxture.sbp.spring.boot.PluginStartingError;
 import org.pf4j.PluginDependency;
 import org.pf4j.PluginDescriptor;
 import org.pf4j.PluginState;
@@ -51,9 +52,12 @@ public class PluginInfo implements PluginDescriptor {
 
     public boolean removed;
 
+    public PluginStartingError startingError;
+
     public static PluginInfo build(PluginDescriptor descriptor,
                                    PluginState pluginState,
                                    String newVersion,
+                                   PluginStartingError startingError,
                                    boolean removed) {
         PluginInfo pluginInfo = new PluginInfo();
         pluginInfo.pluginId = descriptor.getPluginId();
@@ -67,6 +71,7 @@ public class PluginInfo implements PluginDescriptor {
             pluginInfo.dependencies = new ArrayList<>(descriptor.getDependencies());
         }
         pluginInfo.pluginState = pluginState;
+        pluginInfo.startingError = startingError;
         pluginInfo.newVersion = newVersion;
         pluginInfo.removed = removed;
         return pluginInfo;

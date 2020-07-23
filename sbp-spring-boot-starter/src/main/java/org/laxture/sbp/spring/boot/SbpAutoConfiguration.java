@@ -148,7 +148,6 @@ public class SbpAutoConfiguration {
 		pluginManager.presetProperties(flatProperties(properties.getPluginProperties()));
 		pluginManager.setExactVersionAllowed(properties.isExactVersionAllowed());
 		pluginManager.setSystemVersion(properties.getSystemVersion());
-		pluginManager.setAutoStartPlugin(properties.isAutoStartPlugin());
 
 		return pluginManager;
 	}

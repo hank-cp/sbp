@@ -19,9 +19,13 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEvent;
 
 /**
+ * This event will be published to <b>plugin application context</b> once plugin is stopped.
+ *
  * @author <a href="https://github.com/hank-cp">Hank CP</a>
  */
 public class SbpPluginStoppedEvent extends ApplicationEvent {
+
+    private static final long serialVersionUID = 1048404352252169025L;
 
     public SbpPluginStoppedEvent(ApplicationContext pluginApplicationContext) {
         super(pluginApplicationContext);
