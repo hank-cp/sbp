@@ -40,6 +40,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
@@ -447,5 +448,41 @@ public class PluginIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", equalTo(true)));
+    }
+
+    @Test
+    public void testResourceHandler() throws Exception {
+        mvc.perform(get("/public/foo.html") // served by demo-app
+                .contentType(MediaType.TEXT_HTML))
+                .andExpect(status().isOk())
+                .andDo(result -> {
+                    assertThat(result.getResponse().getContentAsString(), equalTo("<body>\nHello foo!\n</body>"));
+                });
+
+        mvc.perform(get("/public/bar.html") // served by demo-plugin-admin
+                .contentType(MediaType.TEXT_HTML))
+                .andExpect(status().isOk())
+                .andDo(result -> {
+                    assertThat(result.getResponse().getContentAsString(), equalTo("<body>\nHello bar!\n</body>"));
+                });
+
+        // stop demo-plugin-admin
+        pluginManager.stopPlugin("demo-plugin-admin");
+
+        // bar.html should be not found after plugin stop.
+        mvc.perform(get("/public/bar.html")
+                .contentType(MediaType.TEXT_HTML))
+                .andExpect(status().isNotFound());
+
+        // start demo-plugin-admin again
+        pluginManager.startPlugin("demo-plugin-admin");
+
+        // bar.html should come back to live again.
+        mvc.perform(get("/public/bar.html")
+                .contentType(MediaType.TEXT_HTML))
+                .andExpect(status().isOk())
+                .andDo(result -> {
+                    assertThat(result.getResponse().getContentAsString(), equalTo("<body>\nHello bar!\n</body>"));
+                });
     }
 }

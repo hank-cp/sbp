@@ -18,12 +18,17 @@ package org.laxture.sbp.spring.boot;
 import org.laxture.sbp.SpringBootPluginManager;
 import org.laxture.sbp.internal.PluginRequestMappingHandlerMapping;
 import org.pf4j.PluginManager;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.web.ConditionalOnEnabledResourceChain;
+import org.springframework.boot.autoconfigure.web.servlet.PluginResourceHandlerRegistrationCustomizer;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcRegistrations;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.event.EventListener;
 import org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
@@ -37,6 +42,9 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 @ConditionalOnClass({ PluginManager.class, SpringBootPluginManager.class })
 @ConditionalOnProperty(prefix = SbpProperties.PREFIX, value = "enabled", havingValue = "true")
 public class SbpMvcPatchAutoConfiguration {
+
+	@Autowired
+
 
 	@Bean
 	@ConditionalOnMissingBean(WebMvcRegistrations.class)
@@ -59,4 +67,13 @@ public class SbpMvcPatchAutoConfiguration {
 		};
 	}
 
+	@Bean
+	public PluginResourceHandlerRegistrationCustomizer resourceHandlerRegistrationCustomizer() {
+		return new PluginResourceHandlerRegistrationCustomizer();
+	}
+
+	@EventListener(SbpPluginStateChangedEvent.class)
+	public void onPluginStarted() {
+
+	}
 }
