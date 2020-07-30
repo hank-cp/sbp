@@ -41,7 +41,7 @@ public class PluginResourceHandlerRegistrationCustomizer implements
 
     @Autowired
     @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
-    private ResourceProperties resourceProperties;
+    private ResourceProperties resourceProperties = new ResourceProperties();
 
     @Autowired(required = false)
     @Qualifier("sbpResourceCache")

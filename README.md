@@ -62,13 +62,13 @@ application, just like any single service provider node in Spring Cloud network.
         <dependency>
             <groupId>org.laxture</groupId>
             <artifactId>sbp-spring-boot-starter</artifactId>
-            <version>0.1.4</version>
+            <version>0.1.6</version>
         </dependency>
         ```
     * Gradle
         ```
         dependencies {
-            implementation 'org.laxture:sbp-spring-boot-starter:0.1.4'
+            implementation 'org.laxture:sbp-spring-boot-starter:0.1.6'
         }
         ```
     * Latest master code is always available with version `-SNAPSHOT`
@@ -150,6 +150,7 @@ everything we need in the real project.
 ### Documentation
 * [How it works](docs/how_it_works.md)
 * [Configuration](docs/configuration.md)
+* [Serve Static Content](docs/resource_handling.md)
 * [Persistence](docs/persistence.md)
 * [Security / AOP](docs/security_aop.md)
 * [Deployment](docs/deployment.md)
