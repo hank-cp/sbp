@@ -34,7 +34,7 @@ with two options
 
 ##### `spring.sbp.plugins-root`
 plugins home folder, relative to project working DIR. 
-Default `plusins`
+Default `plugins`
 
 ##### `spring.sbp.custom-plugin-loaders`
 Allows to provide custom plugin loaders. Provided custom `PluginLoader` should have
