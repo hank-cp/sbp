@@ -60,7 +60,7 @@ public class PluginSecurityTest {
         ((AtomikosDataSourceBean)dataSource).close();
         SpringBootPlugin plugin = (SpringBootPlugin)
                 pluginManager.getPlugin("demo-plugin-library").getPlugin();
-        plugin.releaseResource();
+        plugin.releaseAdditionalResources();
     }
 
     @Test

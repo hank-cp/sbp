@@ -23,6 +23,7 @@ import org.pf4j.*;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.support.GenericApplicationContext;
 
 import javax.annotation.PostConstruct;
 import java.nio.file.Path;
@@ -38,7 +39,7 @@ public class SpringBootPluginManager extends DefaultPluginManager
         implements ApplicationContextAware {
 
     private boolean mainApplicationStarted;
-    private ApplicationContext mainApplicationContext;
+    private GenericApplicationContext mainApplicationContext;
     public Map<String, Object> presetProperties = new HashMap<>();
     private boolean autoStartPlugin = true;
     private String[] profiles;
@@ -60,7 +61,7 @@ public class SpringBootPluginManager extends DefaultPluginManager
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.mainApplicationContext = applicationContext;
+        this.mainApplicationContext = (GenericApplicationContext) applicationContext;
     }
 
     @Override
@@ -151,6 +152,7 @@ public class SpringBootPluginManager extends DefaultPluginManager
                     log.error(e.getMessage(), e);
                     startingErrors.put(pluginWrapper.getPluginId(), PluginStartingError.of(
                             pluginWrapper.getPluginId(), e.getMessage(), e.toString()));
+                    SpringBootPlugin.releaseRegisteredResources(pluginWrapper, mainApplicationContext);
                 }
             }
         }
@@ -194,6 +196,7 @@ public class SpringBootPluginManager extends DefaultPluginManager
             log.error(e.getMessage(), e);
             startingErrors.put(plugin.getPluginId(), PluginStartingError.of(
                     plugin.getPluginId(), e.getMessage(), e.toString()));
+            SpringBootPlugin.releaseRegisteredResources(plugin, mainApplicationContext);
         }
         return plugin.getPluginState();
     }

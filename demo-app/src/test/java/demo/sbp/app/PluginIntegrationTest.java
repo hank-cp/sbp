@@ -23,7 +23,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import demo.sbp.api.service.BookService;
 import lombok.extern.java.Log;
-import org.flywaydb.core.internal.util.UrlUtils;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,14 +39,12 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.FileSystems;
-import java.nio.file.Path;
 import java.util.*;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -95,7 +92,7 @@ public class PluginIntegrationTest {
         ((AtomikosDataSourceBean)dataSource).close();
         SpringBootPlugin plugin = (SpringBootPlugin)
                 pluginManager.getPlugin("demo-plugin-library").getPlugin();
-        plugin.releaseResource();
+        plugin.releaseAdditionalResources();
     }
 
     @Test

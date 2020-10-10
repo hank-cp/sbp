@@ -18,6 +18,7 @@ package org.laxture.sbp.internal;
 import org.laxture.sbp.SpringBootPlugin;
 import org.laxture.sbp.spring.boot.SpringBootstrap;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
@@ -48,13 +49,14 @@ public class PluginRequestMappingHandlerMapping extends RequestMappingHandlerMap
     private void registerController(SpringBootPlugin springBootPlugin, Object controller) {
         String beanName = controller.getClass().getName();
         // unregister RequestMapping if already registered
-        unregisterController(springBootPlugin, controller);
+        unregisterController(springBootPlugin.getMainApplicationContext(), controller);
         springBootPlugin.registerBeanToMainContext(beanName, controller);
         detectHandlerMethods(controller);
     }
 
     public void unregisterControllers(SpringBootPlugin springBootPlugin) {
-        getControllerBeans(springBootPlugin).forEach(bean -> unregisterController(springBootPlugin, bean));
+        getControllerBeans(springBootPlugin).forEach(bean ->
+                unregisterController(springBootPlugin.getMainApplicationContext(), bean));
     }
 
     public Set<Object> getControllerBeans(SpringBootPlugin springBootPlugin) {
@@ -72,10 +74,11 @@ public class PluginRequestMappingHandlerMapping extends RequestMappingHandlerMap
         return beans;
     }
 
-    private void unregisterController(SpringBootPlugin springBootPlugin, Object controller) {
+    public void unregisterController(GenericApplicationContext mainCtx, Object controller) {
         new HashMap<>(getHandlerMethods()).forEach((mapping, handlerMethod) -> {
             if (controller == handlerMethod.getBean()) super.unregisterMapping(mapping);
         });
-        springBootPlugin.unregisterBeanFromMainContext(controller);
+        SpringBootPlugin.unregisterBeanFromMainContext(mainCtx, controller);
     }
+
 }

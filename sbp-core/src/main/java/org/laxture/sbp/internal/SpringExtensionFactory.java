@@ -22,7 +22,10 @@ import org.pf4j.PluginWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
+
+import java.util.Optional;
 
 /**
  * Pf4j ExtensionFactory to create/retrieve extension bean from spring
@@ -58,8 +61,9 @@ public class SpringExtensionFactory implements ExtensionFactory {
     }
 
     public String getExtensionBeanName(Class<?> extensionClass) {
-        String[] beanNames = getApplicationContext(extensionClass)
-                .getBeanNamesForType(extensionClass);
+        ApplicationContext pluginAppCtx = getApplicationContext(extensionClass);
+        if (pluginAppCtx == null) return null;
+        String[] beanNames = pluginAppCtx.getBeanNamesForType(extensionClass);
         return beanNames.length > 0 ? beanNames[0] : null;
     }
 

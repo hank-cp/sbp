@@ -39,12 +39,12 @@ public class LibraryPlugin extends SpringBootPlugin {
 
     @Override
     public void stop() {
-        releaseResource();
+        releaseAdditionalResources();
         super.stop();
     }
 
     @Override
-    public void releaseResource() {
+    public void releaseAdditionalResources() {
         AtomikosDataSourceBean dataSource = (AtomikosDataSourceBean)
                 getApplicationContext().getBean("dataSource");
         dataSource.close();
