@@ -3,7 +3,7 @@ name: CI Test
 on: [push]
 
 jobs:
-  openjdk11:
+  openjdk8:
     runs-on: ubuntu-latest
     services:
       postgres:
