@@ -67,7 +67,7 @@ public class SpringBootPluginClassLoader extends PluginClassLoader {
     }
 
     /**
-     * load class: application ~~ plugin<br/>
+     * load class: application ~~ plugin<br>
      * load ordinary files: plugin ~~ application
      */
     @Override
