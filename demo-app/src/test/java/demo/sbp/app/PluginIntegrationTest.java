@@ -46,6 +46,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.util.*;
 
@@ -235,12 +236,12 @@ public class PluginIntegrationTest {
         URL authorRes = authorPlugin.getWrapper().getPluginClassLoader().getResource("res.txt");
         assertThat(authorRes, notNullValue());
         assertThat(authorRes.getPath(), stringContainsInOrder(Arrays.asList("plugins", "demo-plugin-author")));
-        List<String> contents = FileUtils.readLines(Path.of(authorRes.getPath()), true);
+        List<String> contents = FileUtils.readLines(FileSystems.getDefault().getPath(authorRes.getPath()), true);
         assertThat(contents, hasItem("author"));
 
         URL shelfRes = shelfPlugin.getWrapper().getPluginClassLoader().getResource("res.txt");
         assertThat(shelfRes, notNullValue());
-        contents = FileUtils.readLines(Path.of(shelfRes.getPath()), true);
+        contents = FileUtils.readLines(FileSystems.getDefault().getPath(shelfRes.getPath()), true);
         assertThat(contents, hasItem("app"));
     }
 
@@ -258,10 +259,12 @@ public class PluginIntegrationTest {
 
         List<URL> urls = Collections.list(
                 authorPlugin.getWrapper().getPluginClassLoader().getResources("plugin_only"));
+        log.info(urls.toString());
         assertThat(urls, hasSize(1)); // resource form plugin only
 
         urls = Collections.list(
                 shelfPlugin.getWrapper().getPluginClassLoader().getResources("plugin_only"));
+        log.info(urls.toString());
         assertThat(urls, hasSize(1)); // resources from app
     }
 

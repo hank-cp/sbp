@@ -27,7 +27,8 @@ def isPluginProject(Project project) {
 buildscript {
     ext.springBootVersion = '2.2.0.RELEASE'
     ext.lombokVersion = '1.18.8'
-    ext.pf4jVersion = '3.1.0'
+    ext.pf4jVersion = '3.4.1'
+    ext.jooqVersion = '3.12.3'
 
     repositories {
         jcenter()
@@ -106,8 +107,8 @@ subprojects {
 // Compile & Assemble
 //*************************************************************************
 
-    sourceCompatibility = JavaVersion.VERSION_11
-    targetCompatibility = JavaVersion.VERSION_11
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
 
     tasks.withType(AbstractCompile) {
         options.encoding = 'UTF-8'
@@ -258,6 +259,7 @@ subprojects {
             }
 
             jooq {
+                version = "${jooqVersion}"
                 sbp(sourceSets.main) {
                     jdbc {
                         url = project.'db.url'
@@ -282,6 +284,9 @@ subprojects {
                         }
                         target {
                             packageName = project.'jooq.target.package'
+                        }
+                        generate {
+                            generatedAnnotation = false
                         }
                     }
                 }

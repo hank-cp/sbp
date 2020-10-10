@@ -16,16 +16,17 @@
 package org.laxture.sbp.internal;
 
 import lombok.NonNull;
+import org.pf4j.ClassLoadingStrategy;
 import org.pf4j.PluginClassLoader;
 import org.pf4j.PluginDescriptor;
 import org.pf4j.PluginManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.ReflectionUtils;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.net.URL;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -44,7 +45,7 @@ public class SpringBootPluginClassLoader extends PluginClassLoader {
     public SpringBootPluginClassLoader(PluginManager pluginManager, PluginDescriptor pluginDescriptor, ClassLoader parent) {
         // load class from parent first to avoid same class loaded by different classLoader,
         // so Spring could autowired bean by type correctly.
-        super(pluginManager, pluginDescriptor, parent, true);
+        super(pluginManager, pluginDescriptor, parent, ClassLoadingStrategy.APD);
     }
 
     public void setPluginFirstClasses(@NonNull List<String> pluginFirstClasses) {
@@ -65,6 +66,10 @@ public class SpringBootPluginClassLoader extends PluginClassLoader {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * load class: application -> plugin<br/>
+     * load ordinary files: plugin -> application
+     */
     @Override
     public URL getResource(String name) {
         if (name.endsWith(".class")) return super.getResource(name);
@@ -81,24 +86,20 @@ public class SpringBootPluginClassLoader extends PluginClassLoader {
 
     @Override
     public Enumeration<URL> getResources(String name) throws IOException {
+        if (name.endsWith(".class")) return super.getResources(name);
         return isPluginOnlyResources(name) ? findResources(name) : super.getResources(name);
     }
 
     @Override
     public Class<?> loadClass(String className) throws ClassNotFoundException {
-        try {
-            // if specified, try to load from plugin classpath first
-            if (isPluginFirstClass(className)) {
-                try {
-                    return loadClassFromPlugin(className);
-                } catch (ClassNotFoundException ignored) {}
-            }
-            // not found, load from parent
-            return super.loadClass(className);
-        } catch (ClassNotFoundException ignored) {}
-
-        // try again in in dependencies classpath
-        return loadClassFromDependencies(className);
+        // if specified, try to load from plugin classpath first
+        if (isPluginFirstClass(className)) {
+            try {
+                return loadClassFromPlugin(className);
+            } catch (ClassNotFoundException ignored) {}
+        }
+        // not found, load from parent
+        return super.loadClass(className);
     }
 
     private boolean isPluginFirstClass(String name) {
@@ -140,20 +141,15 @@ public class SpringBootPluginClassLoader extends PluginClassLoader {
         }
     }
 
-    private Class<?> loadClassFromDependencies(String className) throws ClassNotFoundException {
-        try {
-            Method loadClassFromDependenciesMethod = ReflectionUtils.findMethod(getClass().getSuperclass(),
-                    "loadClassFromDependencies", String.class);
-            loadClassFromDependenciesMethod.setAccessible(true);
-            Class<?> loadedClass = (Class<?>) loadClassFromDependenciesMethod.invoke(this, className);
-            if (loadedClass != null) {
-                log.trace("Found class '{}' in dependencies", className);
-                return loadedClass;
-            }
-        } catch (Exception ex) {
-            throw new ClassNotFoundException(className);
-        }
-        throw new ClassNotFoundException(className);
+    @Override
+    protected URL findResourceFromDependencies(String name) {
+        if (!name.endsWith(".class")) return null; // do not load ordinary resource from dependencies
+        return super.findResourceFromDependencies(name);
     }
 
+    @Override
+    protected Collection<URL> findResourcesFromDependencies(String name) throws IOException {
+        if (!name.endsWith(".class")) return Collections.emptyList(); // do not load ordinary resource from dependencies
+        return super.findResourcesFromDependencies(name);
+    }
 }

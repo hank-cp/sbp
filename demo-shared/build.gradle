@@ -1,9 +1,11 @@
 dependencies {
     compile project(':sbp-core')
-    
+
     compile "org.springframework.boot:spring-boot-starter-web"
     compile "org.springframework.boot:spring-boot-starter-aop"
-    compile 'org.springframework.boot:spring-boot-starter-jooq'
+    compile ("org.springframework.boot:spring-boot-starter-jooq") {
+        exclude group: 'org.jooq', module: 'jooq'
+    }
     compile "org.springframework.boot:spring-boot-starter-jta-atomikos"
     compile "org.springframework.boot:spring-boot-configuration-processor"
     compile "org.springframework:spring-context-support"
@@ -13,7 +15,8 @@ dependencies {
     compile "com.fasterxml.jackson.datatype:jackson-datatype-joda"
     compile 'org.modelmapper:modelmapper:2.3.0'
     compile 'org.modelmapper.extensions:modelmapper-jooq:2.3.0'
-    
+    compile "org.jooq:jooq:${jooqVersion}"
+
     compile "org.apache.commons:commons-lang3:3.8.1"
 
     compile 'org.flywaydb:flyway-core'

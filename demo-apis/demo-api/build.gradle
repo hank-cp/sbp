@@ -1,5 +1,5 @@
 dependencies {
-    implementation('org.pf4j:pf4j:3.1.0') {
+    implementation("org.pf4j:pf4j:${pf4jVersion}") {
         exclude group: 'org.slf4j', module: 'slf4j-log4j12'
     }
 

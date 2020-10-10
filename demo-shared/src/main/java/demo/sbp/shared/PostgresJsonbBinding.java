@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import org.jooq.*;
 import org.jooq.impl.DSL;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Types;
@@ -33,7 +34,7 @@ import java.util.Objects;
  *
  * @author <a href="https://github.com/hank-cp">Hank CP</a>
  */
-public class PostgresJsonbBinding implements Binding<Object, JsonNode> {
+public class PostgresJsonbBinding implements Binding<JSONB, JsonNode> {
 
     private ObjectMapper mapper;
 
@@ -44,25 +45,33 @@ public class PostgresJsonbBinding implements Binding<Object, JsonNode> {
     }
 
     @Override
-    public Converter<Object, JsonNode> converter() {
-        return new Converter<Object, JsonNode>() {
+    public Converter<JSONB, JsonNode> converter() {
+        return new Converter<JSONB, JsonNode>() {
+
+            private static final long serialVersionUID = -558287364744020893L;
+
             @Override
-            public JsonNode from(Object t) {
-                return t == null ? mapper.createObjectNode() : mapper.valueToTree(t);
+            public JsonNode from(JSONB t) {
+                try {
+                    if (t == null || "null".equals(t.toString())) return null;
+                    return mapper.readTree(t.toString());
+                } catch (IOException e) {
+                    throw new IllegalArgumentException(e);
+                }
             }
 
             @Override
-            public Object to(JsonNode u) {
+            public JSONB to(JsonNode u) {
                 try {
-                    return u == null ? null : mapper.writeValueAsString(u);
+                    return u == null ? null : JSONB.valueOf(mapper.writeValueAsString(u));
                 } catch (JsonProcessingException e) {
                     throw new IllegalArgumentException(e);
                 }
             }
 
             @Override
-            public Class<Object> fromType() {
-                return Object.class;
+            public Class<JSONB> fromType() {
+                return JSONB.class;
             }
 
             @Override
@@ -93,13 +102,13 @@ public class PostgresJsonbBinding implements Binding<Object, JsonNode> {
     // Getting a String value from a JDBC ResultSet and converting that to a JsonElement
     @Override
     public void get(BindingGetResultSetContext<JsonNode> ctx) throws SQLException {
-        ctx.convert(converter()).value(ctx.resultSet().getString(ctx.index()));
+        ctx.convert(converter()).value(JSONB.valueOf(ctx.resultSet().getString(ctx.index())));
     }
 
     // Getting a String value from a JDBC CallableStatement and converting that to a JsonElement
     @Override
     public void get(BindingGetStatementContext<JsonNode> ctx) throws SQLException {
-        ctx.convert(converter()).value(ctx.statement().getString(ctx.index()));
+        ctx.convert(converter()).value(JSONB.valueOf(ctx.statement().getString(ctx.index())));
     }
 
     // Setting a value on a JDBC SQLOutput (useful for Oracle OBJECT types)
