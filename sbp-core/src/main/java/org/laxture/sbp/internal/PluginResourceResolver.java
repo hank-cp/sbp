@@ -46,6 +46,10 @@ public class PluginResourceResolver extends PathResourceResolver {
         if (pluginManager == null) {
             pluginManager = ApplicationContextProvider.getBean(PluginManager.class);
         }
+        
+        if (pluginManager.getPlugins(PluginState.STARTED).isEmpty()) {
+            return super.getResource(resourcePath, location);
+        }
 
         for (PluginWrapper plugin : pluginManager.getPlugins(PluginState.STARTED)) {
             Resource pluginLocation = new ClassPathResource(classPathLocation.getPath(), plugin.getPluginClassLoader());
