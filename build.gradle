@@ -59,7 +59,7 @@ idea {
     }
 }
 
-task release {
+task release << {
     def currentVersion = "${version}"
     def newVersion = getPropertyOrElse(project, 'newVersion', '')
     if (newVersion == '') {
