@@ -148,7 +148,9 @@ public class PluginIntegrationTest {
         mvc.perform(get("/shelf/list")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(2)));
+                .andExpect(jsonPath("$", hasSize(2)))
+                // verify dependent service is injected back
+                .andExpect(jsonPath("$[0].author.name", equalTo("George Orwell")));
 
         mvc.perform(get("/plugin/extensions/list")
                 .contentType(MediaType.APPLICATION_JSON))

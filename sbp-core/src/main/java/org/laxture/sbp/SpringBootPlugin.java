@@ -21,10 +21,7 @@ import org.laxture.sbp.internal.PluginRequestMappingHandlerMapping;
 import org.laxture.sbp.internal.SpringExtensionFactory;
 import org.laxture.sbp.spring.boot.*;
 import org.laxture.spring.util.ApplicationContextProvider;
-import org.pf4j.Extension;
-import org.pf4j.Plugin;
-import org.pf4j.PluginState;
-import org.pf4j.PluginWrapper;
+import org.pf4j.*;
 import org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -33,7 +30,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Stream;
 
 /**
@@ -68,8 +65,8 @@ import java.util.stream.Stream;
 public abstract class SpringBootPlugin extends Plugin {
 
     private final SpringBootstrap springBootstrap;
-
     private ApplicationContext applicationContext;
+    private final Set<String> injectedExtensionNames = new HashSet<>();
 
     public SpringBootPlugin(PluginWrapper wrapper) {
         super(wrapper);
@@ -109,6 +106,7 @@ public abstract class SpringBootPlugin extends Plugin {
                 Object bean = extensionFactory.create(extensionClass);
                 String beanName = extensionFactory.getExtensionBeanName(extensionClass);
                 registerBeanToMainContext(beanName, bean);
+                injectedExtensionNames.add(beanName);
             } catch (ClassNotFoundException e) {
                 throw new IllegalArgumentException(e.getMessage(), e);
             }
@@ -131,24 +129,15 @@ public abstract class SpringBootPlugin extends Plugin {
         log.debug("Stopping plugin {} ......", getWrapper().getPluginId());
         releaseAdditionalResources();
         // unregister Extension beans
-        Set<String> extensionClassNames = getWrapper().getPluginManager()
-                .getExtensionClassNames(getWrapper().getPluginId());
-        for (String extensionClassName : extensionClassNames) {
-            try {
-                log.debug("Unregister extension <{}> to main ApplicationContext", extensionClassName);
-                Class<?> extensionClass = getWrapper().getPluginClassLoader().loadClass(extensionClassName);
-                SpringExtensionFactory extensionFactory = (SpringExtensionFactory) getWrapper()
-                        .getPluginManager().getExtensionFactory();
-                String beanName = extensionFactory.getExtensionBeanName(extensionClass);
-                unregisterBeanFromMainContext(beanName);
-            } catch (ClassNotFoundException e) {
-                throw new IllegalArgumentException(e.getMessage(), e);
-            }
+        for (String extensionName : injectedExtensionNames) {
+            log.debug("Unregister extension <{}> to main ApplicationContext", extensionName);
+            unregisterBeanFromMainContext(extensionName);
         }
 
         getMainRequestMapping().unregisterControllers(this);
         applicationContext.publishEvent(new SbpPluginStoppedEvent(applicationContext));
         ApplicationContextProvider.unregisterApplicationContext(applicationContext);
+        injectedExtensionNames.clear();
         ((ConfigurableApplicationContext) applicationContext).close();
 
         log.debug("Plugin {} is stopped", getWrapper().getPluginId());

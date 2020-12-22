@@ -157,7 +157,7 @@ public class SpringBootPluginManager extends DefaultPluginManager
             }
         }
 
-        log.info("[SBP] {} plugins are started in {}ms. {} failed", getPlugins().size(),
+        log.info("[SBP] {} plugins are started in {}ms. {} failed", getPlugins(PluginState.STARTED).size(),
                 System.currentTimeMillis() - ts, startingErrors.size());
     }
 
