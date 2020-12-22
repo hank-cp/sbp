@@ -59,22 +59,24 @@ idea {
     }
 }
 
-task release << {
-    def currentVersion = "${version}"
-    def newVersion = getPropertyOrElse(project, 'newVersion', '')
-    if (newVersion == '') {
-        throw new IllegalArgumentException("Argument 'newVersion' is not specified. Please carry '-PnewVersion=x.x.x' as argument.")
-    }
-    println "Setting version from $currentVersion to $newVersion"
+task(release) {
+    doLast {
+        def currentVersion = "${version}"
+        def newVersion = getPropertyOrElse(project, 'newVersion', '')
+        if (newVersion == '') {
+            throw new IllegalArgumentException("Argument 'newVersion' is not specified. Please carry '-PnewVersion=x.x.x' as argument.")
+        }
+        println "Setting version from $currentVersion to $newVersion"
 
-//    exec {
-//        commandLine 'sed', '-ie', "s/$currentVersion/$newVersion/g", "gradle.properties"
-//    }
-    ant.replaceregexp(match:currentVersion, replace:newVersion, flags:'g', byline:true) {
-        fileset(dir: '', includes: ['gradle.properties', 'README.md', 'README.zh-cn.md'])
-    }
-    ant.propertyfile(file: "gradle.properties") {
-        entry( key: "version", value: "$newVersion")
+    //    exec {
+    //        commandLine 'sed', '-ie', "s/$currentVersion/$newVersion/g", "gradle.properties"
+    //    }
+        ant.replaceregexp(match:currentVersion, replace:newVersion, flags:'g', byline:true) {
+            fileset(dir: '', includes: ['gradle.properties', 'README.md', 'README.zh-cn.md'])
+        }
+        ant.propertyfile(file: "gradle.properties") {
+            entry( key: "version", value: "$newVersion")
+        }
     }
 }
 
