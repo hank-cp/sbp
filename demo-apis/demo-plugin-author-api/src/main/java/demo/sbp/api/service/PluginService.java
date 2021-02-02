@@ -13,26 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package demo.sbp.author;
+package demo.sbp.api.service;
 
-import org.pf4j.PluginWrapper;
-import org.laxture.sbp.SpringBootPlugin;
-import org.laxture.sbp.spring.boot.SharedDataSourceSpringBootstrap;
-import org.laxture.sbp.spring.boot.SpringBootstrap;
+import demo.sbp.api.model.Author;
+
+import java.util.List;
 
 /**
  * @author <a href="https://github.com/hank-cp">Hank CP</a>
  */
-public class AuthorPlugin extends SpringBootPlugin {
+public interface PluginService {
 
-    public AuthorPlugin(PluginWrapper wrapper) {
-        super(wrapper);
-    }
-
-    @Override
-    protected SpringBootstrap createSpringBootstrap() {
-        return new SharedDataSourceSpringBootstrap(this, AuthorPluginStarter.class)
-                .importBean("bookService");
-    }
+    String whoAmI();
 
 }

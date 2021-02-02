@@ -17,9 +17,11 @@ package demo.sbp.shelf;
 
 import demo.sbp.api.service.AuthorService;
 import demo.sbp.api.service.BookService;
+import demo.sbp.api.service.PluginService;
 import demo.sbp.shared.IdsConverter;
 import demo.sbp.shelf.service.AuthorServiceMock;
 import demo.sbp.shelf.service.BookServiceMock;
+import demo.sbp.shelf.service.PluginServiceMock;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.NameTokenizers;
 import org.modelmapper.jooq.RecordValueReader;
@@ -50,6 +52,12 @@ public class ShelfPluginStarter {
     @ConditionalOnMissingBean(name = "authorService")
     public AuthorService authorService() {
         return new AuthorServiceMock();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean(name = "pluginService")
+    public PluginService pluginService() {
+        return new PluginServiceMock();
     }
 
     @Bean

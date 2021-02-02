@@ -15,6 +15,7 @@
  */
 package demo.sbp.shelf;
 
+import demo.sbp.api.service.PluginService;
 import org.pf4j.PluginWrapper;
 import org.laxture.sbp.SpringBootPlugin;
 import org.laxture.sbp.spring.boot.SharedDataSourceSpringBootstrap;
@@ -32,8 +33,9 @@ public class ShelfPlugin extends SpringBootPlugin {
     @Override
     protected SpringBootstrap createSpringBootstrap() {
         return new SharedDataSourceSpringBootstrap(this, ShelfPluginStarter.class)
-                .addSharedBeanName("bookService")
-                .addSharedBeanName("authorService");
+                .importBean("bookService")
+                .importBean("authorService")
+                .importBean(PluginService.class);
     }
 
 }

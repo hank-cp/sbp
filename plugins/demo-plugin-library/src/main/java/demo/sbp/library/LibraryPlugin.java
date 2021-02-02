@@ -34,7 +34,7 @@ public class LibraryPlugin extends SpringBootPlugin {
     protected SpringBootstrap createSpringBootstrap() {
         return new SharedJtaSpringBootstrap(
                 this, LibraryPluginStarter.class)
-                .addSharedBeanName("bookService");
+                .importBean("bookService");
     }
 
     @Override

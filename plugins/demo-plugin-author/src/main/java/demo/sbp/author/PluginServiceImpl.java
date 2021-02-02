@@ -15,24 +15,18 @@
  */
 package demo.sbp.author;
 
-import org.pf4j.PluginWrapper;
-import org.laxture.sbp.SpringBootPlugin;
-import org.laxture.sbp.spring.boot.SharedDataSourceSpringBootstrap;
-import org.laxture.sbp.spring.boot.SpringBootstrap;
+import demo.sbp.api.service.PluginService;
+import org.pf4j.Extension;
+import org.springframework.stereotype.Service;
 
 /**
  * @author <a href="https://github.com/hank-cp">Hank CP</a>
  */
-public class AuthorPlugin extends SpringBootPlugin {
-
-    public AuthorPlugin(PluginWrapper wrapper) {
-        super(wrapper);
-    }
+@Service("pluginService")
+public class PluginServiceImpl implements PluginService {
 
     @Override
-    protected SpringBootstrap createSpringBootstrap() {
-        return new SharedDataSourceSpringBootstrap(this, AuthorPluginStarter.class)
-                .importBean("bookService");
+    public String whoAmI() {
+        return "plugin";
     }
-
 }

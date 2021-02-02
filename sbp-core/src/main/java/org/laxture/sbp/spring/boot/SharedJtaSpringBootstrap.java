@@ -49,8 +49,8 @@ public class SharedJtaSpringBootstrap extends SpringBootstrap {
         AnnotationConfigApplicationContext applicationContext =
                 (AnnotationConfigApplicationContext) super.createApplicationContext();
         // share dataSource
-        registerBeanFromMainContext(applicationContext, "xaDataSourceWrapper");
-        registerBeanFromMainContext(applicationContext, "transactionManager");
+        importBeanFromMainContext(applicationContext, "xaDataSourceWrapper");
+        importBeanFromMainContext(applicationContext, "transactionManager");
         return applicationContext;
     }
 

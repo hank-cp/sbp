@@ -53,10 +53,10 @@ public class SharedDataSourceSpringBootstrap extends SpringBootstrap {
         AnnotationConfigApplicationContext applicationContext =
                 (AnnotationConfigApplicationContext) super.createApplicationContext();
         // share dataSource
-        registerBeanFromMainContext(applicationContext, DataSource.class);
-        registerBeanFromMainContext(applicationContext, "transactionManager");
+        importBeanFromMainContext(applicationContext, DataSource.class);
+        importBeanFromMainContext(applicationContext, "transactionManager");
         // share MongoDbFactory
-        registerBeanFromMainContext(applicationContext, "mongoDbFactory");
+        importBeanFromMainContext(applicationContext, "mongoDbFactory");
 
         return applicationContext;
     }

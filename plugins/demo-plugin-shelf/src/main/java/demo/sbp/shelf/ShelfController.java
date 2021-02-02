@@ -17,6 +17,7 @@ package demo.sbp.shelf;
 
 import demo.sbp.api.service.AuthorService;
 import demo.sbp.api.service.BookService;
+import demo.sbp.api.service.PluginService;
 import demo.sbp.shelf.model.Shelf;
 import demo.sbp.shelf.tables.Tables;
 import org.apache.commons.lang3.ArrayUtils;
@@ -49,6 +50,9 @@ public class ShelfController {
     private ApplicationContext applicationContext;
 
     @Autowired
+    private PluginService pluginService;
+
+    @Autowired
     private DSLContext dslContext;
 
     @Autowired
@@ -76,4 +80,8 @@ public class ShelfController {
                 });
     }
 
+    @RequestMapping(value = "/test-plugin-service")
+    public @ResponseBody String testPluginService() {
+        return pluginService.whoAmI();
+    }
 }

@@ -385,6 +385,11 @@ public class PluginIntegrationTest {
                 // author should be loaded by authorService
                 .andExpect(jsonPath("$[0].author", notNullValue()))
                 .andExpect(jsonPath("$[0].author.name", equalTo("George Orwell")));
+
+        mvc.perform(get("/shelf/test-plugin-service")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", equalTo("plugin")));
     }
 
     @Test
