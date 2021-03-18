@@ -62,13 +62,13 @@ application, just like any single service provider node in Spring Cloud network.
         <dependency>
             <groupId>org.laxture</groupId>
             <artifactId>sbp-spring-boot-starter</artifactId>
-            <version>0.1.11</version>
+            <version>0.1.12</version>
         </dependency>
         ```
     * Gradle
         ```
         dependencies {
-            implementation 'org.laxture:sbp-spring-boot-starter:0.1.11'
+            implementation 'org.laxture:sbp-spring-boot-starter:0.1.12'
         }
         ```
     * Latest master code is always available with version `-SNAPSHOT`
@@ -98,13 +98,13 @@ application, just like any single service provider node in Spring Cloud network.
         <dependency>
             <groupId>org.laxture</groupId>
             <artifactId>sbp-core</artifactId>
-            <version>0.1.11</version>
+            <version>0.1.12</version>
         </dependency>
         ```
     * Gradle
         ```
         dependencies {
-            implementation 'org.laxture:sbp-core:0.1.11'
+            implementation 'org.laxture:sbp-core:0.1.12'
         }
         ```
 4. Add Plugin class
