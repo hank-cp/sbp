@@ -188,9 +188,12 @@ public class SpringBootPluginManager extends DefaultPluginManager
 
     private PluginState doStartPlugin(String pluginId, boolean sendEvent) {
         PluginWrapper plugin = getPlugin(pluginId);
+        PluginState previousState = plugin.getPluginState();
         try {
             PluginState pluginState = super.startPlugin(pluginId);
-            if (sendEvent) mainApplicationContext.publishEvent(new SbpPluginStateChangedEvent(mainApplicationContext));
+            if (sendEvent && previousState != pluginState) {
+                mainApplicationContext.publishEvent(new SbpPluginStateChangedEvent(mainApplicationContext));
+            }
             return pluginState;
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -203,9 +206,12 @@ public class SpringBootPluginManager extends DefaultPluginManager
 
     private PluginState doStopPlugin(String pluginId, boolean sendEvent) {
         PluginWrapper plugin = getPlugin(pluginId);
+        PluginState previousState = plugin.getPluginState();
         try {
             PluginState pluginState = super.stopPlugin(pluginId);
-            if (sendEvent) mainApplicationContext.publishEvent(new SbpPluginStateChangedEvent(mainApplicationContext));
+            if (sendEvent && previousState != pluginState) {
+                mainApplicationContext.publishEvent(new SbpPluginStateChangedEvent(mainApplicationContext));
+            }
             return pluginState;
         } catch (Exception e) {
             log.error(e.getMessage(), e);
