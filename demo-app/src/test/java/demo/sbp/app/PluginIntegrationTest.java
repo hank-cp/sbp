@@ -28,6 +28,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.laxture.sbp.SpringBootPlugin;
 import org.laxture.sbp.SpringBootPluginManager;
+import org.laxture.sbp.internal.SpringBootPluginClassLoader;
 import org.pf4j.util.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -268,6 +269,26 @@ public class PluginIntegrationTest {
     }
 
     @Test
+    public void loadLoadClassesFromPlugin() throws Exception {
+        SpringBootPlugin authorPlugin = (SpringBootPlugin)
+            pluginManager.getPlugin("demo-plugin-author").getPlugin();
+        assertThat(authorPlugin, notNullValue());
+        SpringBootPluginClassLoader authorClassLoader = (SpringBootPluginClassLoader)
+            authorPlugin.getWrapper().getPluginClassLoader();
+
+        SpringBootPlugin shelfPlugin = (SpringBootPlugin)
+            pluginManager.getPlugin("demo-plugin-shelf").getPlugin();
+        SpringBootPluginClassLoader shelfClassLoader = (SpringBootPluginClassLoader)
+            shelfPlugin.getWrapper().getPluginClassLoader();
+        assertThat(authorClassLoader, notNullValue());
+        assertThat(shelfClassLoader, notNullValue());
+        assertThat(shelfClassLoader.loadClass("demo.sbp.api.model.Author"),
+            sameInstance(authorClassLoader.loadClass("demo.sbp.api.model.Author")));
+        assertThat(exceptionOf(() -> shelfClassLoader.loadClass("demo.sbp.author.DontLoadMe")),
+            instanceOf(ClassNotFoundException.class));
+    }
+
+    @Test
     @Transactional
     public void testAppService() throws Exception {
         mvc.perform(get("/author/list")
@@ -491,5 +512,18 @@ public class PluginIntegrationTest {
                 .andDo(result -> {
                     assertThat(result.getResponse().getContentAsString(), equalTo("<body>\nHello bar!\n</body>"));
                 });
+    }
+
+    public interface Runnable {
+        public abstract void run() throws Exception;
+    }
+
+    private static Throwable exceptionOf(Runnable runnable) {
+        try {
+            runnable.run();
+            return null;
+        } catch (Throwable t) {
+            return t;
+        }
     }
 }

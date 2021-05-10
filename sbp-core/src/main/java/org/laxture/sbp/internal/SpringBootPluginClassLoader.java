@@ -16,10 +16,7 @@
 package org.laxture.sbp.internal;
 
 import lombok.NonNull;
-import org.pf4j.ClassLoadingStrategy;
-import org.pf4j.PluginClassLoader;
-import org.pf4j.PluginDescriptor;
-import org.pf4j.PluginManager;
+import org.pf4j.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,13 +36,16 @@ public class SpringBootPluginClassLoader extends PluginClassLoader {
     private static final Logger log = LoggerFactory.getLogger(SpringBootPluginClassLoader.class);
 
     private List<String> pluginFirstClasses;
-
     private List<String> pluginOnlyResources;
+    private PluginManager pluginManager;
+    private PluginDescriptor pluginDescriptor;
 
     public SpringBootPluginClassLoader(PluginManager pluginManager, PluginDescriptor pluginDescriptor, ClassLoader parent) {
         // load class from parent first to avoid same class loaded by different classLoader,
         // so Spring could autowired bean by type correctly.
         super(pluginManager, pluginDescriptor, parent, ClassLoadingStrategy.APD);
+        this.pluginManager = pluginManager;
+        this.pluginDescriptor = pluginDescriptor;
     }
 
     public void setPluginFirstClasses(@NonNull List<String> pluginFirstClasses) {
@@ -139,6 +139,40 @@ public class SpringBootPluginClassLoader extends PluginClassLoader {
             // try next step
             return loadClassFromDependencies(className);
         }
+    }
+
+    protected Class<?> getLoadedClass(String className) {
+        return findLoadedClass(className);
+    }
+
+    protected Class<?> loadClassFromDependencies(String className) {
+        log.trace("Search in dependencies for class '{}'", className);
+        List<PluginDependency> dependencies = pluginDescriptor.getDependencies();
+        for (PluginDependency dependency : dependencies) {
+            ClassLoader classLoader = pluginManager.getPluginClassLoader(dependency.getPluginId());
+
+            // If the dependency is marked as optional, its class loader might not be available.
+            if (classLoader == null && dependency.isOptional()) {
+                continue;
+            }
+
+            try {
+                if (classLoader instanceof SpringBootPluginClassLoader) {
+                    // OPTIMIZATION: load classes from loadedClasses only to speed up class loading
+                    Class<?> clazz = ((SpringBootPluginClassLoader) classLoader).getLoadedClass(className);
+                    if (clazz != null) return clazz;
+                    // continue to find class from dependent plugin recursively
+                    clazz = ((SpringBootPluginClassLoader) classLoader).loadClassFromDependencies(className);
+                    if (clazz != null) return clazz;
+                } else {
+                    return classLoader.loadClass(className);
+                }
+            } catch (ClassNotFoundException e) {
+                // try next dependency
+            }
+        }
+
+        return null;
     }
 
     @Override
