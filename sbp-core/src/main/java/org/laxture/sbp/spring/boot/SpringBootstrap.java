@@ -414,7 +414,7 @@ public class SpringBootstrap extends SpringApplication {
                 importedBeanNames.add(beanName);
                 applicationContext.getBeanFactory().autowireBean(bean);
             }
-            log.info("Bean {} is registered from {} ApplicationContext", beanClass.getSimpleName(),
+            log.info("Bean {} is imported from {} ApplicationContext", beanClass.getSimpleName(),
                         (sourceApplicationContext == mainApplicationContext ? "app" : "plugin"));
             return true;
         } catch (NoSuchBeanDefinitionException ex) {
@@ -438,6 +438,7 @@ public class SpringBootstrap extends SpringApplication {
             PluginWrapper dependentPlugin = plugin.getPluginManager().getPlugin(dependency.getPluginId());
             if (dependentPlugin == null) continue;
             SpringBootPlugin sbPlugin = (SpringBootPlugin) dependentPlugin.getPlugin();
+            if (sbPlugin.getApplicationContext() == null) continue; // dependent plugin is not started.
             if (importBean(sbPlugin.getApplicationContext(), applicationContext, beanName)) return true;
         }
         return false;
@@ -449,6 +450,7 @@ public class SpringBootstrap extends SpringApplication {
             PluginWrapper dependentPlugin = plugin.getPluginManager().getPlugin(dependency.getPluginId());
             if (dependentPlugin == null) continue;
             SpringBootPlugin sbPlugin = (SpringBootPlugin) dependentPlugin.getPlugin();
+            if (sbPlugin.getApplicationContext() == null) continue; // dependent plugin is not started.
             if (importBean(sbPlugin.getApplicationContext(), applicationContext, beanClass)) return true;
         }
         return false;
