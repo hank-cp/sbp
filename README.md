@@ -4,9 +4,10 @@
 ![GitHub](https://img.shields.io/github/license/hank-cp/sbp.svg)
 ![GitHub last commit](https://img.shields.io/github/last-commit/hank-cp/sbp.svg)
 
-
 sbp introduce plugin oriented programming to Spring Boot. It is inspired and builds 
 on top of [Pf4j](https://pf4j.org/) project.
+
+[中文](README.zh-cn.md)
 
 ### Why we need plugin for Spring Boot?
 * Spring boot is good, but it is monolithic. It means you have to delivery the whole application
