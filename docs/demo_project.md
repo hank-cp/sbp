@@ -23,7 +23,7 @@ starting skeleton.
     ```
     
 ##### Start DemoApp
-* Make sure jooq mapping code if generated
+* Make sure jooq mapping code is generated
     ```
     > ./gradlew doMigration
     > ./gradlew clean generateSbpJooqSchemaSource
@@ -33,7 +33,7 @@ starting skeleton.
     ```
     > ./gradlew doDataMigration
     ```
-* If you using IDEA, you will need to refresh Gradle setting to include 
+* If you are using IDEA, you will need to refresh Gradle setting to include 
 generated Jooq code.
 * There are two Spring Boot app you could choose to start. `DemoApp`
 omit security configuration. `DemoSecurityApp` includes security 
