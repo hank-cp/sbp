@@ -21,6 +21,7 @@ import org.pf4j.PluginManager;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.web.WebProperties;
 import org.springframework.boot.autoconfigure.web.servlet.PluginResourceHandlerRegistrationCustomizer;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcRegistrations;
 import org.springframework.context.annotation.Bean;
@@ -61,7 +62,7 @@ public class SbpMvcPatchAutoConfiguration {
 	}
 
 	@Bean
-	public PluginResourceHandlerRegistrationCustomizer resourceHandlerRegistrationCustomizer() {
-		return new PluginResourceHandlerRegistrationCustomizer();
+	public PluginResourceHandlerRegistrationCustomizer resourceHandlerRegistrationCustomizer(WebProperties webProperties) {
+		return new PluginResourceHandlerRegistrationCustomizer(webProperties.getResources());
 	}
 }

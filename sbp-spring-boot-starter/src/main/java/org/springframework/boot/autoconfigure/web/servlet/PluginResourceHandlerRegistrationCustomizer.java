@@ -15,11 +15,11 @@
  */
 package org.springframework.boot.autoconfigure.web.servlet;
 
+import com.fasterxml.jackson.databind.util.BeanUtil;
 import org.laxture.sbp.internal.PluginResourceResolver;
 import org.laxture.sbp.spring.boot.SbpPluginStateChangedEvent;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.autoconfigure.web.ResourceProperties;
+import org.springframework.beans.BeanUtils;
+import org.springframework.boot.autoconfigure.web.WebProperties.Resources;
 import org.springframework.cache.Cache;
 import org.springframework.cache.concurrent.ConcurrentMapCache;
 import org.springframework.context.ApplicationListener;
@@ -33,18 +33,19 @@ import org.springframework.web.servlet.resource.VersionResourceResolver;
 /**
  * @author <a href="https://github.com/hank-cp">Hank CP</a>
  */
-public class PluginResourceHandlerRegistrationCustomizer implements
-        WebMvcAutoConfiguration.ResourceHandlerRegistrationCustomizer,
-        ApplicationListener<SbpPluginStateChangedEvent> {
+public class PluginResourceHandlerRegistrationCustomizer extends
+    WebMvcAutoConfiguration.ResourceChainResourceHandlerRegistrationCustomizer
+    implements ApplicationListener<SbpPluginStateChangedEvent> {
 
     private static final String DEFAULT_CACHE_NAME = "sbp-resource-chain-cache";
 
-    @Autowired
-    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
-    private ResourceProperties resourceProperties = new ResourceProperties();
+    private final Resources resourceProperties;
 
-    @Autowired(required = false)
-    @Qualifier("sbpResourceCache")
+    public PluginResourceHandlerRegistrationCustomizer(Resources resourceProperties) {
+        super(resourceProperties);
+        this.resourceProperties = resourceProperties;
+    }
+
     private Cache sbpResourceCache;
 
     @Override
@@ -52,24 +53,21 @@ public class PluginResourceHandlerRegistrationCustomizer implements
         if (sbpResourceCache == null) {
             sbpResourceCache = new ConcurrentMapCache(DEFAULT_CACHE_NAME);
         }
-        ResourceProperties.Chain properties = this.resourceProperties.getChain();
+        Resources.Chain properties = this.resourceProperties.getChain();
         ResourceChainRegistration chain = registration.resourceChain(properties.isCache(), sbpResourceCache);
 
         chain.addResolver(new PluginResourceResolver());
 
-        ResourceProperties.Strategy strategy = properties.getStrategy();
+        Resources.Chain.Strategy strategy = properties.getStrategy();
         if (properties.isCompressed()) {
             chain.addResolver(new EncodedResourceResolver());
         }
         if (strategy.getFixed().isEnabled() || strategy.getContent().isEnabled()) {
             chain.addResolver(getVersionResourceResolver(strategy));
         }
-        if (properties.isHtmlApplicationCache()) {
-            chain.addTransformer(new AppCacheManifestTransformer());
-        }
     }
 
-    private ResourceResolver getVersionResourceResolver(ResourceProperties.Strategy properties) {
+    private ResourceResolver getVersionResourceResolver(Resources.Chain.Strategy properties) {
         VersionResourceResolver resolver = new VersionResourceResolver();
         if (properties.getFixed().isEnabled()) {
             String version = properties.getFixed().getVersion();
