@@ -1,8 +1,8 @@
 dependencies {
-    compile project(':sbp-spring-boot-starter')
-    compile project(':demo-shared')
-    compile project(':demo-api')
-    compile project(':demo-security')
+    implementation project(':sbp-spring-boot-starter')
+    implementation project(':demo-shared')
+    implementation project(':demo-api')
+    implementation project(':demo-security')
 
     // since Spring Boot 2.2.0, spring-data-jpa cannot be declare only in plugin
     // Check /docs/trouble_shoot.md for details.
@@ -10,11 +10,12 @@ dependencies {
     implementation 'javax.transaction:javax.transaction-api'
     implementation 'org.hibernate:hibernate-core'
 
-    runtime "org.postgresql:postgresql"
+    runtimeOnly "org.postgresql:postgresql"
 
-    jooqRuntime "org.postgresql:postgresql"
+    jooqGenerator "org.postgresql:postgresql"
 
     testImplementation "org.springframework.boot:spring-boot-starter-test"
+    testImplementation "junit:junit"
 }
 
 //*************************************************************************

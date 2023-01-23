@@ -26,7 +26,9 @@ spring:
     plugin-properties:
       spring:
         flyway:
-          import-data: true
+          import-data:
+            location:
+              - classpath:plugin_seed_data
           clean-before-migrate: true
         jpa:
           properties:
@@ -37,11 +39,15 @@ spring:
 #    custom-plugin-loader:
 #      - demo.sbp.app.CustomPluginLoader
   flyway:
+    enabled: true
     schemas:
       - demo_app
     locations: classpath:db_migration
     table: _db_migration
-    import-data: true
+    import-data:
+      enabled: true
+      location:
+        - classpath:seed_data
     clean-before-migrate: true
   jooq:
     sql-dialect: postgres

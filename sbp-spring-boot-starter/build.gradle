@@ -1,13 +1,13 @@
 plugins {
     id 'java-library'
-    id 'maven'
+    id 'maven-publish'
 }
 
 group = 'org.laxture.sbp'
 
 dependencies {
-    compile project(':sbp-core')
-    
+    api project(':sbp-core')
+
     implementation "org.springframework.boot:spring-boot-starter-web"
     implementation "org.springframework.boot:spring-boot-starter-aop"
     implementation "org.springframework.boot:spring-boot-configuration-processor"

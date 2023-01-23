@@ -1,12 +1,12 @@
 dependencies {
-    compile project(':demo-shared')
-    compile project(':demo-api')
-    compile project(':demo-plugin-author-api')
-    compile project(':sbp-core')
+    implementation project(':demo-shared')
+    implementation project(':demo-api')
+    implementation project(':demo-plugin-author-api')
+    implementation project(':sbp-core')
 
-    runtime "org.postgresql:postgresql"
+    runtimeOnly "org.postgresql:postgresql"
 
-    jooqRuntime "org.postgresql:postgresql"
+    jooqGenerator "org.postgresql:postgresql"
 }
 
 //*************************************************************************
@@ -20,8 +20,9 @@ manifest {
 }
 
 task copyDependencies(type: Copy) {
-    dependsOn project(':demo-shared').jar, project(':demo-api').jar
-    from configurations.compile
+    group 'build'
+    dependsOn project(':demo-shared').jar, project(':demo-plugin-author-api').jar
+    from file("${project(':demo-plugin-author-api').buildDir}/libs")
     into 'libs'
     include "demo-plugin-author-api*.jar"
 }

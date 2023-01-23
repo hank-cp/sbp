@@ -15,15 +15,13 @@
  */
 package demo.sbp.security;
 
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.AutoConfigureBefore;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -43,8 +41,8 @@ import javax.servlet.http.HttpServletResponse;
  * @author <a href="https://github.com/hank-cp">Hank CP</a>
  */
 @Configuration
-@AutoConfigureAfter(SecurityAutoConfiguration.class)
-@ConditionalOnBean(SecurityAutoConfiguration.class)
+@AutoConfigureBefore(SecurityAutoConfiguration.class)
+@ConditionalOnProperty(prefix = "sbp-demo.security", name = "app-enabled", havingValue = "true")
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
@@ -63,16 +61,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public PermissionCheckingAspect permissionCheckingAspect() {
         return new PermissionCheckingAspect();
-    }
-
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http.cors().and()
-                .csrf().disable()
-                .authorizeRequests()
-                    .anyRequest().authenticated()
-                .and().httpBasic().authenticationEntryPoint(restAuthenticationEntryPoint())
-                .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     }
 
     @Bean

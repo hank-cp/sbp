@@ -37,7 +37,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 public class DemoSecurityApp {
 
     public static void main(String[] args) {
-        SpringApplication.run(DemoSecurityApp.class, args);
+        SpringApplication.run(DemoSecurityApp.class,
+            "--sbp-demo.security.app-enabled=true");
     }
 
     @Bean

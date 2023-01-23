@@ -4,10 +4,13 @@ spring:
     username: postgres
     driver-class-name: "org.postgresql.Driver"
   flyway:
+    enabled: true
     schemas:
       - plugin_shelf
-    locations: classpath:db_migration
+    locations: classpath:plugin_ddl
     table: _db_migration
+    import-data:
+      enabled: true
   jooq:
     sql-dialect: postgres
 

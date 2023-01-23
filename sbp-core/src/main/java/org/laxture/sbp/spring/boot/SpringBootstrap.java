@@ -354,7 +354,6 @@ public class SpringBootstrap extends SpringApplication {
                 if (!imported) log.error("Bean {} is not found", beanClass);
             }
         }
-
         return applicationContext;
     }
 

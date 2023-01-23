@@ -43,9 +43,6 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 @ConditionalOnProperty(prefix = SbpProperties.PREFIX, value = "enabled", havingValue = "true")
 public class SbpMvcPatchAutoConfiguration {
 
-	@Autowired
-
-
 	@Bean
 	@ConditionalOnMissingBean(WebMvcRegistrations.class)
 	public WebMvcRegistrations mvcRegistrations() {

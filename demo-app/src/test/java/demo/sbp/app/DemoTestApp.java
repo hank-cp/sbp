@@ -15,10 +15,8 @@
  */
 package demo.sbp.app;
 
-import demo.sbp.shared.spring.CleanSchemaConfiguration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
 
 /**
  * @author <a href="https://github.com/hank-cp">Hank CP</a>
@@ -30,8 +28,4 @@ public class DemoTestApp extends DemoApp {
         SpringApplication.run(DemoTestApp.class, args);
     }
 
-    @Bean
-    public CleanSchemaConfiguration dataImporter() {
-        return new CleanSchemaConfiguration();
-    }
 }

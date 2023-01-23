@@ -1,12 +1,12 @@
 dependencies {
-    compile project(':demo-shared')
-    compile project(':demo-api')
-    compile project(':demo-plugin-author-api')
-    compile project(':sbp-core')
+    implementation project(':demo-shared')
+    implementation project(':demo-api')
+    implementation project(':demo-plugin-author-api')
+    implementation project(':sbp-core')
 
-    runtime "org.postgresql:postgresql"
+    runtimeOnly "org.postgresql:postgresql"
 
-    jooqRuntime "org.postgresql:postgresql"
+    jooqGenerator "org.postgresql:postgresql"
 }
 
 //*************************************************************************

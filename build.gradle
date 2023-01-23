@@ -1,3 +1,5 @@
+import org.jooq.meta.jaxb.Logging
+
 def checkProperty(Project project, String propName) {
     if (!project.hasProperty(propName)) return false
     String prop = project.property(propName)
@@ -29,11 +31,11 @@ buildscript {
     ext.lombokVersion = '1.18.8'
     ext.pf4jVersion = '3.6.0'
     ext.jooqVersion = '3.12.3'
+    ext.flywayVersion = '8.4.0'
 
     repositories {
-        jcenter()
         mavenCentral()
-        maven { url 'http://repo.spring.io/plugins-release' }
+        maven { url 'https://repo.spring.io/plugins-release' }
     }
     dependencies {
         classpath "org.yaml:snakeyaml:1.19"
@@ -44,8 +46,8 @@ buildscript {
 
 plugins {
     id 'idea'
-    id 'nu.studer.jooq' version '3.0.3' apply false
-    id 'org.flywaydb.flyway' version "5.2.4" apply false
+    id 'nu.studer.jooq' version '6.0.1' apply false
+    id 'org.flywaydb.flyway' version "${flywayVersion}" apply false
 }
 
 //*************************************************************************
@@ -86,7 +88,6 @@ task(release) {
 
 subprojects {
     repositories {
-        jcenter()
         mavenCentral()
         maven { url 'https://repo.spring.io/milestone' }
         maven { url "https://jitpack.io" }
@@ -177,6 +178,7 @@ subprojects {
 //*************************************************************************
 
     task("buildApp") {
+        group 'build'
         finalizedBy jar
     }
 
@@ -281,33 +283,43 @@ subprojects {
 
             jooq {
                 version = "${jooqVersion}"
-                sbp(sourceSets.main) {
-                    jdbc {
-                        url = project.'db.url'
-                        user = project.'db.user'
-                        password = project.'db.password'
-                        driver = project.'db.driver'
-                    }
-                    generator {
-                        name = 'org.jooq.codegen.DefaultGenerator'
-                        database {
-                            name = 'org.jooq.meta.postgres.PostgresDatabase'
-                            inputSchema = project.'db.schema'
-                            includes = '.*'
-                            excludes = '_.*'
-                            forcedTypes {
-                                forcedType {
-                                    userType = 'com.fasterxml.jackson.databind.JsonNode'
-                                    binding = 'demo.sbp.shared.PostgresJsonbBinding'
-                                    types = 'jsonb'
-                                }
+                configurations {
+                    main {
+                        generateSchemaSourceOnCompilation = true  // default (can be omitted)
+                        generationTool {
+                            logging = Logging.WARN
+                            jdbc {
+                                url = project.'db.url'
+                                user = project.'db.user'
+                                password = project.'db.password'
+                                driver = project.'db.driver'
                             }
-                        }
-                        target {
-                            packageName = project.'jooq.target.package'
-                        }
-                        generate {
-                            generatedAnnotation = false
+                            generator {
+                                name = 'org.jooq.codegen.DefaultGenerator'
+                                database {
+                                    name = 'org.jooq.meta.postgres.PostgresDatabase'
+                                    inputSchema = project.'db.schema'
+                                    includes = '.*'
+                                    excludes = '_.*'
+                                    forcedTypes {
+                                        forcedType {
+                                            userType = 'com.fasterxml.jackson.databind.JsonNode'
+                                            binding = 'demo.sbp.shared.PostgresJsonbBinding'
+                                            types = 'jsonb'
+                                        }
+                                    }
+                                }
+                                generate {
+                                    deprecated = false
+                                    records = true
+                                    immutablePojos = true
+                                    fluentSetters = true
+                                }
+                                target {
+                                    packageName = project.'jooq.target.package'
+                                }
+                                strategy.name = 'org.jooq.codegen.DefaultGeneratorStrategy'
+                            }
                         }
                     }
                 }

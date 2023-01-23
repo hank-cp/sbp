@@ -47,6 +47,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.FileSystems;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -260,7 +261,15 @@ public class PluginIntegrationTest {
         List<URL> urls = Collections.list(
                 authorPlugin.getWrapper().getPluginClassLoader().getResources("plugin_only"));
         log.info(urls.toString());
-        assertThat(urls, hasSize(1)); // resource form plugin only
+        if (urls.size() > 1) {
+            // there might be two build folder, IDEA and gradle
+            assertThat(urls, hasSize(2));
+            assertThat(urls.stream().map(URL::toString).collect(Collectors.toList()), contains(
+                containsString("/plugins/demo-plugin-author/out/production/resources/plugin_only"),
+                containsString("/plugins/demo-plugin-author/build/resources/main/plugin_only")));
+        } else {
+            assertThat(urls, hasSize(1)); // resource form plugin only
+        }
 
         urls = Collections.list(
                 shelfPlugin.getWrapper().getPluginClassLoader().getResources("plugin_only"));

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package demo.sbp.shared;
+package demo.sbp.shared.dataimport;
 
 import org.flywaydb.core.Flyway;
 import org.springframework.beans.factory.InitializingBean;
@@ -25,7 +25,7 @@ import org.springframework.core.Ordered;
  *
  * @author <a href="https://github.com/hank-cp">Hank CP</a>
  */
-public class FlywayDataImporter implements InitializingBean, Ordered {
+public class FlywayExecutor implements InitializingBean, Ordered {
 
     private final Flyway flyway;
 
@@ -35,7 +35,7 @@ public class FlywayDataImporter implements InitializingBean, Ordered {
      * Create a new {@link FlywayMigrationInitializer} instance.
      * @param flyway the flyway instance
      */
-    public FlywayDataImporter(Flyway flyway) {
+    public FlywayExecutor(Flyway flyway) {
         this.flyway = flyway;
     }
 

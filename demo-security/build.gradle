@@ -1,6 +1,10 @@
-dependencies {
-    compile project(':sbp-core')
-    compile project(':demo-shared')
+plugins {
+    id 'java-library'
+}
 
-    compile "org.springframework.boot:spring-boot-starter-security"
+dependencies {
+    implementation project(':sbp-core')
+    implementation project(':demo-shared')
+
+    api "org.springframework.boot:spring-boot-starter-security"
 }

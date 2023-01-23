@@ -3,16 +3,16 @@ configurations {
 }
 
 dependencies {
-    compile project(':demo-shared')
-    compile project(':demo-api')
-    compile project(':sbp-core')
+    implementation project(':demo-shared')
+    implementation project(':demo-api')
+    implementation project(':sbp-core')
 
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"
     jpa "org.springframework.boot:spring-boot-starter-data-jpa"
 
-    runtime "org.postgresql:postgresql"
+    runtimeOnly "org.postgresql:postgresql"
 
-    jooqRuntime "org.postgresql:postgresql"
+    jooqGenerator "org.postgresql:postgresql"
 }
 
 //*************************************************************************
@@ -26,6 +26,7 @@ manifest {
 }
 
 task copyDependencies(type: Copy) {
+    group 'build'
     from configurations.jpa.files
     into 'libs'
 //    include "demo-plugin-author-api*.jar"

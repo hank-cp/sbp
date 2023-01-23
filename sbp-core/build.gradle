@@ -1,6 +1,6 @@
 plugins {
     id 'java-library'
-    id 'maven'
+    id 'maven-publish'
 }
 
 group = 'org.laxture.sbp'
@@ -9,10 +9,10 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot'
     implementation 'org.springframework:spring-webmvc'
     implementation 'org.apache.commons:commons-lang3'
-    compile 'javax.annotation:javax.annotation-api'
-    compile 'org.laxture:spring-static-ctx:0.1.2'
+    implementation 'javax.annotation:javax.annotation-api'
+    implementation 'org.laxture:spring-static-ctx:0.1.2'
 
-    compile ("org.pf4j:pf4j:${pf4jVersion}") {
+    api ("org.pf4j:pf4j:${pf4jVersion}") {
         exclude group: 'org.slf4j', module: 'slf4j-log4j12'
     }
 }

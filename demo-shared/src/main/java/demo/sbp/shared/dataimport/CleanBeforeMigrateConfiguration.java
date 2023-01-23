@@ -13,16 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package demo.sbp.shared.spring;
+package demo.sbp.shared.dataimport;
 
+import lombok.extern.slf4j.Slf4j;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.configuration.FluentConfiguration;
-import org.laxture.sbp.SpringBootPlugin;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.flyway.FlywayMigrationStrategy;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -35,43 +34,33 @@ import java.sql.Statement;
  * @author <a href="https://github.com/hank-cp">Hank CP</a>
  */
 @Configuration
-@AutoConfigureAfter(FlywayAutoConfiguration.class)
-public class CleanSchemaConfiguration {
+@Slf4j
+public class CleanBeforeMigrateConfiguration {
 
-    @Autowired(required = false)
-    private SpringBootPlugin plugin;
+    @Autowired
+    private ApplicationContext applicationContext;
 
     @Bean
-    @ConditionalOnProperty(prefix = "spring.flyway", name = "clean-before-migrate")
+    @ConditionalOnProperty("spring.flyway.clean-before-migrate")
     public FlywayMigrationStrategy migrationStrategy() {
-        return new FlywaySchemaCleaner(plugin);
-    }
-
-    public static class FlywaySchemaCleaner implements FlywayMigrationStrategy {
-
-        private SpringBootPlugin plugin;
-
-        public FlywaySchemaCleaner(SpringBootPlugin plugin) {
-            this.plugin = plugin;
-        }
-
-        @Override
-        public void migrate(Flyway flyway) {
+        return flyway -> {
             try (Statement stat = flyway.getConfiguration().getDataSource().getConnection().createStatement()) {
                 for (String schema : flyway.getConfiguration().getSchemas()) {
                     stat.execute("DROP SCHEMA IF EXISTS "+schema + " CASCADE");
+                    log.info("schema \"{}\" is dropped", schema);
                 }
             } catch (SQLException e) {
                 throw new RuntimeException(e.getMessage(), e);
             }
 
-            if (plugin != null) {
-                FluentConfiguration alterConf = Flyway.configure(plugin.getWrapper().getPluginClassLoader());
-                alterConf.configuration(flyway.getConfiguration());
-                new Flyway(alterConf).migrate();
+            if (applicationContext.getClassLoader() !=
+                    flyway.getConfiguration().getClassLoader()) {
+                FluentConfiguration alterConfiguration = Flyway.configure(applicationContext.getClassLoader());
+                alterConfiguration.configuration(flyway.getConfiguration());
+                new Flyway(alterConfiguration).migrate();
             } else {
                 flyway.migrate();
             }
-        }
+        };
     }
 }

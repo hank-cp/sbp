@@ -1,4 +1,4 @@
 # Auto Configure
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  demo.sbp.shared.spring.CleanSchemaConfiguration,\
-  demo.sbp.shared.spring.ImportDataConfiguration
+  demo.sbp.shared.dataimport.CleanBeforeMigrateConfiguration,\
+  demo.sbp.shared.dataimport.ImportDataConfiguration

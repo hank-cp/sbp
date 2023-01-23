@@ -3,5 +3,5 @@ dependencies {
         exclude group: 'org.slf4j', module: 'slf4j-log4j12'
     }
 
-    compile "javax.validation:validation-api:2.0.1.Final"
+    implementation "javax.validation:validation-api:2.0.1.Final"
 }

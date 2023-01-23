@@ -42,7 +42,7 @@ jobs:
         PGUSER: postgres
     - run: ./gradlew :sbp-core:jar
     - run: ./gradlew :sbp-spring-boot-starter:jar
-    - run: ./gradlew doMigration
+    - run: ./gradlew doMigration generateJooq
     - run: ./gradlew buildApp
     - run: ./gradlew copyDependencies
     - run: ./gradlew check
