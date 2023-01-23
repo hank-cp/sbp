@@ -28,10 +28,9 @@ def isPluginProject(Project project) {
 
 buildscript {
     ext.springBootVersion = '2.3.12.RELEASE'
-    ext.lombokVersion = '1.18.8'
-    ext.pf4jVersion = '3.6.0'
-    ext.jooqVersion = '3.12.3'
-    ext.flywayVersion = '8.4.0'
+    ext.lombokVersion = '1.18.24'
+    ext.pf4jVersion = '3.8.0'
+    ext.jooqVersion = '3.17.7'
 
     repositories {
         mavenCentral()
@@ -47,7 +46,7 @@ buildscript {
 plugins {
     id 'idea'
     id 'nu.studer.jooq' version '6.0.1' apply false
-    id 'org.flywaydb.flyway' version "${flywayVersion}" apply false
+    id 'org.flywaydb.flyway' version "8.4.0" apply false
 }
 
 //*************************************************************************
