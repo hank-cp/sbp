@@ -19,9 +19,13 @@ manifest {
     attributes 'Main-Class': 'demo.sbp.author.AuthorPluginStarter'
 }
 
+task clearDependencies(type: Delete) {
+    delete files("${project.projectDir}/libs")
+}
+
 task copyDependencies(type: Copy) {
     group 'build'
-    dependsOn project(':demo-shared').jar, project(':demo-plugin-author-api').jar
+    dependsOn project(':demo-shared').jar, project(':demo-plugin-author-api').jar, clearDependencies
     from file("${project(':demo-plugin-author-api').buildDir}/libs")
     into 'libs'
     include "demo-plugin-author-api*.jar"

@@ -25,8 +25,13 @@ manifest {
     attributes 'Main-Class': 'demo.sbp.library.LibraryPluginStarter'
 }
 
+task clearDependencies(type: Delete) {
+    delete files("${project.projectDir}/libs")
+}
+
 task copyDependencies(type: Copy) {
     group 'build'
+    dependsOn clearDependencies
     from configurations.jpa.files
     into 'libs'
 //    include "demo-plugin-author-api*.jar"
