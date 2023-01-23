@@ -27,7 +27,7 @@ def isPluginProject(Project project) {
 }
 
 buildscript {
-    ext.springBootVersion = '2.3.12.RELEASE'
+    ext.springBootVersion = '2.5.14'
     ext.lombokVersion = '1.18.24'
     ext.pf4jVersion = '3.8.0'
     ext.jooqVersion = '3.12.3'
