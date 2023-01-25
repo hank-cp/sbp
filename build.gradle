@@ -292,7 +292,7 @@ subprojects {
                     main {
                         generateSchemaSourceOnCompilation = true  // default (can be omitted)
                         generationTool {
-                            logging = Logging.WARN
+                            logging = Logging.ERROR
                             jdbc {
                                 url = project.'db.url'
                                 user = project.'db.user'

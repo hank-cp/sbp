@@ -44,13 +44,4 @@ public class LibraryPluginStarter {
         return new BookServiceMock();
     }
 
-    @Bean
-    public ModelMapper modelMapper() {
-        ModelMapper mapper = new ModelMapper();
-        mapper.getConfiguration().setSourceNameTokenizer(NameTokenizers.CAMEL_CASE)
-                .addValueReader(new RecordValueReader());
-        mapper.addConverter(new IdsConverter());
-        return mapper;
-    }
-
 }

@@ -3,7 +3,7 @@ name: CI Test
 on: [push]
 
 jobs:
-  test:
+  ci:
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -41,21 +41,27 @@ jobs:
         PGHOST: localhost
         PGUSER: postgres
     - run: ./gradlew clean :sbp-core:jar :sbp-spring-boot-starter:jar -PspringBootVersion=2.2.13.RELEASE
-    - run: ./gradlew doMigration buildApp copyDependencies check -PspringBootVersion=2.2.13.RELEASE
+    - run: ./gradlew copyDependencies doMigration buildApp -PspringBootVersion=2.2.13.RELEASE
+    - run: ./gradlew check -PspringBootVersion=2.2.13.RELEASE
 
     - run: ./gradlew clean :sbp-core:jar :sbp-spring-boot-starter:jar -PspringBootVersion=2.3.12.RELEASE
-    - run: ./gradlew doMigration buildApp copyDependencies check -PspringBootVersion=2.3.12.RELEASE
+    - run: ./gradlew copyDependencies doMigration buildApp -PspringBootVersion=2.3.12.RELEASE
+    - run: ./gradlew check -PspringBootVersion=2.3.12.RELEASE
 
     - run: ./gradlew clean :sbp-core:jar :sbp-spring-boot-starter:jar -PspringBootVersion=2.4.13
-    - run: ./gradlew doMigration buildApp copyDependencies check -PspringBootVersion=2.4.13
+    - run: ./gradlew copyDependencies doMigration buildApp -PspringBootVersion=2.4.13
+    - run: ./gradlew check -PspringBootVersion=2.4.13
 
     - run: ./gradlew clean :sbp-core:jar :sbp-spring-boot-starter:jar -PspringBootVersion=2.5.14
-    - run: ./gradlew doMigration buildApp copyDependencies check -PspringBootVersion=2.5.14
+    - run: ./gradlew copyDependencies doMigration buildApp -PspringBootVersion=2.5.14
+    - run: ./gradlew check -PspringBootVersion=2.5.14
 
     - run: ./gradlew clean :sbp-core:jar :sbp-spring-boot-starter:jar -PspringBootVersion=2.6.14
-    - run: ./gradlew doMigration buildApp copyDependencies check -PspringBootVersion=2.6.14
+    - run: ./gradlew copyDependencies doMigration buildApp -PspringBootVersion=2.6.14
+    - run: ./gradlew check -PspringBootVersion=2.6.14
 
     - run: ./gradlew clean :sbp-core:jar :sbp-spring-boot-starter:jar -PspringBootVersion=2.7.8
-    - run: ./gradlew doMigration buildApp copyDependencies check -PspringBootVersion=2.7.8
+    - run: ./gradlew copyDependencies doMigration buildApp -PspringBootVersion=2.7.8
+    - run: ./gradlew check -PspringBootVersion=2.7.8
 
     - run: ./gradlew publish -Pversion=-SNAPSHOT -P'signing.keyId=${{ secrets.signingKeyId }}' -P'signing.password=${{ secrets.signingPassword }}' -P'sonatypeUsername=${{ secrets.sonatypeUsername }}' -P'sonatypePassword=${{ secrets.sonatypePassword }}'
