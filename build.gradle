@@ -363,6 +363,7 @@ subprojects {
             publications {
                 mavenJava(MavenPublication) {
                     groupId = project.getGroup()
+                    version getVersion(project)
                     from components.java
                     artifact sourcesJar
                     artifact javadocJar
