@@ -40,6 +40,7 @@ jobs:
       env:
         PGHOST: localhost
         PGUSER: postgres
+    - run: ./gradlew doMigration
     - run: ./gradlew copyDependencies check -PspringBootVersion=2.2.13.RELEASE --rerun-tasks
     - run: ./gradlew copyDependencies check -PspringBootVersion=2.3.12.RELEASE --rerun-tasks
     - run: ./gradlew copyDependencies check -PspringBootVersion=2.4.13 --rerun-tasks
