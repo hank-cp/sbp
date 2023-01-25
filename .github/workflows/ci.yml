@@ -47,4 +47,5 @@ jobs:
     - run: ./gradlew copyDependencies buildApp check -PspringBootVersion=2.5.14 --rerun-tasks
     - run: ./gradlew copyDependencies buildApp check -PspringBootVersion=2.6.14 --rerun-tasks
     - run: ./gradlew copyDependencies buildApp check -PspringBootVersion=2.7.8 --rerun-tasks
-    - run: ./gradlew publish -Pversion=-SNAPSHOT -P'signing.keyId=${{ secrets.signingKeyId }}' -P'signing.password=${{ secrets.signingPassword }}' -P'sonatypeUsername=${{ secrets.sonatypeUsername }}' -P'sonatypePassword=${{ secrets.sonatypePassword }}' --rerun-tasks
+    - run: ./gradlew clean :sbp-core:jar :sbp-spring-boot-starter:jar -Pversion=-SNAPSHOT --rerun-tasks
+    - run: ./gradlew publish -Pversion=-SNAPSHOT -P'signing.keyId=${{ secrets.signingKeyId }}' -P'signing.password=${{ secrets.signingPassword }}' -P'sonatypeUsername=${{ secrets.sonatypeUsername }}' -P'sonatypePassword=${{ secrets.sonatypePassword }}'
