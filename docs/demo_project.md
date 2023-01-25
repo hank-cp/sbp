@@ -49,7 +49,7 @@ configuration with two user:
 otherwise `PluginManager` couldn't find the `plugin` folder.
  ![](work_dir.png?raw=true)
 
-### Project Details
+### Project Description
 * demo-shared: Shared code for app and plugin projects.
 * demo-security: Security configuration demonstrate how to introduce Spring Security and secure your 
 API via AOP.

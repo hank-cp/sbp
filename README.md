@@ -31,6 +31,7 @@ Spring Cloud application.
     * AOP
     * resource loading
 * Code and test plugin project as **STANDALONE** Spring Boot project.
+* Supports Spring Boot from `2.0` to `2.7`
 * **NO** extra knowledge **NEED TO LEARN** as long as you are familiar with Spring Boot.
 * **NO XML**
 
@@ -63,13 +64,15 @@ application, just like any single service provider node in Spring Cloud network.
         <dependency>
             <groupId>org.laxture</groupId>
             <artifactId>sbp-spring-boot-starter</artifactId>
-            <version>0.1.13</version>
+            <version>2.7.14</version>
         </dependency>
         ```
     * Gradle
         ```
         dependencies {
-            implementation 'org.laxture:sbp-spring-boot-starter:0.1.13'
+            implementation "org.springframework.boot:spring-boot-starter-web"
+            implementation "org.springframework.boot:spring-boot-starter-aop"
+            implementation 'org.laxture:sbp-spring-boot-starter:2.7.14'
         }
         ```
     * Latest master code is always available with version `-SNAPSHOT`
@@ -99,13 +102,13 @@ application, just like any single service provider node in Spring Cloud network.
         <dependency>
             <groupId>org.laxture</groupId>
             <artifactId>sbp-core</artifactId>
-            <version>0.1.13</version>
+            <version>2.7.14</version>
         </dependency>
         ```
     * Gradle
         ```
         dependencies {
-            implementation 'org.laxture:sbp-core:0.1.13'
+            implementation 'org.laxture:sbp-core:2.7.14'
         }
         ```
 4. Add Plugin class
@@ -155,6 +158,7 @@ everything we need in the real project.
 * [Persistence](docs/persistence.md)
 * [Security / AOP](docs/security_aop.md)
 * [Deployment](docs/deployment.md)
+* [Support Different Spring Boot Versions](docs/multi_spring_boot_versions)
 * [Trouble Shoot & Misc](docs/trouble_shoot.md)
 * [About demo project](docs/demo_project.md)
 * [Road map](docs/roadmap.md)
