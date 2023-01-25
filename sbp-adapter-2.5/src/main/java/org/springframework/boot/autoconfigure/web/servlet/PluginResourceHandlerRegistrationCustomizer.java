@@ -15,36 +15,33 @@
  */
 package org.springframework.boot.autoconfigure.web.servlet;
 
-import com.fasterxml.jackson.databind.util.BeanUtil;
 import org.laxture.sbp.internal.PluginResourceResolver;
 import org.laxture.sbp.spring.boot.SbpPluginStateChangedEvent;
-import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.web.WebProperties;
 import org.springframework.boot.autoconfigure.web.WebProperties.Resources;
 import org.springframework.cache.Cache;
 import org.springframework.cache.concurrent.ConcurrentMapCache;
 import org.springframework.context.ApplicationListener;
 import org.springframework.web.servlet.config.annotation.ResourceChainRegistration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistration;
-import org.springframework.web.servlet.resource.AppCacheManifestTransformer;
 import org.springframework.web.servlet.resource.EncodedResourceResolver;
 import org.springframework.web.servlet.resource.ResourceResolver;
 import org.springframework.web.servlet.resource.VersionResourceResolver;
 
 /**
+ * Provide static resources lookup for plugin.
+ *
  * @author <a href="https://github.com/hank-cp">Hank CP</a>
  */
-public class PluginResourceHandlerRegistrationCustomizer extends
-    WebMvcAutoConfiguration.ResourceChainResourceHandlerRegistrationCustomizer
-    implements ApplicationListener<SbpPluginStateChangedEvent> {
+public class PluginResourceHandlerRegistrationCustomizer implements
+    WebMvcAutoConfiguration.ResourceHandlerRegistrationCustomizer,
+    ApplicationListener<SbpPluginStateChangedEvent> {
 
     private static final String DEFAULT_CACHE_NAME = "sbp-resource-chain-cache";
 
-    private final Resources resourceProperties;
-
-    public PluginResourceHandlerRegistrationCustomizer(Resources resourceProperties) {
-        super(resourceProperties);
-        this.resourceProperties = resourceProperties;
-    }
+    @Autowired
+    private WebProperties webProperties;
 
     private Cache sbpResourceCache;
 
@@ -53,7 +50,9 @@ public class PluginResourceHandlerRegistrationCustomizer extends
         if (sbpResourceCache == null) {
             sbpResourceCache = new ConcurrentMapCache(DEFAULT_CACHE_NAME);
         }
-        Resources.Chain properties = this.resourceProperties.getChain();
+        Resources resourcesProperties = this.webProperties.getResources();
+        if (resourcesProperties == null) resourcesProperties = new Resources();
+        Resources.Chain properties = resourcesProperties.getChain();
         ResourceChainRegistration chain = registration.resourceChain(properties.isCache(), sbpResourceCache);
 
         chain.addResolver(new PluginResourceResolver());

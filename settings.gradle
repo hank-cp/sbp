@@ -1,5 +1,7 @@
 include 'sbp-core',
         'sbp-spring-boot-starter',
+        VersionNumber.parse("${springBootVersion}") >= VersionNumber.parse("2.5")
+            ? 'sbp-adapter-2.5' : 'sbp-adapter-2',
         'demo-shared',
         'demo-security',
         'demo-api',

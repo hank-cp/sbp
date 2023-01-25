@@ -6,18 +6,23 @@ plugins {
 group = 'org.laxture.sbp'
 
 dependencies {
-    api project(':sbp-core')
-
-    implementation "org.springframework.boot:spring-boot-starter-web"
-    implementation "org.springframework.boot:spring-boot-starter-aop"
-    implementation "org.springframework.boot:spring-boot-configuration-processor"
-    implementation "org.springframework.boot:spring-boot-autoconfigure"
-    implementation "org.springframework:spring-context-support"
-
     implementation "org.apache.commons:commons-lang3"
     implementation "commons-codec:commons-codec"
 
-    implementation 'org.flywaydb:flyway-core'
+    api project(':sbp-core')
+    if (VersionNumber.parse("${springBootVersion}") >= VersionNumber.parse("2.5")) {
+        api project(':sbp-adapter-2.5')
+    } else {
+        api project(':sbp-adapter-2')
+    }
+
+    api "org.springframework.boot:spring-boot-starter-web"
+    api "org.springframework.boot:spring-boot-starter-aop"
+    api "org.springframework.boot:spring-boot-configuration-processor"
+    api "org.springframework.boot:spring-boot-autoconfigure"
+    api "org.springframework:spring-context-support"
+
+    api 'org.flywaydb:flyway-core'
 
     annotationProcessor "org.springframework.boot:spring-boot-autoconfigure-processor"
 }

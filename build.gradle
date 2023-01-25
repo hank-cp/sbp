@@ -26,12 +26,14 @@ def isPluginProject(Project project) {
     return project.hasProperty("plugin")
 }
 
-buildscript {
-    ext.springBootVersion = '2.7.8'
-    ext.lombokVersion = '1.18.24'
-    ext.pf4jVersion = '3.8.0'
-    ext.jooqVersion = '3.12.3'
+def getVersion(Project project) {
+    def version = getPropertyOrElse(project, 'version', '')
+    if (version != '' && version != 'unspecified') return version
+    def sVer = VersionNumber.parse(getPropertyOrElse(project, 'springBootVersion', '0.0.0'))
+    return sVer.getMajor() + '.' + sVer.getMinor() + '.' + getPropertyOrElse(project, 'sbpVersion', '0')
+}
 
+buildscript {
     repositories {
         mavenCentral()
         maven { url 'https://repo.spring.io/plugins-release' }
@@ -50,15 +52,8 @@ plugins {
 }
 
 //*************************************************************************
-// IDEA
+// Versioning
 //*************************************************************************
-
-idea {
-    module {
-        inheritOutputDirs = true
-        downloadSources = true
-    }
-}
 
 task(release) {
     doLast {
@@ -69,15 +64,26 @@ task(release) {
         }
         println "Setting version from $currentVersion to $newVersion"
 
-    //    exec {
-    //        commandLine 'sed', '-ie', "s/$currentVersion/$newVersion/g", "gradle.properties"
-    //    }
+        //    exec {
+        //        commandLine 'sed', '-ie', "s/$currentVersion/$newVersion/g", "gradle.properties"
+        //    }
         ant.replaceregexp(match:currentVersion, replace:newVersion, flags:'g', byline:true) {
             fileset(dir: '', includes: ['gradle.properties', 'README.md', 'README.zh-cn.md'])
         }
         ant.propertyfile(file: "gradle.properties") {
             entry( key: "version", value: "$newVersion")
         }
+    }
+}
+
+//*************************************************************************
+// IDEA
+//*************************************************************************
+
+idea {
+    module {
+        inheritOutputDirs = true
+        downloadSources = true
     }
 }
 
@@ -145,7 +151,7 @@ subprojects {
         manifest.attributes provider: 'gradle'
         enabled true
         doFirst {
-            archiveFileName = "$project.name-${archiveVersion.get()}.${archiveExtension.get()}"
+            archiveFileName = "$project.name-${getVersion(project)}.${archiveExtension.get()}"
         }
     }
 
@@ -330,6 +336,10 @@ subprojects {
     //*************************************************************************
     // Maven
     //*************************************************************************
+
+        javadoc {
+            options.addStringOption('Xdoclint:none', '-quiet')
+        }
 
         task sourcesJar(type: Jar, dependsOn: classes) {
             archiveClassifier.set('sources')
