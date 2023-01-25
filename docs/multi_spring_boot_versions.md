@@ -18,3 +18,5 @@ two versions: `2.4.X` and `2.7.X`. `X` is the major version of sbp.
   * `2.4.X` supports Spring Boot `2.0` to `2.4` 
   * `2.7.x` supports Spring Boot `2.5` to `2.7`
 Please choose the correct sbp version to match you Spring Boot version.
+
+`-SNAPSHOT` version only supports Spring Boot `2.5` to `2.7`.
