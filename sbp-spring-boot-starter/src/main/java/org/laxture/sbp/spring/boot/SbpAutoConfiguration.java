@@ -35,9 +35,7 @@ import org.springframework.util.StringUtils;
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Stack;
+import java.util.*;
 import java.util.function.Consumer;
 
 /**
@@ -144,8 +142,10 @@ public class SbpAutoConfiguration {
 			}
 		};
 
+		Set<String> profiles = new HashSet<>(Arrays.asList(properties.getPluginProfiles()));
+		profiles.add("plugin"); // set default profile
+		pluginManager.setProfiles(profiles.toArray(new String[] {}));
 		pluginManager.setAutoStartPlugin(properties.isAutoStartPlugin());
-		pluginManager.setProfiles(properties.getPluginProfiles());
 		pluginManager.presetProperties(flatProperties(properties.getPluginProperties()));
 		pluginManager.setExactVersionAllowed(properties.isExactVersionAllowed());
 		pluginManager.setSystemVersion(properties.getSystemVersion());

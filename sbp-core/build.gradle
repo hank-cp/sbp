@@ -6,14 +6,13 @@ plugins {
 group = 'org.laxture.sbp'
 
 dependencies {
-    implementation 'org.laxture:spring-static-ctx:0.1.2'
-
-    api 'org.springframework.boot:spring-boot'
-    api 'org.springframework:spring-webmvc'
+    api 'org.laxture:spring-static-ctx:0.1.2'
     api 'org.apache.commons:commons-lang3'
     api 'javax.annotation:javax.annotation-api'
-
     api ("org.pf4j:pf4j:${pf4jVersion}") {
         exclude group: 'org.slf4j', module: 'slf4j-log4j12'
     }
+
+    implementation 'org.springframework.boot:spring-boot'
+    implementation 'org.springframework:spring-webmvc'
 }

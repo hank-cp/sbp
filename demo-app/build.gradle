@@ -4,12 +4,6 @@ dependencies {
     implementation project(':demo-api')
     implementation project(':demo-security')
 
-    // since Spring Boot 2.2.0, spring-data-jpa cannot be declare only in plugin
-    // Check /docs/trouble_shoot.md for details.
-    implementation "org.springframework.boot:spring-boot-starter-data-jpa"
-    implementation 'javax.transaction:javax.transaction-api'
-    implementation 'org.hibernate:hibernate-core'
-
     runtimeOnly "org.postgresql:postgresql"
 
     jooqGenerator "org.postgresql:postgresql"

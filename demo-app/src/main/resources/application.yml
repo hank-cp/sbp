@@ -18,6 +18,8 @@ spring:
       - "out/production/resources"
     lib-directories:
       - "libs"
+    plugin-profiles:
+      - share_jta
     plugin-properties:
       spring:
         jpa:
@@ -72,3 +74,4 @@ spring:
     plugins-root: plugins
     plugin-profiles:
       - docker
+      - share_jta

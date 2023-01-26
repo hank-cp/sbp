@@ -22,14 +22,12 @@ import demo.sbp.library.model.LibraryBooks;
 import demo.sbp.library.repository.LibraryBooksRepository;
 import demo.sbp.library.repository.LibraryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -49,12 +47,6 @@ public class LibraryController {
 
     @Autowired
     private LibraryBooksRepository libraryBooksRepository;
-
-    @Autowired
-    private ApplicationContext applicationContext;
-
-    @Autowired
-    private EntityManager entityManager;
 
     @RequestMapping(value = "/list")
     @Transactional(readOnly = true)

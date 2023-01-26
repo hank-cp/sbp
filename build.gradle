@@ -182,9 +182,14 @@ subprojects {
 // Build Tasks
 //*************************************************************************
 
-    task("buildApp") {
+    task buildApp {
         group 'build'
         finalizedBy jar
+    }
+
+    task cleanBuildDir(type: Delete) {
+        group 'build'
+        delete "${projectDir}/out"
     }
 
 //*************************************************************************

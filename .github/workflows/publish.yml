@@ -19,7 +19,9 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 11
-      - run: ./gradlew publish -Pversion=2.4.${GITHUB_REF##*/} -PspringBootVersion=2.4.13 -P'signing.keyId=${{ secrets.signingKeyId }}' -P'signing.password=${{ secrets.signingPassword }}' -P'sonatypeUsername=${{ secrets.sonatypeUsername }}' -P'sonatypePassword=${{ secrets.sonatypePassword }}'
+      - run: ./gradlew :sbp-core:publish -Pversion=2.4.${GITHUB_REF##*/} -PspringBootVersion=2.4.13 -P'signing.keyId=${{ secrets.signingKeyId }}' -P'signing.password=${{ secrets.signingPassword }}' -P'sonatypeUsername=${{ secrets.sonatypeUsername }}' -P'sonatypePassword=${{ secrets.sonatypePassword }}'
+      - run: ./gradlew :sbp-spring-boot-starter:publish -Pversion=2.4.${GITHUB_REF##*/} -PspringBootVersion=2.4.13 -P'signing.keyId=${{ secrets.signingKeyId }}' -P'signing.password=${{ secrets.signingPassword }}' -P'sonatypeUsername=${{ secrets.sonatypeUsername }}' -P'sonatypePassword=${{ secrets.sonatypePassword }}'
+      - run: ./gradlew :sbp-adapter-2:publish -Pversion=2.4.${GITHUB_REF##*/} -PspringBootVersion=2.4.13 -P'signing.keyId=${{ secrets.signingKeyId }}' -P'signing.password=${{ secrets.signingPassword }}' -P'sonatypeUsername=${{ secrets.sonatypeUsername }}' -P'sonatypePassword=${{ secrets.sonatypePassword }}'
   release-2_7:
     runs-on: ubuntu-latest
     steps:
@@ -34,4 +36,6 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 11
-      - run: ./gradlew publish -Pversion=2.7.${GITHUB_REF##*/} -PspringBootVersion=2.7.8 -P'signing.keyId=${{ secrets.signingKeyId }}' -P'signing.password=${{ secrets.signingPassword }}' -P'sonatypeUsername=${{ secrets.sonatypeUsername }}' -P'sonatypePassword=${{ secrets.sonatypePassword }}'
+      - run: ./gradlew :sbp-core:publish -Pversion=2.7.${GITHUB_REF##*/} -PspringBootVersion=2.7.8 -P'signing.keyId=${{ secrets.signingKeyId }}' -P'signing.password=${{ secrets.signingPassword }}' -P'sonatypeUsername=${{ secrets.sonatypeUsername }}' -P'sonatypePassword=${{ secrets.sonatypePassword }}'
+      - run: ./gradlew :sbp-spring-boot-starter:publish -Pversion=2.7.${GITHUB_REF##*/} -PspringBootVersion=2.7.8 -P'signing.keyId=${{ secrets.signingKeyId }}' -P'signing.password=${{ secrets.signingPassword }}' -P'sonatypeUsername=${{ secrets.sonatypeUsername }}' -P'sonatypePassword=${{ secrets.sonatypePassword }}'
+      - run: ./gradlew :sbp-adapter-2.5:publish -Pversion=2.7.${GITHUB_REF##*/} -PspringBootVersion=2.7.8 -P'signing.keyId=${{ secrets.signingKeyId }}' -P'signing.password=${{ secrets.signingPassword }}' -P'sonatypeUsername=${{ secrets.sonatypeUsername }}' -P'sonatypePassword=${{ secrets.sonatypePassword }}'

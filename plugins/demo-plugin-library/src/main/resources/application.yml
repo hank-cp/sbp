@@ -21,13 +21,7 @@ spring:
   jta:
     atomikos:
       datasource:
-        beanName: dataSource-library
-
-sbp-plugin:
-  plugin-first-classes:
-    - org.springframework.boot.autoconfigure.data.*
-    - org.springframework.boot.autoconfigure.orm.*
-    - org.springframework.boot.orm.jpa.*
+        beanName: dataSource-library # this line is necessary, could be any name except "dataSource"
 
 logging:
   level:

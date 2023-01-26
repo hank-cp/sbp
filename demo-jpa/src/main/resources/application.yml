@@ -6,11 +6,8 @@ spring:
     add-mappings: true
     cache:
       period: 3600
-  http:
-    encoding:
-      force: true
   datasource:
-    url: "jdbc:postgresql://localhost/sbp-test"
+    url: "jdbc:postgresql://localhost/sbp"
     username: postgres
     driver-class-name: "org.postgresql.Driver"
   sbp:
@@ -21,38 +18,29 @@ spring:
       - "out/production/resources"
       - "build/classes/java/main"
       - "build/resources/main"
-    lib-directories:
-      - "libs"
-    plugin-profiles:
-      - share_jta
+    disabled-plugins:
+      - demo-plugin-admin
+      - demo-plugin-author
+      - demo-plugin-shelf
+    # plugin-properties will apply these properties for all plugins
     plugin-properties:
       spring:
-        flyway:
-          import-data:
-            location:
-              - classpath:plugin_seed_data
-          clean-before-migrate: true
         jpa:
           properties:
             hibernate:
               temp:
                 use_jdbc_metadata_defaults: false
           database-platform: org.hibernate.dialect.PostgreSQL9Dialect
-#    custom-plugin-loader:
-#      - demo.sbp.app.CustomPluginLoader
-  flyway:
-    enabled: true
-    schemas:
-      - demo_app
-    locations: classpath:db_migration
-    table: _db_migration
-    import-data:
-      enabled: true
-      location:
-        - classpath:seed_data
-    clean-before-migrate: true
-  jooq:
-    sql-dialect: postgres
+    controller:
+      base-path: sbp
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        temp:
+          use_jdbc_metadata_defaults: false
+    database-platform: org.hibernate.dialect.PostgreSQL9Dialect
   jta:
     atomikos:
       datasource:
@@ -65,5 +53,13 @@ spring:
 logging:
   level:
     org.hibernate.tool.schema.internal.ExceptionHandlerLoggedImpl: ERROR
-#    org.jooq: DEBUG
-    org.jooq.Constants: ERROR
+    com.atomikos.jdbc.AtomikosConnectionProxy: ERROR
+
+---
+spring:
+  profiles: docker
+  sbp:
+    runtime-mode: deployment
+    plugins-root: plugins
+    plugin-profiles:
+      - docker
