@@ -13,6 +13,8 @@ spring:
     url: "jdbc:postgresql://localhost/sbp-test"
     username: postgres
     driver-class-name: "org.postgresql.Driver"
+  flyway:
+    enabled: false
   sbp:
     runtime-mode: development
     enabled: true
@@ -27,6 +29,8 @@ spring:
       - demo-plugin-shelf
     plugin-properties:
       spring:
+        flyway:
+          enabled: false
         jpa:
           properties:
             hibernate:

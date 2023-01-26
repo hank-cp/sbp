@@ -10,6 +10,8 @@ spring:
     url: "jdbc:postgresql://localhost/sbp"
     username: postgres
     driver-class-name: "org.postgresql.Driver"
+  flyway:
+    enabled: false
   sbp:
     runtime-mode: development
     enabled: true
@@ -25,6 +27,8 @@ spring:
     # plugin-properties will apply these properties for all plugins
     plugin-properties:
       spring:
+        flyway:
+          enabled: false
         jpa:
           properties:
             hibernate:
