@@ -1,0 +1,19 @@
+dependencies {
+    implementation project(':sbp-spring-boot-starter')
+
+    implementation "org.springframework.boot:spring-boot-starter-webflux"
+    implementation "org.springframework.boot:spring-boot-starter-aop"
+
+    testImplementation "org.springframework.boot:spring-boot-starter-test"
+    testImplementation "junit:junit"
+}
+
+//*************************************************************************
+// App Properties
+//*************************************************************************
+
+mainClassName = 'demo.sbp.app.DemoAppWebFlux'
+
+manifest {
+    attributes 'Main-Class': 'demo.sbp.app.DemoAppWebFlux'
+}

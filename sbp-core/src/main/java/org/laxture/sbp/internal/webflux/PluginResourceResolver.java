@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.laxture.sbp.internal;
+package org.laxture.sbp.internal.webflux;
 
 import org.laxture.spring.util.ApplicationContextProvider;
 import org.pf4j.PluginManager;
@@ -23,7 +23,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-import org.springframework.web.servlet.resource.PathResourceResolver;
+import org.springframework.web.reactive.resource.PathResourceResolver;
+import reactor.core.publisher.Mono;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -37,7 +38,7 @@ public class PluginResourceResolver extends PathResourceResolver {
     private PluginManager pluginManager;
 
     @Override
-    protected Resource getResource(String resourcePath, Resource location) throws IOException {
+    protected Mono<Resource> getResource(String resourcePath, Resource location) {
         if (!(location instanceof ClassPathResource)) return null;
         ClassPathResource classPathLocation = (ClassPathResource) location;
 
@@ -47,21 +48,24 @@ public class PluginResourceResolver extends PathResourceResolver {
             pluginManager = ApplicationContextProvider.getBean(PluginManager.class);
         }
 
-        for (PluginWrapper plugin : pluginManager.getPlugins(PluginState.STARTED)) {
-            Resource pluginLocation = new ClassPathResource(classPathLocation.getPath(), plugin.getPluginClassLoader());
-            Resource resource = pluginLocation.createRelative(resourcePath);
-            if (resource.isReadable()) {
-                if (checkResource(resource, pluginLocation)) {
-                    return resource;
-                }
-                else if (logger.isWarnEnabled()) {
-                    Resource[] allowedLocations = getAllowedLocations();
-                    logger.warn("Resource path \"" + resourcePath + "\" was successfully resolved " +
-                            "but resource \"" +	resource.getURL() + "\" is neither under the " +
+        try {
+            for (PluginWrapper plugin : pluginManager.getPlugins(PluginState.STARTED)) {
+                Resource pluginLocation = new ClassPathResource(classPathLocation.getPath(), plugin.getPluginClassLoader());
+                Resource resource = pluginLocation.createRelative(resourcePath);
+                if (resource.isReadable()) {
+                    if (checkResource(resource, pluginLocation)) {
+                        return Mono.just(resource);
+                    } else if (logger.isWarnEnabled()) {
+                        Resource[] allowedLocations = getAllowedLocations();
+                        logger.warn("Resource path \"" + resourcePath + "\" was successfully resolved " +
+                            "but resource \"" + resource.getURL() + "\" is neither under the " +
                             "current location \"" + location.getURL() + "\" nor under any of the " +
                             "allowed locations " + (allowedLocations != null ? Arrays.asList(allowedLocations) : "[]"));
+                    }
                 }
             }
+        } catch (IOException ex) {
+            return Mono.error(ex);
         }
         return super.getResource(resourcePath, location);
     }

@@ -1,0 +1,30 @@
+spring:
+  webflux:
+    static-path-pattern: /public/**
+  mvc:
+    throw-exception-if-no-handler-found: true
+    static-path-pattern: /public/**
+  resources:
+    add-mappings: true
+    cache:
+      period: 3600
+  sbp:
+    plugins-root: "demo-webflux/plugins"
+    runtime-mode: development
+    enabled: true
+    classes-directories:
+      - "out/production/classes"
+      - "out/production/resources"
+    controller:
+      base-path: sbp
+  flyway:
+    enabled: false
+  main:
+    allow-bean-definition-overriding: true
+
+logging:
+  level:
+    org.hibernate.tool.schema.internal.ExceptionHandlerLoggedImpl: ERROR
+    org.jooq: DEBUG
+    org.jooq.Constants: ERROR
+    com.atomikos.jdbc.AtomikosConnectionProxy: ERROR

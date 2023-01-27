@@ -16,11 +16,13 @@
 package org.laxture.sbp.spring.boot;
 
 import org.laxture.sbp.SpringBootPluginManager;
-import org.laxture.sbp.internal.PluginRequestMappingHandlerMapping;
+import org.laxture.sbp.internal.webmvc.PluginRequestMappingHandlerMapping;
 import org.pf4j.PluginManager;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.web.reactive.WebFluxRegistrations;
 import org.springframework.boot.autoconfigure.web.servlet.PluginResourceHandlerRegistrationCustomizer;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcRegistrations;
 import org.springframework.context.annotation.Bean;
@@ -37,7 +39,9 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 @Configuration
 @ConditionalOnClass({ PluginManager.class, SpringBootPluginManager.class })
 @ConditionalOnProperty(prefix = SbpProperties.PREFIX, value = "enabled", havingValue = "true")
-public class SbpMvcPatchAutoConfiguration {
+@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
+
+public class SbpWebMvcPatchAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(WebMvcRegistrations.class)
@@ -56,6 +60,17 @@ public class SbpMvcPatchAutoConfiguration {
 			@Override
 			public ExceptionHandlerExceptionResolver getExceptionHandlerExceptionResolver() {
 				return null;
+			}
+		};
+	}
+
+	@Bean
+	@ConditionalOnMissingBean(WebFluxRegistrations.class)
+	public WebFluxRegistrations webFluxRegistrations() {
+		return new WebFluxRegistrations() {
+			@Override
+			public org.springframework.web.reactive.result.method.annotation.RequestMappingHandlerMapping getRequestMappingHandlerMapping() {
+				return WebFluxRegistrations.super.getRequestMappingHandlerMapping();
 			}
 		};
 	}

@@ -15,7 +15,7 @@
  */
 package org.springframework.boot.autoconfigure.web.servlet;
 
-import org.laxture.sbp.internal.PluginResourceResolver;
+import org.laxture.sbp.internal.webmvc.PluginResourceResolver;
 import org.laxture.sbp.spring.boot.SbpPluginStateChangedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.web.ResourceProperties;

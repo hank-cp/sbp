@@ -21,9 +21,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
-import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
@@ -32,34 +30,22 @@ import java.util.stream.Collectors;
 /**
  * @author <a href="https://github.com/hank-cp">Hank CP</a>
  */
-public class PluginRequestMappingHandlerMapping extends RequestMappingHandlerMapping {
+public interface PluginRequestMappingAdapter {
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void detectHandlerMethods(Object controller) {
-        super.detectHandlerMethods(controller);
-    }
+    void registerController(SpringBootPlugin springBootPlugin, Object controller);
 
-    public void registerControllers(SpringBootPlugin springBootPlugin) {
+    void unregisterController(GenericApplicationContext mainCtx, Object controller);
+
+    default void registerControllers(SpringBootPlugin springBootPlugin) {
         getControllerBeans(springBootPlugin).forEach(bean -> registerController(springBootPlugin, bean));
     }
 
-    private void registerController(SpringBootPlugin springBootPlugin, Object controller) {
-        String beanName = controller.getClass().getName();
-        // unregister RequestMapping if already registered
-        unregisterController(springBootPlugin.getMainApplicationContext(), controller);
-        springBootPlugin.registerBeanToMainContext(beanName, controller);
-        detectHandlerMethods(controller);
-    }
-
-    public void unregisterControllers(SpringBootPlugin springBootPlugin) {
+    default void unregisterControllers(SpringBootPlugin springBootPlugin) {
         getControllerBeans(springBootPlugin).forEach(bean ->
-                unregisterController(springBootPlugin.getMainApplicationContext(), bean));
+            unregisterController(springBootPlugin.getMainApplicationContext(), bean));
     }
 
-    public Set<Object> getControllerBeans(SpringBootPlugin springBootPlugin) {
+    default Set<Object> getControllerBeans(SpringBootPlugin springBootPlugin) {
         LinkedHashSet<Object> beans = new LinkedHashSet<>();
         ApplicationContext applicationContext = springBootPlugin.getApplicationContext();
         //noinspection unchecked
@@ -72,13 +58,6 @@ public class PluginRequestMappingHandlerMapping extends RequestMappingHandlerMap
                 .entrySet().stream().filter(beanEntry -> !sharedBeanNames.contains(beanEntry.getKey()))
                 .map(Map.Entry::getValue).collect(Collectors.toList()));
         return beans;
-    }
-
-    public void unregisterController(GenericApplicationContext mainCtx, Object controller) {
-        new HashMap<>(getHandlerMethods()).forEach((mapping, handlerMethod) -> {
-            if (controller == handlerMethod.getBean()) super.unregisterMapping(mapping);
-        });
-        SpringBootPlugin.unregisterBeanFromMainContext(mainCtx, controller);
     }
 
 }

@@ -1,0 +1,16 @@
+dependencies {
+    implementation project(':sbp-core')
+
+    implementation "org.springframework.boot:spring-boot-starter-webflux"
+    implementation "org.springframework.boot:spring-boot-starter-aop"
+}
+
+//*************************************************************************
+// App Properties
+//*************************************************************************
+
+mainClassName = 'demo.sbp.admin.AdminPluginStarter'
+
+manifest {
+    attributes 'Main-Class': 'demo.sbp.admin.AdminPluginStarter'
+}

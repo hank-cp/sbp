@@ -21,11 +21,9 @@ import org.laxture.sbp.internal.MainAppReadyListener;
 import org.laxture.sbp.internal.MainAppStartedListener;
 import org.laxture.sbp.internal.SpringBootPluginClassLoader;
 import org.pf4j.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.web.servlet.WebMvcRegistrations;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -50,9 +48,6 @@ import java.util.function.Consumer;
 @Import({MainAppStartedListener.class, MainAppReadyListener.class})
 @Slf4j
 public class SbpAutoConfiguration {
-
-	@Autowired
-	private WebMvcRegistrations mvcRegistrations;
 
 	@Bean
 	@ConditionalOnMissingBean(PluginStateListener.class)

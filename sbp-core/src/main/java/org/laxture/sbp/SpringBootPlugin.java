@@ -17,11 +17,15 @@ package org.laxture.sbp;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.laxture.sbp.internal.PluginRequestMappingHandlerMapping;
+import org.laxture.sbp.internal.PluginRequestMappingAdapter;
 import org.laxture.sbp.internal.SpringExtensionFactory;
+import org.laxture.sbp.internal.webmvc.PluginRequestMappingHandlerMapping;
 import org.laxture.sbp.spring.boot.*;
 import org.laxture.spring.util.ApplicationContextProvider;
-import org.pf4j.*;
+import org.pf4j.Extension;
+import org.pf4j.Plugin;
+import org.pf4j.PluginState;
+import org.pf4j.PluginWrapper;
 import org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -30,7 +34,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Stream;
 
 /**
@@ -73,8 +78,8 @@ public abstract class SpringBootPlugin extends Plugin {
         springBootstrap = createSpringBootstrap();
     }
 
-    private PluginRequestMappingHandlerMapping getMainRequestMapping() {
-        return (PluginRequestMappingHandlerMapping)
+    private PluginRequestMappingAdapter getMainRequestMapping() {
+        return (PluginRequestMappingAdapter)
                 getMainApplicationContext().getBean("requestMappingHandlerMapping");
     }
 

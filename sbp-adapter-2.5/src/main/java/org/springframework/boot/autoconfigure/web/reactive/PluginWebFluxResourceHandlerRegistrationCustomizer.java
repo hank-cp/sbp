@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.boot.autoconfigure.web.servlet;
+package org.springframework.boot.autoconfigure.web.reactive;
 
-import org.laxture.sbp.internal.webmvc.PluginResourceResolver;
+import org.laxture.sbp.internal.webflux.PluginResourceResolver;
 import org.laxture.sbp.spring.boot.SbpPluginStateChangedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.web.WebProperties;
@@ -23,14 +23,19 @@ import org.springframework.boot.autoconfigure.web.WebProperties.Resources;
 import org.springframework.cache.Cache;
 import org.springframework.cache.concurrent.ConcurrentMapCache;
 import org.springframework.context.ApplicationListener;
+import org.springframework.web.reactive.config.ResourceChainRegistration;
+import org.springframework.web.reactive.config.ResourceHandlerRegistration;
+import org.springframework.web.reactive.resource.EncodedResourceResolver;
+import org.springframework.web.reactive.resource.ResourceResolver;
+import org.springframework.web.reactive.resource.VersionResourceResolver;
 
 /**
  * Provide static resources lookup for plugin.
  *
  * @author <a href="https://github.com/hank-cp">Hank CP</a>
  */
-public class PluginResourceHandlerRegistrationCustomizer implements
-    WebMvcAutoConfiguration.ResourceHandlerRegistrationCustomizer,
+public class PluginWebFluxResourceHandlerRegistrationCustomizer implements
+    ResourceHandlerRegistrationCustomizer,
     ApplicationListener<SbpPluginStateChangedEvent> {
 
     private static final String DEFAULT_CACHE_NAME = "sbp-resource-chain-cache";

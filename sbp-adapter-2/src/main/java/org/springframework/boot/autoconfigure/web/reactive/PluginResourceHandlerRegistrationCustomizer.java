@@ -13,16 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.boot.autoconfigure.web.servlet;
+package org.springframework.boot.autoconfigure.web.reactive;
 
-import org.laxture.sbp.internal.webmvc.PluginResourceResolver;
+import org.laxture.sbp.internal.webflux.PluginResourceResolver;
 import org.laxture.sbp.spring.boot.SbpPluginStateChangedEvent;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.web.WebProperties;
-import org.springframework.boot.autoconfigure.web.WebProperties.Resources;
+import org.springframework.boot.autoconfigure.web.ResourceProperties;
 import org.springframework.cache.Cache;
 import org.springframework.cache.concurrent.ConcurrentMapCache;
 import org.springframework.context.ApplicationListener;
+import org.springframework.web.reactive.config.ResourceChainRegistration;
+import org.springframework.web.reactive.config.ResourceHandlerRegistration;
+import org.springframework.web.reactive.resource.AppCacheManifestTransformer;
+import org.springframework.web.reactive.resource.EncodedResourceResolver;
+import org.springframework.web.reactive.resource.ResourceResolver;
+import org.springframework.web.reactive.resource.VersionResourceResolver;
 
 /**
  * Provide static resources lookup for plugin.
@@ -30,13 +35,13 @@ import org.springframework.context.ApplicationListener;
  * @author <a href="https://github.com/hank-cp">Hank CP</a>
  */
 public class PluginResourceHandlerRegistrationCustomizer implements
-    WebMvcAutoConfiguration.ResourceHandlerRegistrationCustomizer,
+    ResourceHandlerRegistrationCustomizer,
     ApplicationListener<SbpPluginStateChangedEvent> {
 
     private static final String DEFAULT_CACHE_NAME = "sbp-resource-chain-cache";
 
     @Autowired
-    private WebProperties webProperties;
+    private ResourceProperties resourceProperties = new ResourceProperties();
 
     private Cache sbpResourceCache;
 
@@ -45,23 +50,24 @@ public class PluginResourceHandlerRegistrationCustomizer implements
         if (sbpResourceCache == null) {
             sbpResourceCache = new ConcurrentMapCache(DEFAULT_CACHE_NAME);
         }
-        Resources resourcesProperties = this.webProperties.getResources();
-        if (resourcesProperties == null) resourcesProperties = new Resources();
-        Resources.Chain properties = resourcesProperties.getChain();
+        ResourceProperties.Chain properties = this.resourceProperties.getChain();
         ResourceChainRegistration chain = registration.resourceChain(properties.isCache(), sbpResourceCache);
 
         chain.addResolver(new PluginResourceResolver());
 
-        Resources.Chain.Strategy strategy = properties.getStrategy();
+        ResourceProperties.Strategy strategy = properties.getStrategy();
         if (properties.isCompressed()) {
             chain.addResolver(new EncodedResourceResolver());
         }
         if (strategy.getFixed().isEnabled() || strategy.getContent().isEnabled()) {
             chain.addResolver(getVersionResourceResolver(strategy));
         }
+        if (properties.isHtmlApplicationCache()) {
+            chain.addTransformer(new AppCacheManifestTransformer());
+        }
     }
 
-    private ResourceResolver getVersionResourceResolver(Resources.Chain.Strategy properties) {
+    private ResourceResolver getVersionResourceResolver(ResourceProperties.Strategy properties) {
         VersionResourceResolver resolver = new VersionResourceResolver();
         if (properties.getFixed().isEnabled()) {
             String version = properties.getFixed().getVersion();
