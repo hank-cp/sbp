@@ -16,6 +16,8 @@ spring:
     classes-directories:
       - "out/production/classes"
       - "out/production/resources"
+      - "build/classes/java/main"
+      - "build/resources/main"
     lib-directories:
       - "libs"
     plugin-profiles:

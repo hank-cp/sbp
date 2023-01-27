@@ -106,7 +106,7 @@ subprojects {
         apply plugin: 'org.springframework.boot'
         apply plugin: 'nu.studer.jooq'
         apply plugin: 'org.flywaydb.flyway'
-    } else {
+    } else if (isLibraryProject(name)) {
         apply plugin: 'maven-publish'
         apply plugin: 'signing'
     }
