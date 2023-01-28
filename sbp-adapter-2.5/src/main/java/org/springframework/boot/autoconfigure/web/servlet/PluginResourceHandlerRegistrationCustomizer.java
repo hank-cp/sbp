@@ -23,6 +23,11 @@ import org.springframework.boot.autoconfigure.web.WebProperties.Resources;
 import org.springframework.cache.Cache;
 import org.springframework.cache.concurrent.ConcurrentMapCache;
 import org.springframework.context.ApplicationListener;
+import org.springframework.web.servlet.config.annotation.ResourceChainRegistration;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistration;
+import org.springframework.web.servlet.resource.EncodedResourceResolver;
+import org.springframework.web.servlet.resource.ResourceResolver;
+import org.springframework.web.servlet.resource.VersionResourceResolver;
 
 /**
  * Provide static resources lookup for plugin.
