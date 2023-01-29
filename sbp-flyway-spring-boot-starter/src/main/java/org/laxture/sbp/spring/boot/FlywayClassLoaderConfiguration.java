@@ -42,9 +42,6 @@ public class FlywayClassLoaderConfiguration {
     @Autowired
     private SpringBootPlugin plugin;
 
-    @Autowired
-    private ApplicationContext applicationContext;
-
     @Bean
     @ConditionalOnMissingBean
     public FlywayMigrationStrategy migrationStrategy() {
