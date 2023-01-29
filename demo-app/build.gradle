@@ -1,5 +1,6 @@
 dependencies {
     implementation project(':sbp-spring-boot-starter')
+    implementation project(':sbp-flyway-spring-boot-starter')
     implementation project(':demo-shared')
     implementation project(':demo-api')
     implementation project(':demo-security')
