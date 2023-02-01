@@ -34,7 +34,7 @@ import org.springframework.web.reactive.resource.VersionResourceResolver;
  *
  * @author <a href="https://github.com/hank-cp">Hank CP</a>
  */
-public class PluginResourceHandlerRegistrationCustomizer implements
+public class PluginWebFluxResourceHandlerRegistrationCustomizer implements
     ResourceHandlerRegistrationCustomizer,
     ApplicationListener<SbpPluginStateChangedEvent> {
 
