@@ -15,9 +15,10 @@
  */
 package org.laxture.sbp.internal.webflux;
 
+import lombok.extern.slf4j.Slf4j;
 import org.laxture.sbp.SpringBootPlugin;
 import org.laxture.sbp.internal.PluginRequestMappingAdapter;
-import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.result.method.annotation.RequestMappingHandlerMapping;
 
 import java.util.HashMap;
@@ -25,6 +26,7 @@ import java.util.HashMap;
 /**
  * @author <a href="https://github.com/hank-cp">Hank CP</a>
  */
+@Slf4j
 public class PluginRequestMappingHandlerMapping extends RequestMappingHandlerMapping
     implements PluginRequestMappingAdapter {
 
@@ -40,17 +42,21 @@ public class PluginRequestMappingHandlerMapping extends RequestMappingHandlerMap
     public void registerController(SpringBootPlugin springBootPlugin, Object controller) {
         String beanName = controller.getClass().getName();
         // unregister RequestMapping if already registered
-        unregisterController(springBootPlugin.getMainApplicationContext(), controller);
+        unregisterController(springBootPlugin, controller);
         springBootPlugin.registerBeanToMainContext(beanName, controller);
         detectHandlerMethods(controller);
     }
 
     @Override
-    public void unregisterController(GenericApplicationContext mainCtx, Object controller) {
+    public void unregisterController(SpringBootPlugin springBootPlugin, Object controller) {
         new HashMap<>(getHandlerMethods()).forEach((mapping, handlerMethod) -> {
             if (controller == handlerMethod.getBean()) super.unregisterMapping(mapping);
         });
-        SpringBootPlugin.unregisterBeanFromMainContext(mainCtx, controller);
+        springBootPlugin.unregisterBeanFromMainContext(controller);
     }
 
+    @Override
+    public Class<?> getRouterFunctionClass() {
+        return RouterFunction.class;
+    }
 }

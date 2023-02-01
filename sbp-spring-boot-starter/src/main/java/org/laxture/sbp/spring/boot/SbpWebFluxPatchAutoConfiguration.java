@@ -23,6 +23,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.web.reactive.PluginWebFluxResourceHandlerRegistrationCustomizer;
 import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.reactive.WebFluxRegistrations;
 import org.springframework.boot.autoconfigure.web.servlet.PluginResourceHandlerRegistrationCustomizer;
@@ -54,7 +55,7 @@ public class SbpWebFluxPatchAutoConfiguration {
 	}
 
 	@Bean
-	public PluginResourceHandlerRegistrationCustomizer resourceHandlerRegistrationCustomizer() {
-		return new PluginResourceHandlerRegistrationCustomizer();
+	public PluginWebFluxResourceHandlerRegistrationCustomizer resourceHandlerRegistrationCustomizer() {
+		return new PluginWebFluxResourceHandlerRegistrationCustomizer();
 	}
 }

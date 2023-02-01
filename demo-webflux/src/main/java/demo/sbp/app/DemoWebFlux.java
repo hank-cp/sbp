@@ -24,6 +24,13 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
+import org.springframework.web.reactive.function.server.RouterFunction;
+import org.springframework.web.reactive.function.server.ServerResponse;
+import reactor.core.publisher.Mono;
+
+import static org.springframework.web.reactive.function.server.RequestPredicates.GET;
+import static org.springframework.web.reactive.function.server.RouterFunctions.route;
+import static org.springframework.web.reactive.function.server.ServerResponse.ok;
 
 /**
  * @author <a href="https://github.com/hank-cp">Hank CP</a>
@@ -44,6 +51,12 @@ public class DemoWebFlux {
     @Bean
     public ApplicationContextAware multiApplicationContextProviderRegister() {
         return ApplicationContextProvider::registerApplicationContext;
+    }
+
+    @Bean
+    RouterFunction<ServerResponse> bookAuthorsRoute() {
+        return route(GET("/book/authors"),
+            req -> ok().body(Mono.just("George Orwell"), String.class));
     }
 
 }

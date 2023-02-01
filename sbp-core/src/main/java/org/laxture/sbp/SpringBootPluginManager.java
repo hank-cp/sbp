@@ -152,7 +152,7 @@ public class SpringBootPluginManager extends DefaultPluginManager
                     log.error(e.getMessage(), e);
                     startingErrors.put(pluginWrapper.getPluginId(), PluginStartingError.of(
                             pluginWrapper.getPluginId(), e.getMessage(), e.toString()));
-                    SpringBootPlugin.releaseRegisteredResources(pluginWrapper, mainApplicationContext);
+                    SpringBootPlugin.releaseLegacyResources(pluginWrapper, mainApplicationContext);
                 }
             }
         }
@@ -199,13 +199,16 @@ public class SpringBootPluginManager extends DefaultPluginManager
             log.error(e.getMessage(), e);
             startingErrors.put(plugin.getPluginId(), PluginStartingError.of(
                     plugin.getPluginId(), e.getMessage(), e.toString()));
-            SpringBootPlugin.releaseRegisteredResources(plugin, mainApplicationContext);
+            SpringBootPlugin.releaseLegacyResources(plugin, mainApplicationContext);
         }
         return plugin.getPluginState();
     }
 
     private PluginState doStopPlugin(String pluginId, boolean sendEvent) {
         PluginWrapper plugin = getPlugin(pluginId);
+        if (plugin == null) {
+            throw new IllegalArgumentException("pluginId " + pluginId + " doesn't existed.");
+        }
         PluginState previousState = plugin.getPluginState();
         try {
             PluginState pluginState = super.stopPlugin(pluginId);

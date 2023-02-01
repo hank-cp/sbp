@@ -17,6 +17,14 @@ package demo.sbp.admin;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.web.reactive.function.server.RouterFunction;
+import org.springframework.web.reactive.function.server.ServerResponse;
+import reactor.core.publisher.Mono;
+
+import static org.springframework.web.reactive.function.server.RequestPredicates.GET;
+import static org.springframework.web.reactive.function.server.RouterFunctions.route;
+import static org.springframework.web.reactive.function.server.ServerResponse.ok;
 
 /**
  * @author <a href="https://github.com/hank-cp">Hank CP</a>
@@ -26,6 +34,12 @@ public class AdminPluginStarter {
 
     public static void main(String[] args) {
         SpringApplication.run(AdminPluginStarter.class, args);
+    }
+
+    @Bean
+    RouterFunction<ServerResponse> adminPluginRoute() {
+        return route(GET("/admin/plugin"),
+            req -> ok().body(Mono.just("I am plugin!"), String.class));
     }
 
 }

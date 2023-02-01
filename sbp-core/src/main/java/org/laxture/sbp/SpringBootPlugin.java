@@ -98,6 +98,7 @@ public abstract class SpringBootPlugin extends Plugin {
 
         applicationContext = springBootstrap.run();
         getMainRequestMapping().registerControllers(this);
+        getMainRequestMapping().registerRouterFunction(this);
 
         // register Extensions
         Set<String> extensionClassNames = getWrapper().getPluginManager()
@@ -140,6 +141,7 @@ public abstract class SpringBootPlugin extends Plugin {
         }
 
         getMainRequestMapping().unregisterControllers(this);
+        getMainRequestMapping().unregisterRouterFunction(this);
         applicationContext.publishEvent(new SbpPluginStoppedEvent(applicationContext));
         ApplicationContextProvider.unregisterApplicationContext(applicationContext);
         injectedExtensionNames.clear();
@@ -148,8 +150,14 @@ public abstract class SpringBootPlugin extends Plugin {
         log.debug("Plugin {} is stopped", getWrapper().getPluginId());
     }
 
-    public static void releaseRegisteredResources(PluginWrapper plugin,
-                                                  GenericApplicationContext mainAppCtx) {
+    /**
+     * Clean legacy resources left behind by failed plugin starting.
+     *
+     * @param plugin
+     * @param mainAppCtx
+     */
+    public static void releaseLegacyResources(PluginWrapper plugin,
+                                              GenericApplicationContext mainAppCtx) {
         try {
             // unregister Extension beans
             Set<String> extensionClassNames = plugin.getPluginManager()
@@ -166,13 +174,15 @@ public abstract class SpringBootPlugin extends Plugin {
             // unregister Controller beans
             PluginRequestMappingHandlerMapping requestMapping = (PluginRequestMappingHandlerMapping)
                     mainAppCtx.getBean("requestMappingHandlerMapping");
-            Stream.concat(mainAppCtx.getBeansWithAnnotation(Controller.class).values().stream(),
-                mainAppCtx.getBeansWithAnnotation(RestController.class).values().stream())
+            Stream.concat(Stream.concat(Stream.concat(
+                mainAppCtx.getBeansOfType(Controller.class).values().stream(),
+                mainAppCtx.getBeansWithAnnotation(RestController.class).values().stream()),
+                mainAppCtx.getBeansOfType(org.springframework.web.servlet.function.RouterFunction.class).values().stream()),
+                mainAppCtx.getBeansOfType(org.springframework.web.reactive.function.server.RouterFunction.class).values().stream())
                     .filter(bean -> bean.getClass().getClassLoader() == plugin.getPluginClassLoader())
                     .forEach(bean -> {
-                        requestMapping.unregisterController(mainAppCtx, bean);
+                        SpringBootPlugin.unregisterBeanFromMainContext(mainAppCtx, bean);
                     });
-
         } catch (Exception e) {
             log.trace("Release registered resources failed. "+e.getMessage(), e);
         }

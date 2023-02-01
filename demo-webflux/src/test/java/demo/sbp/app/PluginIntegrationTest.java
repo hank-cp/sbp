@@ -37,7 +37,7 @@ import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
  * @author <a href="https://github.com/hank-cp">Hank CP</a>
  */
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = DemoTestWebFlux.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(classes = DemoTestWebFlux.class)
 @TestPropertySource(properties =
         "spring.autoconfigure.exclude=" +
                 "org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration," +
@@ -111,5 +111,38 @@ public class PluginIntegrationTest {
                 assertThat(new String(response.getResponseBody(), Charset.defaultCharset()),
                     equalTo("<body>\nHello bar!\n</body>"));
             });
+    }
+
+    @Test
+    public void testAppRouter() throws Exception {
+        webTestClient.
+            get().uri("/book/authors")
+            .exchange()
+            .expectStatus().isOk()
+            .expectBody().jsonPath("$", equalTo("George Orwell"));
+    }
+
+    @Test
+    public void testPluginRouter() {
+        webTestClient
+            .get().uri("/admin/plugin")
+            .exchange()
+            .expectStatus().isOk()
+            .expectBody().jsonPath("$", equalTo("I am plugin!"));
+
+        pluginManager.stopPlugin("demo-plugin-webflux");
+
+        webTestClient
+            .get().uri("/admin/plugin")
+            .exchange()
+            .expectStatus().isNotFound();
+
+        pluginManager.startPlugin("demo-plugin-webflux");
+
+        webTestClient
+            .get().uri("/admin/plugin")
+            .exchange()
+            .expectStatus().isOk()
+            .expectBody().jsonPath("$", equalTo("I am plugin!"));
     }
 }
