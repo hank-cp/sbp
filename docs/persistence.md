@@ -40,11 +40,13 @@ anymore across different `transactionManager`s. In other words, we partially los
 
 ![](persistence_2.png?raw=true)
 
-Event more, if you use JPA in app and wants to share the same data source to plugins, the mentioned
+Event more, if you are using JPA in app and wants to share the same data source to plugins, the mentioned
 limitation will prevent this to happen. Jpa natively prevents sharing active transaction information
 out side of its control, so plugins will never be able to fire workable transactions. It's also 
 impossible to share `EntityManager` between app and plugins, since it does provide any API to 
 manage its internal state.
+
+![](persistence_5.png?raw=true)
 
 We could introduce JTA/XA to solve this problem.
 

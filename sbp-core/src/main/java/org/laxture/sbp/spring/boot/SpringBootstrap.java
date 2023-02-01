@@ -27,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
@@ -34,7 +35,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
@@ -63,13 +64,24 @@ public class SpringBootstrap extends SpringApplication {
 
     public static final String[] DEFAULT_EXCLUDE_CONFIGURATIONS = {
             "org.laxture.sbp.spring.boot.SbpAutoConfiguration",
+            // Embedded Web Server
+            "org.springframework.boot.autoconfigure.web.embedded.EmbeddedWebServerFactoryCustomizerAutoConfiguration",
             // Spring Web MVC
             "org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration",
             "org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration",
-            "org.springframework.boot.actuate.autoconfigure.metrics.web.servlet.WebMvcMetricsAutoConfiguration",
-            "org.springframework.boot.autoconfigure.web.embedded.EmbeddedWebServerFactoryCustomizerAutoConfiguration",
+            "org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration",
             "org.springframework.boot.autoconfigure.web.servlet.HttpEncodingAutoConfiguration",
+            "org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration",
             "org.springframework.boot.autoconfigure.websocket.servlet.WebSocketServletAutoConfiguration",
+            "org.springframework.boot.autoconfigure.websocket.reactive.WebSocketReactiveAutoConfiguration",
+            // Spring WebFlux
+            "org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration",
+            "org.springframework.boot.autoconfigure.web.reactive.error.ErrorWebFluxAutoConfiguration",
+            "org.springframework.boot.autoconfigure.web.reactive.HttpHandlerAutoConfiguration",
+            "org.springframework.boot.autoconfigure.web.reactive.ReactiveMultipartAutoConfiguration",
+            "org.springframework.boot.autoconfigure.web.reactive.ReactiveWebServerFactoryAutoConfiguration",
+            "org.springframework.boot.autoconfigure.web.reactive.WebSessionIdResolverAutoConfiguration",
+            "org.springframework.boot.autoconfigure.websocket.reactive.WebSocketReactiveAutoConfiguration",
             // Actuator/JMX
             "org.springframework.boot.actuate.autoconfigure.amqp.RabbitHealthContributorAutoConfiguration",
             "org.springframework.boot.actuate.autoconfigure.audit.AuditAutoConfiguration",
@@ -207,7 +219,7 @@ public class SpringBootstrap extends SpringApplication {
 
     private final SpringBootPlugin plugin;
 
-    private final ApplicationContext mainApplicationContext;
+    private final GenericApplicationContext mainApplicationContext;
 
     private final ClassLoader pluginClassLoader;
 
@@ -381,13 +393,17 @@ public class SpringBootstrap extends SpringApplication {
         }
     }
 
-    protected boolean importBean(ApplicationContext sourceApplicationContext,
-                                 AbstractApplicationContext applicationContext,
-                                 String beanName) {
+    protected boolean importBean(GenericApplicationContext sourceApplicationContext,
+                                 GenericApplicationContext applicationContext,
+                                 String beanName, boolean registerBeanDefinition) {
         try {
             Object bean = sourceApplicationContext.getBean(beanName);
             applicationContext.getBeanFactory().registerSingleton(beanName, bean);
             applicationContext.getBeanFactory().autowireBean(bean);
+            if (registerBeanDefinition) {
+                BeanDefinition beanDef = sourceApplicationContext.getBeanDefinition(beanName);
+                applicationContext.registerBeanDefinition(beanName, beanDef);
+            }
             importedBeanNames.add(beanName);
             log.info("Bean {} is imported from {} ApplicationContext", beanName,
                     (sourceApplicationContext == mainApplicationContext ? "app" : "plugin"));
@@ -398,20 +414,24 @@ public class SpringBootstrap extends SpringApplication {
         }
     }
 
-    protected boolean importBean(ApplicationContext sourceApplicationContext,
-                                 AbstractApplicationContext applicationContext,
-                                 Class<?> beanClass) {
+    protected boolean importBean(GenericApplicationContext sourceApplicationContext,
+                                 GenericApplicationContext applicationContext,
+                                 Class<?> beanClass, boolean registerBeanDefinition) {
         try {
             Map<String, ?> beans = sourceApplicationContext.getBeansOfType(beanClass);
-            if (beans.size() <= 0) {
+            if (beans.size() == 0) {
                 return false;
             }
             for (String beanName : beans.keySet()) {
                 if (applicationContext.containsBean(beanName)) continue;
                 Object bean = beans.get(beanName);
                 applicationContext.getBeanFactory().registerSingleton(beanName, bean);
-                importedBeanNames.add(beanName);
                 applicationContext.getBeanFactory().autowireBean(bean);
+                if (registerBeanDefinition) {
+                    BeanDefinition beanDef = sourceApplicationContext.getBeanDefinition(beanName);
+                    applicationContext.registerBeanDefinition(beanName, beanDef);
+                }
+                importedBeanNames.add(beanName);
             }
             log.info("Bean {} is imported from {} ApplicationContext", beanClass.getSimpleName(),
                         (sourceApplicationContext == mainApplicationContext ? "app" : "plugin"));
@@ -421,36 +441,36 @@ public class SpringBootstrap extends SpringApplication {
         }
     }
 
-    protected boolean importBeanFromMainContext(AbstractApplicationContext applicationContext,
+    protected boolean importBeanFromMainContext(GenericApplicationContext applicationContext,
                                                 String beanName) {
-        return importBean(mainApplicationContext, applicationContext, beanName);
+        return importBean(mainApplicationContext, applicationContext, beanName, false);
     }
 
-    protected boolean importBeanFromMainContext(AbstractApplicationContext applicationContext,
+    protected boolean importBeanFromMainContext(GenericApplicationContext applicationContext,
                                                 Class<?> beanClass) {
-        return importBean(mainApplicationContext, applicationContext, beanClass);
+        return importBean(mainApplicationContext, applicationContext, beanClass, false);
     }
 
-    protected boolean importBeanFromDependentPlugin(AbstractApplicationContext applicationContext,
+    protected boolean importBeanFromDependentPlugin(GenericApplicationContext applicationContext,
                                                     String beanName) {
         for (PluginDependency dependency : plugin.getWrapper().getDescriptor().getDependencies()) {
             PluginWrapper dependentPlugin = plugin.getPluginManager().getPlugin(dependency.getPluginId());
             if (dependentPlugin == null) continue;
             SpringBootPlugin sbPlugin = (SpringBootPlugin) dependentPlugin.getPlugin();
             if (sbPlugin.getApplicationContext() == null) continue; // dependent plugin is not started.
-            if (importBean(sbPlugin.getApplicationContext(), applicationContext, beanName)) return true;
+            if (importBean(sbPlugin.getApplicationContext(), applicationContext, beanName, false)) return true;
         }
         return false;
     }
 
-    protected boolean importBeanFromDependentPlugin(AbstractApplicationContext applicationContext,
+    protected boolean importBeanFromDependentPlugin(GenericApplicationContext applicationContext,
                                                     Class<?> beanClass) {
         for (PluginDependency dependency : plugin.getWrapper().getDescriptor().getDependencies()) {
             PluginWrapper dependentPlugin = plugin.getPluginManager().getPlugin(dependency.getPluginId());
             if (dependentPlugin == null) continue;
             SpringBootPlugin sbPlugin = (SpringBootPlugin) dependentPlugin.getPlugin();
             if (sbPlugin.getApplicationContext() == null) continue; // dependent plugin is not started.
-            if (importBean(sbPlugin.getApplicationContext(), applicationContext, beanClass)) return true;
+            if (importBean(sbPlugin.getApplicationContext(), applicationContext, beanClass, false)) return true;
         }
         return false;
     }

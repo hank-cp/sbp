@@ -142,6 +142,9 @@ public class SpringBootPluginManager extends DefaultPluginManager
         for (PluginWrapper pluginWrapper : resolvedPlugins) {
             PluginState pluginState = pluginWrapper.getPluginState();
             if ((PluginState.DISABLED != pluginState) && (PluginState.STARTED != pluginState)) {
+                if (pluginWrapper.getPlugin() == null) {
+                    throw new IllegalArgumentException("pluginId " + pluginWrapper.getPluginId() + " doesn't existed.");
+                }
                 try {
                     pluginWrapper.getPlugin().start();
                     pluginWrapper.setPluginState(PluginState.STARTED);

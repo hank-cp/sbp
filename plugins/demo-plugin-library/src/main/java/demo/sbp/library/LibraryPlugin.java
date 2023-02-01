@@ -16,10 +16,10 @@
 package demo.sbp.library;
 
 import com.atomikos.jdbc.AtomikosDataSourceBean;
-import org.pf4j.PluginWrapper;
 import org.laxture.sbp.SpringBootPlugin;
 import org.laxture.sbp.spring.boot.SharedJtaSpringBootstrap;
 import org.laxture.sbp.spring.boot.SpringBootstrap;
+import org.pf4j.PluginWrapper;
 
 /**
  * @author <a href="https://github.com/hank-cp">Hank CP</a>
@@ -45,8 +45,20 @@ public class LibraryPlugin extends SpringBootPlugin {
 
     @Override
     public void releaseAdditionalResources() {
+        // close AtomikosDataSourceBean
+//        DataSource dataSource = (DataSource)
+//                getApplicationContext().getBean("dataSource");
+//        try {
+//            Method closeMethod;
+//            try {
+//                closeMethod = dataSource.getClass().getDeclaredMethod("close");
+//            } catch (NoSuchMethodException e) { return; }
+//            closeMethod.setAccessible(true);
+//            closeMethod.invoke(dataSource);
+//        } catch (BeansException | IllegalAccessException | InvocationTargetException ignored) {}
+
         AtomikosDataSourceBean dataSource = (AtomikosDataSourceBean)
-                getApplicationContext().getBean("dataSource");
+            getApplicationContext().getBean("dataSource");
         dataSource.close();
     }
 }
