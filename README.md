@@ -25,11 +25,14 @@ Spring Cloud application.
 * Much more **LIGHTWEIGHT** development and deployment for spiral extensible architecture.
 * Install/update/start/stop plugins **ON THE FLY**.
 * **FULL STACK** Web/Rest server-side features powered by Spring Boot, including:
-    * controller for request handling
-    * persistence (Spring Data/JPA/Jooq/Plain SQL)
-    * security
-    * AOP
-    * resource loading
+  * Controller/RestController
+  * RouterFunction
+  * WebFlux
+  * static resource mapping, including template engine like Freemarker/Velocity/Thymeleaf
+  * persistence (Spring Data/JPA/Jooq/Mybatis/Plain SQL)
+  * Spring Security
+  * AOP
+
 * Code and test plugin project as **STANDALONE** Spring Boot project.
 * Supports Spring Boot from `2.0` to `2.7`
 * **NO** extra knowledge **NEED TO LEARN** as long as you are familiar with Spring Boot.

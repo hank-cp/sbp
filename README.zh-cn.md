@@ -19,13 +19,16 @@ sbp为Spring Boot带来面向插件开发设计的能力. 它受到开源项目[
 * 一个开发部署更加**轻量简单**的螺旋扩展架构.
 * **在线** 安装/升级/启动/停止插件.
 * 由Spring Boot提供**全栈**Web/Rest后台服务, 包括:
-    * 处理请求的Controller
-    * 各种持久化工具 (Spring Data/JPA/Jooq/Plain SQL)
-    * Spring Security
-    * AOP
-    * 静态资源加载
+  * Controller/RestController
+  * RouterFunction
+  * WebFlux
+  * 静态资源加载, 也包括Freemarker/Velocity/Thymeleaf这类模板引擎
+  * 各种持久化中间件 (Spring Data/JPA/Jooq/MybatisPlain SQL)
+  * Spring Security
+  * AOP
 * 在**独立可执行的**Spring Boot工程中开发调试测试插件.
 * 只需熟悉Spring Boot, **无需要学习**其它框架知识. 
+* 支持Spring Boot从`2.0`到`2.7`各版本
 * **NO XML**
 
 ### License 

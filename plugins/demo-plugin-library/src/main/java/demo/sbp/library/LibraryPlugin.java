@@ -20,6 +20,11 @@ import org.laxture.sbp.SpringBootPlugin;
 import org.laxture.sbp.spring.boot.SharedJtaSpringBootstrap;
 import org.laxture.sbp.spring.boot.SpringBootstrap;
 import org.pf4j.PluginWrapper;
+import org.springframework.beans.BeansException;
+
+import javax.sql.DataSource;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 /**
  * @author <a href="https://github.com/hank-cp">Hank CP</a>
@@ -36,7 +41,6 @@ public class LibraryPlugin extends SpringBootPlugin {
                 this, LibraryPluginStarter.class)
                 .importBean("bookService");
     }
-
     @Override
     public void stop() {
         releaseAdditionalResources();
