@@ -21,11 +21,11 @@ import org.laxture.sbp.spring.boot.PluginStartingError;
 import org.laxture.sbp.spring.boot.SbpPluginStateChangedEvent;
 import org.pf4j.*;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.support.GenericApplicationContext;
 
-import javax.annotation.PostConstruct;
 import java.nio.file.Path;
 import java.util.*;
 
@@ -36,7 +36,7 @@ import java.util.*;
  */
 @Slf4j
 public class SpringBootPluginManager extends DefaultPluginManager
-        implements ApplicationContextAware {
+        implements ApplicationContextAware, InitializingBean {
 
     private boolean mainApplicationStarted;
     private GenericApplicationContext mainApplicationContext;
@@ -122,8 +122,8 @@ public class SpringBootPluginManager extends DefaultPluginManager
     /**
      * This method load, start plugins and inject extensions in Spring
      */
-    @PostConstruct
-    public void init() {
+    @Override
+    public void afterPropertiesSet() {
         loadPlugins();
     }
 

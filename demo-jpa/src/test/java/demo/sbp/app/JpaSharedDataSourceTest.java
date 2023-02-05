@@ -145,7 +145,7 @@ public class JpaSharedDataSourceTest {
         mvc.perform(get("/library/books/"+response.get("id").asLong())
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(3)));
+                .andExpect(jsonPath("$", hasSize(4)));
 
         // new book insert cascade
         ArrayNode books = (ArrayNode) objectMapper.readTree(
@@ -156,9 +156,9 @@ public class JpaSharedDataSourceTest {
                 .andReturn().getResponse().getContentAsByteArray());
 
         // rollback test data since @Transactional couldn't be applied to this test
-        bookService.deleteBook(books.get(books.size()-1).get("id").asLong());
         mvc.perform(get("/library/delete/"+response.get("id").asLong())
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
+        bookService.deleteBook(books.get(books.size()-1).get("id").asLong());
     }
 }

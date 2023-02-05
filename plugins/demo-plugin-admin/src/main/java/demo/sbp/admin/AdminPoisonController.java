@@ -15,24 +15,20 @@
  */
 package demo.sbp.admin;
 
-import demo.sbp.security.annotation.RequirePermission;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.annotation.PostConstruct;
 
 /**
  * @author <a href="https://github.com/hank-cp">Hank CP</a>
  */
 @RestController
 @RequestMapping(value = "/admin")
-public class AdminPoisonController {
+public class AdminPoisonController implements InitializingBean {
 
-    @PostConstruct
-    private void suicide() {
+    @Override
+    public void afterPropertiesSet() throws Exception {
 //        throw new RuntimeException();
     }
 

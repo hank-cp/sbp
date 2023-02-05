@@ -20,11 +20,10 @@ import org.laxture.sbp.SpringBootPlugin;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import javax.sql.DataSource;
 
 /**
  * Introduce central Jta transaction management between app and plugins, which
- * connect to very different databases with different {@link DataSource}.
+ * connect to very different databases with different <code>DataSource</code>.
  *
  * <b>Note that related AutoConfigurations have to be excluded explicitly to avoid
  * duplicated resource retaining.</b>

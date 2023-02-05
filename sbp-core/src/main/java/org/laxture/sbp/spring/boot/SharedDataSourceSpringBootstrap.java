@@ -21,10 +21,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import javax.sql.DataSource;
-
 /**
- * Demonstrate how to share {@link DataSource} from main {@link ApplicationContext},
+ * Demonstrate how to share <code>DataSource</code> from main {@link ApplicationContext},
  * so plugin could use the same database as app and share database connection resource,
  * e.g. connection pool, transaction, etc.
  *
@@ -53,7 +51,7 @@ public class SharedDataSourceSpringBootstrap extends SpringBootstrap {
         AnnotationConfigApplicationContext applicationContext =
                 (AnnotationConfigApplicationContext) super.createApplicationContext();
         // share dataSource
-        importBeanFromMainContext(applicationContext, DataSource.class);
+        importBeanFromMainContext(applicationContext, "dataSource");
         importBeanFromMainContext(applicationContext, "transactionManager");
         // share MongoDbFactory
         importBeanFromMainContext(applicationContext, "mongoDbFactory");

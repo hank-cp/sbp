@@ -28,7 +28,6 @@ public class Author {
 
     public long id;
 
-    @NotNull
     public String name;
 
     public List<Long> bookIds;

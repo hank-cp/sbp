@@ -87,11 +87,10 @@ public class LibraryController {
         // insert a new book for test
         Book book = bookService.persistBook(UUID.randomUUID().toString());
 
-        // FIXME Atomikos couldn't join below @Transactional to previous JPA session
-//        libraryBooks = new LibraryBooks();
-//        libraryBooks.library = library;
-//        libraryBooks.bookId = book.id;
-//        libraryBooksRepository.save(libraryBooks);
+        libraryBooks = new LibraryBooks();
+        libraryBooks.library = library;
+        libraryBooks.bookId = book.id;
+        libraryBooksRepository.save(libraryBooks);
 
         return library;
     }
