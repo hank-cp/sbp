@@ -29,4 +29,3 @@ logging:
     org.hibernate.tool.schema.internal.ExceptionHandlerLoggedImpl: ERROR
     org.jooq: DEBUG
     org.jooq.Constants: ERROR
-    com.atomikos.jdbc.AtomikosConnectionProxy: ERROR

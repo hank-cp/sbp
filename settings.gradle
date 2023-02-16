@@ -1,18 +1,17 @@
 include 'sbp-core',
-        'sbp-spring-boot-starter',
         VersionNumber.parse("${springBootVersion}") >= VersionNumber.parse("2.5")
             ? 'sbp-adapter-2.5' : 'sbp-adapter-2',
-        'sbp-flyway-spring-boot-starter',
+        'sbp-spring-boot-starter',
+        'sbp-spring-boot-flyway-starter',
 
         'demo-shared',
         'demo-security',
         'demo-api',
         'demo-plugin-author-api',
         'demo-app',
-        'demo-jpa',
+
         'demo-plugin-author',
         'demo-plugin-shelf',
-        'demo-plugin-library',
         'demo-plugin-admin',
 
         'demo-webflux',
@@ -23,7 +22,24 @@ project(":demo-plugin-author-api").projectDir = file("demo-apis/demo-plugin-auth
 
 project(":demo-plugin-author").projectDir = file("plugins/demo-plugin-author")
 project(":demo-plugin-shelf").projectDir = file("plugins/demo-plugin-shelf")
-project(":demo-plugin-library").projectDir = file("plugins/demo-plugin-library")
 project(":demo-plugin-admin").projectDir = file("plugins/demo-plugin-admin")
 
 project(":demo-plugin-webflux").projectDir = file("demo-webflux/plugins/demo-plugin-webflux")
+
+// JPA projects, only support Spring Boot 3+
+
+if (VersionNumber.parse("${springBootVersion}") >= VersionNumber.parse("3.0")) {
+    include 'demo-library-model',
+            'demo-plugin-library',
+
+            'demo-book-model',
+            'demo-jpa',
+            'sbp-spring-boot-jpa-starter'
+
+    project(":demo-book-model").projectDir = VersionNumber.parse("${springBootVersion}") >= VersionNumber.parse("3.0")
+            ? file("demo-apis/demo-book-model-3") : file("demo-apis/demo-book-model")
+    project(":demo-library-model").projectDir = VersionNumber.parse("${springBootVersion}") >= VersionNumber.parse("3.0")
+            ? file("demo-apis/demo-library-model-3") : file("demo-apis/demo-library-model")
+
+    project(":demo-plugin-library").projectDir = file("demo-jpa/plugins/demo-plugin-library")
+}

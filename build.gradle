@@ -14,8 +14,11 @@ def getPropertyOrElse(Project project, String propName, String alternative) {
 def isApplicationProject(String projectName) {
     return projectName.startsWith('demo') \
         && !projectName.endsWith('-api') \
+        && !projectName.endsWith('-model') \
+        && !projectName.endsWith('-model-3') \
         && !projectName.endsWith('-shared') \
-        && !projectName.endsWith('-security')
+        && !projectName.endsWith('-security') \
+        && !projectName.endsWith('-test-support')
 }
 
 def isLibraryProject(String projectName) {
@@ -47,7 +50,7 @@ buildscript {
 
 plugins {
     id 'idea'
-    id 'nu.studer.jooq' version '6.0.1' apply false
+    id 'nu.studer.jooq' version '8.1' apply false
     id 'org.flywaydb.flyway' version "8.4.0" apply false
 }
 
@@ -134,8 +137,13 @@ subprojects {
 // Compile & Assemble
 //*************************************************************************
 
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
+    if (VersionNumber.parse("${springBootVersion}") >= VersionNumber.parse("3.0")) {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    } else {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
 
     tasks.withType(AbstractCompile) {
         options.encoding = 'UTF-8'

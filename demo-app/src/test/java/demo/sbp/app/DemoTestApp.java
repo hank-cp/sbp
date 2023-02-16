@@ -21,7 +21,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 /**
  * @author <a href="https://github.com/hank-cp">Hank CP</a>
  */
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = "demo.sbp")
 public class DemoTestApp extends DemoApp {
 
     public static void main(String[] args) {

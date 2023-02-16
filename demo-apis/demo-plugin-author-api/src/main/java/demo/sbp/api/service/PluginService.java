@@ -15,10 +15,6 @@
  */
 package demo.sbp.api.service;
 
-import demo.sbp.api.model.Author;
-
-import java.util.List;
-
 /**
  * @author <a href="https://github.com/hank-cp">Hank CP</a>
  */

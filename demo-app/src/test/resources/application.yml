@@ -23,8 +23,6 @@ spring:
       - "build/resources/main"
     lib-directories:
       - "libs"
-    plugin-profiles:
-      - share_jta
     plugin-properties:
       spring:
         flyway:
@@ -53,12 +51,6 @@ spring:
     clean-before-migrate: true
   jooq:
     sql-dialect: postgres
-  jta:
-    atomikos:
-      datasource:
-        max-pool-size: 20
-        min-pool-size: 5
-        borrow-connection-timeout: 60
   main:
     allow-bean-definition-overriding: true
 

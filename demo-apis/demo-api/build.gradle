@@ -1,3 +1,7 @@
+plugins {
+    id 'java-library'
+}
+
 dependencies {
     implementation("org.pf4j:pf4j:${pf4jVersion}") {
         exclude group: 'org.slf4j', module: 'slf4j-log4j12'

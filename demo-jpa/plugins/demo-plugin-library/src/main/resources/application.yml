@@ -1,0 +1,13 @@
+spring:
+  datasource:
+    url: "jdbc:postgresql://localhost/sbp"
+    username: postgres
+    driver-class-name: "org.postgresql.Driver"
+  flyway:
+    enabled: false
+
+logging:
+  level:
+    org.hibernate.tool.schema.internal.ExceptionHandlerLoggedImpl: ERROR
+    org.jooq: DEBUG
+    org.jooq.Constants: ERROR

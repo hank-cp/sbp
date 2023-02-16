@@ -25,7 +25,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.DependsOn;
@@ -55,7 +54,7 @@ public class DemoApp {
     @Bean
     @ConditionalOnMissingBean
     @DependsOn("multiApplicationContextProviderRegister")
-    public ModelMapper modelMapper(ApplicationContext applicationContext) {
+    public ModelMapper modelMapper() {
         ModelMapper mapper = new ModelMapper();
         mapper.getConfiguration().setSourceNameTokenizer(NameTokenizers.CAMEL_CASE)
                 .addValueReader(new RecordValueReader());

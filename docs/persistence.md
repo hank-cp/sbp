@@ -111,7 +111,7 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQL95Dialect
-        hbm2dll:
+        hbm2ddl:
           create_namespaces: true
     show-sql: true
     open-in-view: false

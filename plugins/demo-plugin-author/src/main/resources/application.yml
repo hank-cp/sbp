@@ -15,6 +15,8 @@ spring:
     sql-dialect: postgres
 
 sbp-plugin:
+#  plugin-first-classes:
+#    - org.jooq.DSLContext1
   plugin-only-resources:
     - plugin_only
 

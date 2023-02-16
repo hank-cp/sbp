@@ -256,6 +256,10 @@ public class SpringBootstrap extends SpringApplication {
                 getExcludeConfigurations());
     }
 
+    public GenericApplicationContext getMainApplicationContext() {
+        return mainApplicationContext;
+    }
+
     /**
      * Beans that wanted to be shared from main {@link ApplicationContext}.
      * Note that this method only takes effect before {@link #run(String...)} method.
@@ -398,12 +402,11 @@ public class SpringBootstrap extends SpringApplication {
                                  String beanName, boolean registerBeanDefinition) {
         try {
             Object bean = sourceApplicationContext.getBean(beanName);
+            if (registerBeanDefinition) {
+                importBeanDefinition(sourceApplicationContext, applicationContext, beanName);
+            }
             applicationContext.getBeanFactory().registerSingleton(beanName, bean);
             applicationContext.getBeanFactory().autowireBean(bean);
-            if (registerBeanDefinition) {
-                BeanDefinition beanDef = sourceApplicationContext.getBeanDefinition(beanName);
-                applicationContext.registerBeanDefinition(beanName, beanDef);
-            }
             importedBeanNames.add(beanName);
             log.info("Bean {} is imported from {} ApplicationContext", beanName,
                     (sourceApplicationContext == mainApplicationContext ? "app" : "plugin"));
@@ -425,12 +428,11 @@ public class SpringBootstrap extends SpringApplication {
             for (String beanName : beans.keySet()) {
                 if (applicationContext.containsBean(beanName)) continue;
                 Object bean = beans.get(beanName);
+                if (registerBeanDefinition) {
+                    importBeanDefinition(sourceApplicationContext, applicationContext, beanName);
+                }
                 applicationContext.getBeanFactory().registerSingleton(beanName, bean);
                 applicationContext.getBeanFactory().autowireBean(bean);
-                if (registerBeanDefinition) {
-                    BeanDefinition beanDef = sourceApplicationContext.getBeanDefinition(beanName);
-                    applicationContext.registerBeanDefinition(beanName, beanDef);
-                }
                 importedBeanNames.add(beanName);
             }
             log.info("Bean {} is imported from {} ApplicationContext", beanClass.getSimpleName(),
@@ -447,8 +449,18 @@ public class SpringBootstrap extends SpringApplication {
     }
 
     protected boolean importBeanFromMainContext(GenericApplicationContext applicationContext,
+                                                String beanName, boolean registerBeanDefinition) {
+        return importBean(mainApplicationContext, applicationContext, beanName, registerBeanDefinition);
+    }
+
+    protected boolean importBeanFromMainContext(GenericApplicationContext applicationContext,
                                                 Class<?> beanClass) {
         return importBean(mainApplicationContext, applicationContext, beanClass, false);
+    }
+
+    protected boolean importBeanFromMainContext(GenericApplicationContext applicationContext,
+                                                Class<?> beanClass, boolean registerBeanDefinition) {
+        return importBean(mainApplicationContext, applicationContext, beanClass, registerBeanDefinition);
     }
 
     protected boolean importBeanFromDependentPlugin(GenericApplicationContext applicationContext,
@@ -473,6 +485,15 @@ public class SpringBootstrap extends SpringApplication {
             if (importBean(sbPlugin.getApplicationContext(), applicationContext, beanClass, false)) return true;
         }
         return false;
+    }
+
+    protected void importBeanDefinition(GenericApplicationContext sourceApplicationContext,
+                                        GenericApplicationContext applicationContext,
+                                        String beanName) {
+        try {
+            BeanDefinition beanDef = sourceApplicationContext.getBeanDefinition(beanName);
+            applicationContext.registerBeanDefinition(beanName, beanDef);
+        } catch (NoSuchBeanDefinitionException ignored) {}
     }
 
     private String getProperties(Environment env, String propName, int index) {

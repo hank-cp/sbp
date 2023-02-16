@@ -15,23 +15,21 @@
  */
 package demo.sbp.app;
 
-import com.atomikos.jdbc.AtomikosDataSourceBean;
 import lombok.extern.java.Log;
-import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.laxture.sbp.SpringBootPlugin;
 import org.laxture.sbp.SpringBootPluginManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
-import javax.sql.DataSource;
+import java.util.Base64;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -48,22 +46,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class PluginSecurityTest {
 
     @Autowired
+    private ApplicationContext applicationContext;
+
+    @Autowired
     private MockMvc mvc;
 
     @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
     private SpringBootPluginManager pluginManager;
-
-    @Autowired
-    private DataSource dataSource;
-
-    @After
-    public void afterTest() {
-        ((AtomikosDataSourceBean)dataSource).close();
-        SpringBootPlugin plugin = (SpringBootPlugin)
-                pluginManager.getPlugin("demo-plugin-library").getPlugin();
-        plugin.releaseAdditionalResources();
-    }
 
     @Test
     public void testAppUnauthorized() throws Exception {
@@ -82,7 +72,7 @@ public class PluginSecurityTest {
     @Test
     public void testAppAuthorized() throws Exception {
         mvc.perform(get("/book/list")
-                .header("authorization", "Basic dXNlcjp1c2Vy") // login as user
+                .header("authorization", "Basic " + Base64.getEncoder().encodeToString("user:user".getBytes()))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
@@ -90,7 +80,7 @@ public class PluginSecurityTest {
     @Test
     public void testPluginAuthorized() throws Exception {
         mvc.perform(get("/author/list")
-                .header("authorization", "Basic dXNlcjp1c2Vy") // login as user
+                .header("authorization", "Basic " + Base64.getEncoder().encodeToString("user:user".getBytes()))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
@@ -98,12 +88,12 @@ public class PluginSecurityTest {
     @Test
     public void testAppPermissionCheckByAop() throws Exception {
         mvc.perform(get("/plugin/list")
-                .header("authorization", "Basic dXNlcjp1c2Vy") // login as user
+                .header("authorization", "Basic " + Base64.getEncoder().encodeToString("user:user".getBytes()))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized());
 
         mvc.perform(get("/plugin/list")
-                .header("authorization", "Basic YWRtaW46YWRtaW4=") // login as user
+                .header("authorization", "Basic " + Base64.getEncoder().encodeToString("admin:admin".getBytes()))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
@@ -111,12 +101,12 @@ public class PluginSecurityTest {
     @Test
     public void testPluginPermissionCheckByAop() throws Exception {
         mvc.perform(get("/admin/admin")
-                .header("authorization", "Basic dXNlcjp1c2Vy") // login as user
+                .header("authorization", "Basic " + Base64.getEncoder().encodeToString("user:user".getBytes()))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized());
 
         mvc.perform(get("/admin/admin")
-                .header("authorization", "Basic YWRtaW46YWRtaW4=")  // login as admin
+                .header("authorization", "Basic " + Base64.getEncoder().encodeToString("admin:admin".getBytes()))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }

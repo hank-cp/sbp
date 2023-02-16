@@ -31,24 +31,23 @@ import java.util.stream.Collectors;
  * @author <a href="https://github.com/hank-cp">Hank CP</a>
  */
 @SuppressWarnings("ConstantConditions")
-public class IdsConverter implements ConditionalConverter<Record, List<Long>> {
+public class IdsConverter implements ConditionalConverter<String, List<Long>> {
 
     @Override
     public MatchResult match(Class<?> sourceType, Class<?> destinationType) {
-        return Record.class.isAssignableFrom(sourceType)
+        return String.class.isAssignableFrom(sourceType)
                 && Collection.class.isAssignableFrom(destinationType)
                 ? MatchResult.FULL
                 : MatchResult.NONE;
     }
 
     @Override
-    public List<Long> convert(MappingContext<Record, List<Long>> context) {
-        Object source = context.getSource();
-        String idsInString = (String) source;
-        if (idsInString == null || idsInString.length() <= 0)
+    public List<Long> convert(MappingContext<String, List<Long>> context) {
+        String source = context.getSource();
+        if (source == null || source.length() <= 0)
             return new ArrayList<>();
 
-        String[] ids = idsInString.split(",");
+        String[] ids = source.split(",");
         return Arrays.stream(ids)
                 .map(Long::parseLong)
                 .collect(Collectors.toList());

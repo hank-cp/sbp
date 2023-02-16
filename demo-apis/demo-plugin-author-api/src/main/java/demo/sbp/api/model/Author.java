@@ -17,7 +17,6 @@ package demo.sbp.api.model;
 
 import lombok.Data;
 
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**

@@ -1,0 +1,9 @@
+plugins {
+    id 'java-library'
+}
+
+dependencies {
+    implementation project(':demo-api')
+    implementation 'org.hibernate.orm:hibernate-core'
+    implementation 'org.laxture:spring-static-ctx:0.1.2'
+}

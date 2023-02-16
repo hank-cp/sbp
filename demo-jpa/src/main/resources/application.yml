@@ -13,6 +13,7 @@ spring:
   flyway:
     enabled: false
   sbp:
+    plugins-root: "demo-jpa/plugins"
     runtime-mode: development
     enabled: true
     classes-directories:
@@ -20,6 +21,8 @@ spring:
       - "out/production/resources"
       - "build/classes/java/main"
       - "build/resources/main"
+    lib-directories:
+      - "libs"
     disabled-plugins:
       - demo-plugin-admin
       - demo-plugin-author
@@ -39,31 +42,20 @@ spring:
       base-path: sbp
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
     properties:
       hibernate:
+        dialect: org.hibernate.dialect.PostgreSQL95Dialect
+        hbm2ddl:
+          create_namespaces: true
+        database-platform: org.hibernate.dialect.PostgreSQL9Dialect
         temp:
           use_jdbc_metadata_defaults: false
-    database-platform: org.hibernate.dialect.PostgreSQL9Dialect
-  jta:
-    atomikos:
-      datasource:
-        max-pool-size: 20
-        min-pool-size: 5
-        borrow-connection-timeout: 60
+    show-sql: true
+    open-in-view: false
   main:
     allow-bean-definition-overriding: true
 
 logging:
   level:
     org.hibernate.tool.schema.internal.ExceptionHandlerLoggedImpl: ERROR
-    com.atomikos.jdbc.AtomikosConnectionProxy: ERROR
-
----
-spring:
-  profiles: docker
-  sbp:
-    runtime-mode: deployment
-    plugins-root: plugins
-    plugin-profiles:
-      - docker

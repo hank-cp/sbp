@@ -19,13 +19,9 @@ import org.laxture.sbp.SpringBootPlugin;
 import org.laxture.sbp.SpringBootPluginManager;
 import org.pf4j.ExtensionFactory;
 import org.pf4j.PluginWrapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
-
-import java.util.Optional;
 
 /**
  * Pf4j ExtensionFactory to create/retrieve extension bean from spring
@@ -35,9 +31,7 @@ import java.util.Optional;
  */
 public class SpringExtensionFactory implements ExtensionFactory {
 
-    private static final Logger log = LoggerFactory.getLogger(SpringExtensionFactory.class);
-
-    private SpringBootPluginManager pluginManager;
+    private final SpringBootPluginManager pluginManager;
 
     public SpringExtensionFactory(SpringBootPluginManager pluginManager) {
         this.pluginManager = pluginManager;
@@ -69,7 +63,7 @@ public class SpringExtensionFactory implements ExtensionFactory {
 
     private Object createWithoutSpring(Class<?> extensionClass) {
         try {
-            return extensionClass.newInstance();
+            return extensionClass.getDeclaredConstructor().newInstance();
         } catch (Exception e) {
             throw new IllegalArgumentException(e.getMessage(), e);
         }

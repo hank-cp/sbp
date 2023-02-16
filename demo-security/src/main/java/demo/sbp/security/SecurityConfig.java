@@ -15,21 +15,28 @@
  */
 package demo.sbp.security;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.authentication.configurers.provisioning.InMemoryUserDetailsManagerConfigurer;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.util.StringUtils;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  * [Spring Security](https://spring.io/projects/spring-security) configuration.
@@ -43,14 +50,21 @@ import javax.servlet.http.HttpServletResponse;
 @Configuration
 @AutoConfigureBefore(SecurityAutoConfiguration.class)
 @ConditionalOnProperty(prefix = "sbp-demo.security", name = "app-enabled", havingValue = "true")
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+public class SecurityConfig { // extends InMemoryUserDetailsManagerConfigurer<AuthenticationManagerBuilder> {
 
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.inMemoryAuthentication()
-                .withUser("admin").password(encoder().encode("admin")).roles("ADMIN")
-                .and()
-                .withUser("user").password(encoder().encode("user")).roles("USER");
+//    @Override
+//    public void configure(AuthenticationManagerBuilder builder) throws Exception {
+//        this.withUser("admin").password("admin").roles("ADMIN")
+//            .and()
+//            .withUser("user").password("user").roles("USER");
+//        super.configure(builder);
+//    }
+
+    @Bean
+    public InMemoryUserDetailsManager inMemoryUserDetailsManager(PasswordEncoder encoder) {
+        return new InMemoryUserDetailsManager(
+            User.withUsername("admin").password(encoder.encode("admin")).roles("ADMIN").build(),
+            User.withUsername("user").password(encoder.encode("user")).roles("USER").build());
     }
 
     @Bean
@@ -73,7 +87,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public AuthenticationEntryPoint restAuthenticationEntryPoint() {
         return (request, response, authException) ->
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+                response.sendError(HttpStatus.UNAUTHORIZED.ordinal(), "Unauthorized");
     }
 
 }

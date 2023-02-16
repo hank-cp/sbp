@@ -1,0 +1,10 @@
+plugins {
+    id 'java-library'
+}
+
+dependencies {
+    implementation project(':demo-api')
+    implementation 'org.hibernate:hibernate-core'
+    implementation 'com.fasterxml.jackson.core:jackson-annotations'
+    implementation 'org.laxture:spring-static-ctx:0.1.2'
+}

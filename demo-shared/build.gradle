@@ -7,10 +7,7 @@ dependencies {
 
     api "org.springframework.boot:spring-boot-starter-web"
     api "org.springframework.boot:spring-boot-starter-aop"
-    api ("org.springframework.boot:spring-boot-starter-jooq") {
-        exclude group: 'org.jooq', module: 'jooq'
-    }
-    api "org.springframework.boot:spring-boot-starter-jta-atomikos"
+    api("org.springframework.boot:spring-boot-starter-jooq")
     api "org.springframework.boot:spring-boot-configuration-processor"
     api "org.springframework:spring-context-support"
 
@@ -18,8 +15,10 @@ dependencies {
     api "joda-time:joda-time"
     api "com.fasterxml.jackson.datatype:jackson-datatype-joda"
     api 'org.modelmapper:modelmapper:2.3.0'
-    api 'org.modelmapper.extensions:modelmapper-jooq:2.3.0'
-    api "org.jooq:jooq:${jooqVersion}"
+    api('org.modelmapper.extensions:modelmapper-jooq:3.1.0') {
+        exclude group: 'org.jooq', module: 'jooq'
+    }
+    api "org.jooq:jooq"
     api "org.apache.commons:commons-lang3:3.8.1"
     api 'org.laxture:spring-static-ctx:0.1.2'
     api 'org.flywaydb:flyway-core'

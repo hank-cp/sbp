@@ -20,8 +20,6 @@ spring:
       - "build/resources/main"
     lib-directories:
       - "libs"
-    plugin-profiles:
-      - share_jta
     plugin-properties:
       spring:
         jpa:
@@ -52,12 +50,6 @@ spring:
         temp:
           use_jdbc_metadata_defaults: false
     database-platform: org.hibernate.dialect.PostgreSQL9Dialect
-  jta:
-    atomikos:
-      datasource:
-        max-pool-size: 20
-        min-pool-size: 5
-        borrow-connection-timeout: 60
   main:
     allow-bean-definition-overriding: true
 
@@ -66,14 +58,3 @@ logging:
     org.hibernate.tool.schema.internal.ExceptionHandlerLoggedImpl: ERROR
     org.jooq: DEBUG
     org.jooq.Constants: ERROR
-    com.atomikos.jdbc.AtomikosConnectionProxy: ERROR
-
----
-spring:
-  profiles: docker
-  sbp:
-    runtime-mode: deployment
-    plugins-root: plugins
-    plugin-profiles:
-      - docker
-      - share_jta

@@ -15,15 +15,10 @@
  */
 package demo.sbp.app;
 
-import com.atomikos.datasource.RecoverableResource;
-import com.atomikos.icatch.config.Configuration;
-import com.atomikos.jdbc.AtomikosDataSourceBean;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import demo.sbp.api.service.BookService;
 import lombok.extern.java.Log;
-import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.laxture.sbp.SpringBootPlugin;
@@ -33,7 +28,6 @@ import org.pf4j.util.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
@@ -42,11 +36,12 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.sql.DataSource;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.FileSystems;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -74,9 +69,6 @@ public class PluginIntegrationTest {
     private MockMvc mvc;
 
     @Autowired
-    private ApplicationContext applicationContext;
-
-    @Autowired
     private BookService bookService;
 
     @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
@@ -85,17 +77,6 @@ public class PluginIntegrationTest {
 
     @Autowired
     private ObjectMapper objectMapper;
-
-    @Autowired
-    private DataSource dataSource;
-
-    @After
-    public void afterTest() {
-        ((AtomikosDataSourceBean)dataSource).close();
-        SpringBootPlugin plugin = (SpringBootPlugin)
-                pluginManager.getPlugin("demo-plugin-library").getPlugin();
-        plugin.releaseAdditionalResources();
-    }
 
     @Test
     public void testApp() throws Exception {
@@ -121,14 +102,15 @@ public class PluginIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[*]", containsInAnyOrder(
-                        "demo-plugin-author", "demo-plugin-shelf",
-                        "demo-plugin-admin", "demo-plugin-library")));
+                    "demo-plugin-author",
+                    "demo-plugin-shelf",
+                    "demo-plugin-admin")));
 
         mvc.perform(get("/plugin/extensions/list")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[*]",
-                        containsInAnyOrder("author", "shelf", "admin", "library")));
+                        containsInAnyOrder("author", "shelf", "admin")));
     }
 
     @Test
@@ -143,7 +125,7 @@ public class PluginIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[*]",
-                        containsInAnyOrder("author", "admin", "library")));
+                        containsInAnyOrder("author", "admin")));
 
         pluginManager.startPlugin("demo-plugin-shelf");
 
@@ -158,42 +140,7 @@ public class PluginIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[*]",
-                        containsInAnyOrder("author", "shelf", "admin", "library")));
-    }
-
-    @Test
-    public void testPluginStartStopReleaseDataSource() throws Exception {
-        // first access dataSource to trigger xaDataSource init
-        mvc.perform(get("/book/list")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(3)));
-        mvc.perform(get("/library/list")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(0)));
-
-        List<RecoverableResource> dataSource = new ArrayList<>();
-        Enumeration<RecoverableResource> enumeration = Configuration.getResources();
-        while (enumeration.hasMoreElements()) {
-            dataSource.add(enumeration.nextElement());
-        }
-        assertThat(dataSource, hasSize(2));
-
-        RecoverableResource jpaDataSource = Configuration.getResource("dataSource-library");
-        assertThat(jpaDataSource, notNullValue());
-        assertThat(jpaDataSource.isClosed(), is(false));
-
-        pluginManager.stopPlugin("demo-plugin-library");
-
-        jpaDataSource = Configuration.getResource("dataSource-library");
-        assertThat(jpaDataSource, nullValue());
-
-        pluginManager.startPlugin("demo-plugin-library");
-
-        jpaDataSource = Configuration.getResource("dataSource-library");
-        assertThat(jpaDataSource, notNullValue());
-        assertThat(jpaDataSource.isClosed(), is(false));
+                        containsInAnyOrder("author", "shelf", "admin")));
     }
 
     @Test
@@ -371,37 +318,6 @@ public class PluginIntegrationTest {
     }
 
     @Test
-    public void testAppServiceFailedAndRollbackWithJpa() throws Exception {
-        mvc.perform(get("/library/list")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(0)));
-
-        mvc.perform(get("/book/list")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(3)));
-
-        try {
-            mvc.perform(get("/library/failed")
-                    .contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(status().isInternalServerError());
-        } catch (Exception ignored) {}
-
-        // libraries should be rollback to 0
-        mvc.perform(get("/library/list")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(0)));
-
-        // books cascade saving should be rollback to 3
-        mvc.perform(get("/book/list")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(3)));
-    }
-
-    @Test
     @Transactional
     public void testPluginService() throws Exception {
         mvc.perform(get("/shelf/list")
@@ -420,59 +336,6 @@ public class PluginIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", equalTo("plugin")));
-    }
-
-    @Test
-//    @Transactional
-    public void testJpaCompatibility() throws Exception {
-        /*
-        JpaTransactionManager does not support
-        running within DataSourceTransactionManager if told to manage the DataSource itself.
-        It is recommended to use a single JpaTransactionManager for all transactions
-        on a single DataSource, no matter whether JPA or JDBC access.
-
-        If @Transactional is annotated, Spring Test will start a transaction by
-        DataSourceTransactionManager to rollback test data, which is conflict with
-        JPATransactionManager. So in this test case we have to rollback test data manually.
-         */
-
-        // no data initially
-        mvc.perform(get("/library/list")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(0)));
-
-        // insert data
-        JsonNode response = objectMapper.readTree(mvc.perform(get("/library/new")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andReturn().getResponse().getContentAsByteArray());
-        assertThat(response, notNullValue());
-        assertThat(response.get("id").asLong(), not(0L));
-
-        mvc.perform(get("/library/list")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(1)));
-
-        mvc.perform(get("/library/books/"+response.get("id").asLong())
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(4)));
-
-        // new book insert cascade
-        ArrayNode books = (ArrayNode) objectMapper.readTree(
-                mvc.perform(get("/book/list")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(4)))
-                .andReturn().getResponse().getContentAsByteArray());
-
-        // rollback test data since @Transactional couldn't be applied to this test
-        mvc.perform(get("/library/delete/"+response.get("id").asLong())
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
-        bookService.deleteBook(books.get(books.size()-1).get("id").asLong());
     }
 
     @Test

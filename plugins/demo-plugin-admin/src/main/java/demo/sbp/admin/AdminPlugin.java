@@ -36,6 +36,7 @@ public class AdminPlugin extends SpringBootPlugin {
         if (getMainApplicationContext().containsBean(SecurityConfig.class.getName())) {
             bootstrap.addPresetProperty("sbp.security.enabled", true);
         }
+        bootstrap.importBean("permissionCheckingAspect");
         return bootstrap;
     }
 

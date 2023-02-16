@@ -1,0 +1,8 @@
+plugins {
+    id 'java-library'
+}
+
+dependencies {
+    implementation project(':demo-api')
+    implementation 'org.hibernate.orm:hibernate-core'
+}
