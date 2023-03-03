@@ -16,13 +16,9 @@
 package demo.sbp.library;
 
 import org.laxture.sbp.SpringBootPlugin;
-import org.laxture.sbp.spring.boot.PluginPersistenceManagedTypes;
-import org.laxture.sbp.spring.boot.SharedJpaSpringBootstrap;
+import org.laxture.sbp.spring.boot.SbpJpaConfigurer;
 import org.laxture.sbp.spring.boot.SpringBootstrap;
 import org.pf4j.PluginWrapper;
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.core.io.ResourceLoader;
-import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 /**
  * @author <a href="https://github.com/hank-cp">Hank CP</a>
@@ -30,36 +26,13 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 public class LibraryPlugin extends SpringBootPlugin {
 
     public LibraryPlugin(PluginWrapper wrapper) {
-        super(wrapper);
+        super(wrapper, new SbpJpaConfigurer(new String[] {"demo.sbp.library.model"}));
     }
 
     @Override
     protected SpringBootstrap createSpringBootstrap() {
-        return new SharedJpaSpringBootstrap(
-                this, new String[] {"demo.sbp.library.model"}, LibraryPluginStarter.class)
+        return new SpringBootstrap(
+                this, LibraryPluginStarter.class)
                 .importBean("bookService");
-    }
-
-    @Override
-    public void start() {
-        super.start();
-//        PluginPersistenceManagedTypes persistenceManagedTypes = (PluginPersistenceManagedTypes)
-//            getApplicationContext().getBean("persistenceManagedTypes");
-//        BeanFactory beanFactory = (BeanFactory) getApplicationContext().getBean("beanFactory");
-//        ResourceLoader resourceLoader = (ResourceLoader) getApplicationContext().getBean("resourceLoader");
-//        LocalContainerEntityManagerFactoryBean entityManagerFactory = (LocalContainerEntityManagerFactoryBean)
-//            getApplicationContext().getBean("entityManagerFactory");
-//
-//        persistenceManagedTypes.registerPackage(beanFactory, resourceLoader);
-//        entityManagerFactory.afterPropertiesSet();
-        // TODO register Classloader
-
-    }
-
-    @Override
-    public void stop() {
-        // TODO unregister PersistenceManagedTypes
-        releaseAdditionalResources();
-        super.stop();
     }
 }

@@ -37,8 +37,7 @@ public class PluginRequestMappingHandlerMapping extends RequestMappingHandlerMap
     }
 
     @Override
-    public void registerController(SpringBootPlugin springBootPlugin, Object controller) {
-        String beanName = controller.getClass().getName();
+    public void registerController(SpringBootPlugin springBootPlugin, String beanName, Object controller) {
         // unregister RequestMapping if already registered
         unregisterController(springBootPlugin, controller);
         springBootPlugin.registerBeanToMainContext(beanName, controller);

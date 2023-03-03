@@ -16,10 +16,10 @@
 package demo.sbp.shelf;
 
 import demo.sbp.api.service.PluginService;
-import org.pf4j.PluginWrapper;
 import org.laxture.sbp.SpringBootPlugin;
-import org.laxture.sbp.spring.boot.SharedDataSourceSpringBootstrap;
 import org.laxture.sbp.spring.boot.SpringBootstrap;
+import org.laxture.sbp.spring.boot.configurer.SbpDataSourceConfigurer;
+import org.pf4j.PluginWrapper;
 
 /**
  * @author <a href="https://github.com/hank-cp">Hank CP</a>
@@ -27,12 +27,12 @@ import org.laxture.sbp.spring.boot.SpringBootstrap;
 public class ShelfPlugin extends SpringBootPlugin {
 
     public ShelfPlugin(PluginWrapper wrapper) {
-        super(wrapper);
+        super(wrapper, new SbpDataSourceConfigurer());
     }
 
     @Override
     protected SpringBootstrap createSpringBootstrap() {
-        return new SharedDataSourceSpringBootstrap(this, ShelfPluginStarter.class)
+        return new SpringBootstrap(this, ShelfPluginStarter.class)
                 .importBean("bookService")
                 .importBean("authorService")
                 .importBean(PluginService.class);

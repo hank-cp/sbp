@@ -27,6 +27,7 @@ import org.springframework.boot.autoconfigure.web.servlet.PluginResourceHandlerR
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcRegistrations;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
@@ -75,7 +76,7 @@ public class SbpWebMvcPatchAutoConfiguration {
 		};
 	}
 
-	@Bean
+	@Bean @Primary
 	public PluginResourceHandlerRegistrationCustomizer resourceHandlerRegistrationCustomizer() {
 		return new PluginResourceHandlerRegistrationCustomizer();
 	}

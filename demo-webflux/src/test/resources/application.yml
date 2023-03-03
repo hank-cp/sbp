@@ -23,9 +23,3 @@ spring:
     enabled: false
   main:
     allow-bean-definition-overriding: true
-
-logging:
-  level:
-    org.hibernate.tool.schema.internal.ExceptionHandlerLoggedImpl: ERROR
-    org.jooq: DEBUG
-    org.jooq.Constants: ERROR

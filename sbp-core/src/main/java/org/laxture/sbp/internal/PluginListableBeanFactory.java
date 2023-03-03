@@ -15,8 +15,11 @@
  */
 package org.laxture.sbp.internal;
 
+import org.laxture.sbp.util.BeanUtil;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
+
+import java.util.Map;
 
 /**
  * @author <a href="https://github.com/hank-cp">Hank CP</a>
@@ -35,5 +38,4 @@ public class PluginListableBeanFactory extends DefaultListableBeanFactory {
         } catch (ClassNotFoundException ignored) {}
         return super.predictBeanType(beanName, mbd, typesToMatch);
     }
-
 }

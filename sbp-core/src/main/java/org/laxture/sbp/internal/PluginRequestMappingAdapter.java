@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.LinkedHashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -38,31 +38,32 @@ public interface PluginRequestMappingAdapter {
     // RequestMapping
     //*************************************************************************
 
-    void registerController(SpringBootPlugin springBootPlugin, Object controller);
+    void registerController(SpringBootPlugin springBootPlugin, String beanName, Object controller);
 
     void unregisterController(SpringBootPlugin springBootPlugin, Object controller);
 
     default void registerControllers(SpringBootPlugin springBootPlugin) {
-        getControllerBeans(springBootPlugin).forEach(bean -> registerController(springBootPlugin, bean));
+        getControllerBeans(springBootPlugin).forEach((beanName, bean) ->
+            registerController(springBootPlugin, beanName, bean));
     }
 
     default void unregisterControllers(SpringBootPlugin springBootPlugin) {
-        getControllerBeans(springBootPlugin).forEach(bean ->
+        getControllerBeans(springBootPlugin).forEach((beanName, bean) ->
             unregisterController(springBootPlugin, bean));
     }
 
-    default Set<Object> getControllerBeans(SpringBootPlugin springBootPlugin) {
-        LinkedHashSet<Object> beans = new LinkedHashSet<>();
+    default Map<String, Object> getControllerBeans(SpringBootPlugin springBootPlugin) {
+        LinkedHashMap<String, Object> beans = new LinkedHashMap<>();
         ApplicationContext applicationContext = springBootPlugin.getApplicationContext();
         //noinspection unchecked
         Set<String> sharedBeanNames = (Set<String>) applicationContext.getBean(
                 SpringBootstrap.BEAN_IMPORTED_BEAN_NAMES);
-        beans.addAll(applicationContext.getBeansWithAnnotation(Controller.class)
+        beans.putAll(applicationContext.getBeansWithAnnotation(Controller.class)
                 .entrySet().stream().filter(beanEntry -> !sharedBeanNames.contains(beanEntry.getKey()))
-                .map(Map.Entry::getValue).collect(Collectors.toList()));
-        beans.addAll(applicationContext.getBeansWithAnnotation(RestController.class)
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
+        beans.putAll(applicationContext.getBeansWithAnnotation(RestController.class)
                 .entrySet().stream().filter(beanEntry -> !sharedBeanNames.contains(beanEntry.getKey()))
-                .map(Map.Entry::getValue).collect(Collectors.toList()));
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
         return beans;
     }
 
@@ -73,28 +74,28 @@ public interface PluginRequestMappingAdapter {
     Class<?> getRouterFunctionClass();
 
     default void registerRouterFunction(SpringBootPlugin springBootPlugin) {
-        getRouterFunctionBeans(springBootPlugin).forEach(bean -> {
-            String beanName = bean.getClass().getName();
+        getRouterFunctionBeans(springBootPlugin).forEach((beanName, bean) -> {
             // unregister RequestMapping if already registered
-            springBootPlugin.unregisterBeanFromMainContext(bean);
+            springBootPlugin.unregisterBeanFromMainContext(beanName);
             springBootPlugin.registerBeanToMainContext(beanName, bean);
         });
         this.initRouterFunctions(springBootPlugin);
     }
 
     default void unregisterRouterFunction(SpringBootPlugin springBootPlugin) {
-        getRouterFunctionBeans(springBootPlugin).forEach(springBootPlugin::unregisterBeanFromMainContext);
+        getRouterFunctionBeans(springBootPlugin).forEach(
+            (beanName, bean) -> springBootPlugin.unregisterBeanFromMainContext(beanName));
         this.initRouterFunctions(springBootPlugin);
     }
 
-    default Set<Object> getRouterFunctionBeans(SpringBootPlugin springBootPlugin) {
+    default Map<String, Object> getRouterFunctionBeans(SpringBootPlugin springBootPlugin) {
         ApplicationContext applicationContext = springBootPlugin.getApplicationContext();
         //noinspection unchecked
         Set<String> sharedBeanNames = (Set<String>) applicationContext.getBean(
             SpringBootstrap.BEAN_IMPORTED_BEAN_NAMES);
         return applicationContext.getBeansOfType(getRouterFunctionClass())
             .entrySet().stream().filter(beanEntry -> !sharedBeanNames.contains(beanEntry.getKey()))
-            .map(Map.Entry::getValue).collect(Collectors.toSet());
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 
     default void initRouterFunctions(SpringBootPlugin springBootPlugin) {

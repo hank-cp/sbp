@@ -21,11 +21,9 @@ spring:
       base-path: sbp
   flyway:
     enabled: false
-  main:
-    allow-bean-definition-overriding: true
+#  main:
+#    allow-bean-definition-overriding: true
 
-logging:
-  level:
-    org.hibernate.tool.schema.internal.ExceptionHandlerLoggedImpl: ERROR
-    org.jooq: DEBUG
-    org.jooq.Constants: ERROR
+springdoc:
+  cache:
+    disabled: true

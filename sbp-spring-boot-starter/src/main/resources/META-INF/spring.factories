@@ -2,4 +2,8 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   org.laxture.sbp.spring.boot.SbpAutoConfiguration,\
   org.laxture.sbp.spring.boot.SbpWebMvcPatchAutoConfiguration,\
-  org.laxture.sbp.spring.boot.SbpWebFluxPatchAutoConfiguration
+  org.laxture.sbp.spring.boot.SbpWebFluxPatchAutoConfiguration,\
+  org.laxture.sbp.spring.boot.FlywayClassLoaderConfiguration
+
+org.springframework.boot.autoconfigure.AutoConfigurationImportFilter=\
+    org.laxture.sbp.spring.boot.ExcludeConfigurationFilter

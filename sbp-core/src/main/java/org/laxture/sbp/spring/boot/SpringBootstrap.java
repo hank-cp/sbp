@@ -249,8 +249,9 @@ public class SpringBootstrap extends SpringApplication {
         this.plugin = plugin;
         this.mainApplicationContext = plugin.getMainApplicationContext();
         this.pluginClassLoader = plugin.getWrapper().getPluginClassLoader();
+
         Map<String, Object> presetProperties = ((SpringBootPluginManager)
-                plugin.getWrapper().getPluginManager()).getPresetProperties();
+            plugin.getWrapper().getPluginManager()).getPresetProperties();
         if (presetProperties != null) this.presetProperties.putAll(presetProperties);
         this.presetProperties.put(PROPERTY_NAME_AUTOCONFIGURE_EXCLUDE,
                 getExcludeConfigurations());
@@ -323,8 +324,11 @@ public class SpringBootstrap extends SpringApplication {
     }
 
     /** Override this methods to customize excluded spring boot configuration */
-    protected String[] getExcludeConfigurations() {
-        return DEFAULT_EXCLUDE_CONFIGURATIONS;
+    private String[] getExcludeConfigurations() {
+        Set<String> configurations = new HashSet<>(
+            Arrays.asList(DEFAULT_EXCLUDE_CONFIGURATIONS));
+        configurations.addAll(plugin.getExcludeConfigurations());
+        return configurations.toArray(new String[] {});
     }
 
     protected String[] getExcludeApplicationListeners() {
@@ -370,6 +374,8 @@ public class SpringBootstrap extends SpringApplication {
                 if (!imported) log.error("Bean {} is not found", beanClass);
             }
         }
+
+        this.plugin.onPluginBootstrap(this, applicationContext);
         return applicationContext;
     }
 
@@ -423,6 +429,7 @@ public class SpringBootstrap extends SpringApplication {
         try {
             Map<String, ?> beans = sourceApplicationContext.getBeansOfType(beanClass);
             if (beans.size() == 0) {
+
                 return false;
             }
             for (String beanName : beans.keySet()) {
@@ -443,28 +450,28 @@ public class SpringBootstrap extends SpringApplication {
         }
     }
 
-    protected boolean importBeanFromMainContext(GenericApplicationContext applicationContext,
+    public boolean importBeanFromMainContext(GenericApplicationContext applicationContext,
                                                 String beanName) {
         return importBean(mainApplicationContext, applicationContext, beanName, false);
     }
 
-    protected boolean importBeanFromMainContext(GenericApplicationContext applicationContext,
+    public boolean importBeanFromMainContext(GenericApplicationContext applicationContext,
                                                 String beanName, boolean registerBeanDefinition) {
         return importBean(mainApplicationContext, applicationContext, beanName, registerBeanDefinition);
     }
 
-    protected boolean importBeanFromMainContext(GenericApplicationContext applicationContext,
+    public boolean importBeanFromMainContext(GenericApplicationContext applicationContext,
                                                 Class<?> beanClass) {
         return importBean(mainApplicationContext, applicationContext, beanClass, false);
     }
 
-    protected boolean importBeanFromMainContext(GenericApplicationContext applicationContext,
+    public boolean importBeanFromMainContext(GenericApplicationContext applicationContext,
                                                 Class<?> beanClass, boolean registerBeanDefinition) {
         return importBean(mainApplicationContext, applicationContext, beanClass, registerBeanDefinition);
     }
 
-    protected boolean importBeanFromDependentPlugin(GenericApplicationContext applicationContext,
-                                                    String beanName) {
+    public boolean importBeanFromDependentPlugin(GenericApplicationContext applicationContext,
+                                                 String beanName) {
         for (PluginDependency dependency : plugin.getWrapper().getDescriptor().getDependencies()) {
             PluginWrapper dependentPlugin = plugin.getPluginManager().getPlugin(dependency.getPluginId());
             if (dependentPlugin == null) continue;
@@ -475,8 +482,8 @@ public class SpringBootstrap extends SpringApplication {
         return false;
     }
 
-    protected boolean importBeanFromDependentPlugin(GenericApplicationContext applicationContext,
-                                                    Class<?> beanClass) {
+    public boolean importBeanFromDependentPlugin(GenericApplicationContext applicationContext,
+                                                 Class<?> beanClass) {
         for (PluginDependency dependency : plugin.getWrapper().getDescriptor().getDependencies()) {
             PluginWrapper dependentPlugin = plugin.getPluginManager().getPlugin(dependency.getPluginId());
             if (dependentPlugin == null) continue;
@@ -487,7 +494,7 @@ public class SpringBootstrap extends SpringApplication {
         return false;
     }
 
-    protected void importBeanDefinition(GenericApplicationContext sourceApplicationContext,
+    public void importBeanDefinition(GenericApplicationContext sourceApplicationContext,
                                         GenericApplicationContext applicationContext,
                                         String beanName) {
         try {

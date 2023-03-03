@@ -17,10 +17,10 @@ package org.laxture.sbp;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.laxture.sbp.internal.PluginRequestMappingAdapter;
 import org.laxture.sbp.internal.SpringExtensionFactory;
-import org.laxture.sbp.internal.webmvc.PluginRequestMappingHandlerMapping;
 import org.laxture.sbp.spring.boot.*;
+import org.laxture.sbp.spring.boot.configurer.SbpWebConfigurer;
+import org.laxture.sbp.util.BeanUtil;
 import org.laxture.spring.util.ApplicationContextProvider;
 import org.pf4j.Extension;
 import org.pf4j.Plugin;
@@ -34,9 +34,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Stream;
+import java.util.*;
 
 /**
  * Base Pf4j Plugin for Spring Boot.
@@ -63,7 +61,7 @@ import java.util.stream.Stream;
  * * Close plugin {@link ApplicationContext}
  *
  * @see SpringBootstrap
- * @see SharedDataSourceSpringBootstrap
+ * @see IPluginConfigurer
  * @author <a href="https://github.com/hank-cp">Hank CP</a>
  */
 @Slf4j
@@ -73,20 +71,27 @@ public abstract class SpringBootPlugin extends Plugin {
     private ApplicationContext applicationContext;
     private final Set<String> injectedExtensionNames = new HashSet<>();
 
-    public SpringBootPlugin(PluginWrapper wrapper) {
+    private final List<IPluginConfigurer> pluginConfigurers = new ArrayList<>();
+
+    public SpringBootPlugin(PluginWrapper wrapper,
+                            IPluginConfigurer... pluginConfigurers) {
         super(wrapper);
+
+        // setup pluginConfigurers
+        boolean containsWebConfigurer = false;
+        if (pluginConfigurers != null) {
+            for (IPluginConfigurer configurer : pluginConfigurers) {
+                this.pluginConfigurers.add(configurer);
+                containsWebConfigurer = containsWebConfigurer ||
+                    configurer instanceof SbpWebConfigurer;
+            }
+        }
+        // add SbpWebConfigurer by default
+        if (!containsWebConfigurer) {
+            this.pluginConfigurers.add(new SbpWebConfigurer());
+        }
+
         springBootstrap = createSpringBootstrap();
-    }
-
-    private PluginRequestMappingAdapter getMainRequestMapping() {
-        return (PluginRequestMappingAdapter)
-                getMainApplicationContext().getBean("requestMappingHandlerMapping");
-    }
-
-    /**
-     * Release plugin holding release on stop.
-     */
-    public void releaseAdditionalResources() {
     }
 
     @Override
@@ -97,8 +102,9 @@ public abstract class SpringBootPlugin extends Plugin {
         log.debug("Starting plugin {} ......", getWrapper().getPluginId());
 
         applicationContext = springBootstrap.run();
-        getMainRequestMapping().registerControllers(this);
-        getMainRequestMapping().registerRouterFunction(this);
+        for (IPluginConfigurer configurer : this.pluginConfigurers) {
+            configurer.onStart(this);
+        }
 
         // register Extensions
         Set<String> extensionClassNames = getWrapper().getPluginManager()
@@ -133,15 +139,15 @@ public abstract class SpringBootPlugin extends Plugin {
         if (getWrapper().getPluginState() != PluginState.STARTED) return;
 
         log.debug("Stopping plugin {} ......", getWrapper().getPluginId());
-        releaseAdditionalResources();
         // unregister Extension beans
         for (String extensionName : injectedExtensionNames) {
             log.debug("Unregister extension <{}> to main ApplicationContext", extensionName);
             unregisterBeanFromMainContext(extensionName);
         }
 
-        getMainRequestMapping().unregisterControllers(this);
-        getMainRequestMapping().unregisterRouterFunction(this);
+        for (IPluginConfigurer configurer : this.pluginConfigurers) {
+            configurer.onStop(this);
+        }
         applicationContext.publishEvent(new SbpPluginStoppedEvent(applicationContext));
         ApplicationContextProvider.unregisterApplicationContext(applicationContext);
         injectedExtensionNames.clear();
@@ -152,9 +158,6 @@ public abstract class SpringBootPlugin extends Plugin {
 
     /**
      * Clean legacy resources left behind by failed plugin starting.
-     *
-     * @param plugin
-     * @param mainAppCtx
      */
     public static void releaseLegacyResources(PluginWrapper plugin,
                                               GenericApplicationContext mainAppCtx) {
@@ -171,18 +174,10 @@ public abstract class SpringBootPlugin extends Plugin {
                     unregisterBeanFromMainContext(mainAppCtx, beanName);
             }
 
-            // unregister Controller beans
-            PluginRequestMappingHandlerMapping requestMapping = (PluginRequestMappingHandlerMapping)
-                    mainAppCtx.getBean("requestMappingHandlerMapping");
-            Stream.concat(Stream.concat(Stream.concat(
-                mainAppCtx.getBeansOfType(Controller.class).values().stream(),
-                mainAppCtx.getBeansWithAnnotation(RestController.class).values().stream()),
-                mainAppCtx.getBeansOfType(org.springframework.web.servlet.function.RouterFunction.class).values().stream()),
-                mainAppCtx.getBeansOfType(org.springframework.web.reactive.function.server.RouterFunction.class).values().stream())
-                    .filter(bean -> bean.getClass().getClassLoader() == plugin.getPluginClassLoader())
-                    .forEach(bean -> {
-                        SpringBootPlugin.unregisterBeanFromMainContext(mainAppCtx, bean);
-                    });
+            SpringBootPlugin springBootPlugin = (SpringBootPlugin) plugin.getPlugin();
+            for (IPluginConfigurer configurer : springBootPlugin.pluginConfigurers) {
+                configurer.releaseLegacyResource(plugin, mainAppCtx);
+            }
         } catch (Exception e) {
             log.trace("Release registered resources failed. "+e.getMessage(), e);
         }
@@ -227,8 +222,24 @@ public abstract class SpringBootPlugin extends Plugin {
     public static void unregisterBeanFromMainContext(GenericApplicationContext mainCtx,
                                                      Object bean) {
         Assert.notNull(bean, "bean must not be null");
-        String beanName = bean.getClass().getName();
-        ((AbstractAutowireCapableBeanFactory) mainCtx.getBeanFactory()).destroySingleton(beanName);
+        String beanName = BeanUtil.getBeanName(mainCtx.getBeanFactory(), bean);
+        if (beanName != null) {
+            ((AbstractAutowireCapableBeanFactory) mainCtx.getBeanFactory()).destroySingleton(beanName);
+        }
     }
 
+    public void onPluginBootstrap(SpringBootstrap bootstrap,
+                                  GenericApplicationContext pluginApplicationContext) {
+        for (IPluginConfigurer configurer : this.pluginConfigurers) {
+            configurer.onBootstrap(bootstrap, pluginApplicationContext);
+        }
+    }
+
+    public Set<String> getExcludeConfigurations() {
+        Set<String> configurations = new HashSet<>();
+        for (IPluginConfigurer configurer : this.pluginConfigurers) {
+            configurations.addAll(Arrays.asList(configurer.excludeConfigurations()));
+        }
+        return configurations;
+    }
 }

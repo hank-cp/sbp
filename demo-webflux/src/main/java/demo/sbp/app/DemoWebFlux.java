@@ -15,15 +15,17 @@
  */
 package demo.sbp.app;
 
+import io.swagger.v3.oas.annotations.Operation;
 import org.laxture.spring.util.ApplicationContextProvider;
+import org.springdoc.core.annotations.RouterOperation;
+import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Profile;
+import org.springframework.context.annotation.*;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
@@ -37,6 +39,10 @@ import static org.springframework.web.reactive.function.server.ServerResponse.ok
  */
 @SpringBootApplication(scanBasePackages = "demo.sbp", exclude = {
     SecurityAutoConfiguration.class, SecurityFilterAutoConfiguration.class,
+})
+@ComponentScans(value = {
+    @ComponentScan(excludeFilters = @ComponentScan.Filter(
+        type = FilterType.REGEX, pattern = "org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration\\$ResourceChainCustomizerConfiguration"))
 })
 @Profile("no_security")
 public class DemoWebFlux {
@@ -54,9 +60,17 @@ public class DemoWebFlux {
     }
 
     @Bean
+    @RouterOperation(operation = @Operation(operationId = "/book/authors"))
     RouterFunction<ServerResponse> bookAuthorsRoute() {
         return route(GET("/book/authors"),
             req -> ok().body(Mono.just("George Orwell"), String.class));
+    }
+
+    @Bean
+    public GroupedOpenApi mainApiDoc() {
+        return GroupedOpenApi.builder().group("main")
+            .packagesToScan("demo.sbp.app")
+            .build();
     }
 
 }

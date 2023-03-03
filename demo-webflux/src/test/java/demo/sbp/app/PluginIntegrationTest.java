@@ -30,7 +30,7 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 import java.nio.charset.Charset;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.*;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
 
 /**
@@ -59,7 +59,7 @@ public class PluginIntegrationTest {
             get().uri("/book/list")
             .exchange()
             .expectStatus().isOk()
-            .expectBody().jsonPath("$", hasSize(3));
+            .expectBody().jsonPath("$").value(hasSize(3));
     }
 
     @Test
@@ -68,7 +68,7 @@ public class PluginIntegrationTest {
             .get().uri("/admin/user")
             .exchange()
             .expectStatus().isOk()
-            .expectBody().jsonPath("$", equalTo("Hello User!"));
+            .expectBody().jsonPath("$").value(equalTo("Hello User!"));
     }
 
     @Test
@@ -119,7 +119,7 @@ public class PluginIntegrationTest {
             get().uri("/book/authors")
             .exchange()
             .expectStatus().isOk()
-            .expectBody().jsonPath("$", equalTo("George Orwell"));
+            .expectBody().jsonPath("$").value(equalTo("George Orwell"));
     }
 
     @Test
@@ -128,7 +128,7 @@ public class PluginIntegrationTest {
             .get().uri("/admin/plugin")
             .exchange()
             .expectStatus().isOk()
-            .expectBody().jsonPath("$", equalTo("I am plugin!"));
+            .expectBody().jsonPath("$").value(equalTo("I am plugin!"));
 
         pluginManager.stopPlugin("demo-plugin-webflux");
 
@@ -143,6 +143,77 @@ public class PluginIntegrationTest {
             .get().uri("/admin/plugin")
             .exchange()
             .expectStatus().isOk()
-            .expectBody().jsonPath("$", equalTo("I am plugin!"));
+            .expectBody().jsonPath("$").value(equalTo("I am plugin!"));
+    }
+
+    @Test
+    public void testApiDoc() {
+        webTestClient
+            .get().uri("/v3/api-docs/main")
+            .exchange()
+            .expectStatus().isOk()
+            .expectBody().jsonPath("$.paths").value(allOf(
+                aMapWithSize(4),
+                hasKey("/book/"), // app controller
+                hasKey("/book/list"), // app controller
+                hasKey("/book/authors"), // app route function
+                hasKey("/admin/plugin") // plugin route function
+            ));
+
+        webTestClient
+            .get().uri("/v3/api-docs/admin")
+            .exchange()
+            .expectStatus().isOk()
+            .expectBody().jsonPath("$.paths").value(allOf(
+                aMapWithSize(4),
+                hasKey("/admin/user"), // plugin controller
+                hasKey("/admin/admin"), // plugin controller
+                hasKey("/book/authors"), // app route function
+                hasKey("/admin/plugin") // plugin route function
+            ));
+
+        pluginManager.stopPlugin("demo-plugin-webflux");
+
+        webTestClient
+            .get().uri("/v3/api-docs/admin")
+            .exchange()
+            .expectStatus().isNotFound();
+
+        webTestClient
+            .get().uri("/v3/api-docs/main")
+            .exchange()
+            .expectStatus().isOk()
+            .expectBody().jsonPath("$.paths").value(allOf(
+                aMapWithSize(3),
+                hasKey("/book/"), // app controller
+                hasKey("/book/list"), // app controller
+                hasKey("/book/authors") // app route function
+            ));
+
+        pluginManager.startPlugin("demo-plugin-webflux");
+
+        webTestClient
+            .get().uri("/v3/api-docs/main")
+            .exchange()
+            .expectStatus().isOk()
+            .expectBody().jsonPath("$.paths").value(allOf(
+                aMapWithSize(4),
+                hasKey("/book/"), // app controller
+                hasKey("/book/list"), // app controller
+                hasKey("/book/authors"), // app route function
+                hasKey("/admin/plugin") // plugin route function
+            ));
+
+        webTestClient
+            .get().uri("/v3/api-docs/admin")
+            .exchange()
+            .expectStatus().isOk()
+            .expectBody().jsonPath("$.paths").value(allOf(
+                aMapWithSize(4),
+                hasKey("/admin/user"), // plugin controller
+                hasKey("/admin/admin"), // plugin controller
+                hasKey("/book/authors"), // app route function
+                hasKey("/admin/plugin") // plugin route function
+            ));
     }
 }

@@ -16,10 +16,10 @@
 package demo.sbp.admin;
 
 import demo.sbp.security.SecurityConfig;
-import org.pf4j.PluginWrapper;
 import org.laxture.sbp.SpringBootPlugin;
-import org.laxture.sbp.spring.boot.SharedDataSourceSpringBootstrap;
 import org.laxture.sbp.spring.boot.SpringBootstrap;
+import org.laxture.sbp.spring.boot.configurer.SbpDataSourceConfigurer;
+import org.pf4j.PluginWrapper;
 
 /**
  * @author <a href="https://github.com/hank-cp">Hank CP</a>
@@ -27,12 +27,12 @@ import org.laxture.sbp.spring.boot.SpringBootstrap;
 public class AdminPlugin extends SpringBootPlugin {
 
     public AdminPlugin(PluginWrapper wrapper) {
-        super(wrapper);
+        super(wrapper, new SbpDataSourceConfigurer());
     }
 
     @Override
     protected SpringBootstrap createSpringBootstrap() {
-        SpringBootstrap bootstrap = new SharedDataSourceSpringBootstrap(this, AdminPluginStarter.class);
+        SpringBootstrap bootstrap = new SpringBootstrap(this, AdminPluginStarter.class);
         if (getMainApplicationContext().containsBean(SecurityConfig.class.getName())) {
             bootstrap.addPresetProperty("sbp.security.enabled", true);
         }

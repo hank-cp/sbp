@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package demo.sbp.admin;
+package demo.sbp.webflux.admin;
 
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,12 +28,12 @@ import reactor.core.publisher.Mono;
 @RequestMapping(value = "/admin")
 public class AdminController {
 
-    @RequestMapping(value = "/user")
+    @GetMapping(value = "/user")
     public @ResponseBody Mono<String> user() {
         return Mono.just("Hello User!");
     }
 
-    @RequestMapping(value = "/admin")
+    @GetMapping(value = "/admin")
 //    @RequirePermission("ADMIN")
     public @ResponseBody Mono<String> admin() {
         return Mono.just("Hello Admin!");

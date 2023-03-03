@@ -13,17 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package demo.sbp.admin;
+package demo.sbp.webflux.admin;
 
+import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.reactive.function.server.RouterFunction;
+import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
-import static org.springframework.web.reactive.function.server.RequestPredicates.GET;
-import static org.springframework.web.reactive.function.server.RouterFunctions.route;
+import static org.springdoc.webflux.core.fn.SpringdocRouteBuilder.route;
 import static org.springframework.web.reactive.function.server.ServerResponse.ok;
 
 /**
@@ -38,8 +39,20 @@ public class AdminPluginStarter {
 
     @Bean
     RouterFunction<ServerResponse> adminPluginRoute() {
-        return route(GET("/admin/plugin"),
-            req -> ok().body(Mono.just("I am plugin!"), String.class));
+        return route().GET("/admin/plugin",
+            this::iAmPlugin,
+            ops -> ops.operationId("iAmPlugin")).build();
+        // ref: https://github.com/springdoc/springdoc-openapi/blob/master/springdoc-openapi-webflux-core/src/test/java/test/org/springdoc/api/app90/HelloRouter.java
     }
 
+    @Bean
+    public GroupedOpenApi adminApiDoc() {
+        return GroupedOpenApi.builder().group("admin")
+            .packagesToScan("demo.sbp.webflux.admin")
+            .build();
+    }
+
+    private Mono<ServerResponse> iAmPlugin(ServerRequest req) {
+        return ok().body(Mono.just("I am plugin!"), String.class);
+    }
 }

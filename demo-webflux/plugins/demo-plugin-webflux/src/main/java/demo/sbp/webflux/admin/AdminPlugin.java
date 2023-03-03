@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package demo.sbp.admin;
+package demo.sbp.webflux.admin;
 
 import org.laxture.sbp.SpringBootPlugin;
-import org.laxture.sbp.spring.boot.SharedDataSourceSpringBootstrap;
+import org.laxture.sbp.spring.boot.SbpSpringDocWebFluxConfigurer;
 import org.laxture.sbp.spring.boot.SpringBootstrap;
 import org.pf4j.PluginWrapper;
 import org.springframework.boot.WebApplicationType;
@@ -27,12 +27,12 @@ import org.springframework.boot.WebApplicationType;
 public class AdminPlugin extends SpringBootPlugin {
 
     public AdminPlugin(PluginWrapper wrapper) {
-        super(wrapper);
+        super(wrapper, new SbpSpringDocWebFluxConfigurer());
     }
 
     @Override
     protected SpringBootstrap createSpringBootstrap() {
-        SpringBootstrap bootstrap = new SharedDataSourceSpringBootstrap(this, AdminPluginStarter.class);
+        SpringBootstrap bootstrap = new SpringBootstrap(this, AdminPluginStarter.class);
 //        if (getMainApplicationContext().containsBean(SecurityConfig.class.getName())) {
 //            bootstrap.addPresetProperty("sbp.security.enabled", true);
 //        }

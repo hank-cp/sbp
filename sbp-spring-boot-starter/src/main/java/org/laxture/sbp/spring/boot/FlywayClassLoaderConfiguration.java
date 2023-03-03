@@ -34,7 +34,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @AutoConfigureAfter(FlywayAutoConfiguration.class)
 @ConditionalOnProperty(prefix = "spring.flyway", name = "enabled", matchIfMissing = true)
-@ConditionalOnBean(SpringBootPlugin.class)
+@ConditionalOnBean({ SpringBootPlugin.class, FlywayMigrationStrategy.class })
 public class FlywayClassLoaderConfiguration {
 
     @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")

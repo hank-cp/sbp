@@ -2,7 +2,7 @@ include 'sbp-core',
         VersionNumber.parse("${springBootVersion}") >= VersionNumber.parse("2.5")
             ? 'sbp-adapter-2.5' : 'sbp-adapter-2',
         'sbp-spring-boot-starter',
-        'sbp-spring-boot-flyway-starter',
+        'sbp-spring-boot-springdoc-webflux-starter',
 
         'demo-shared',
         'demo-security',
