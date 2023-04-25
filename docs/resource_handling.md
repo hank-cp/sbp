@@ -12,3 +12,5 @@ spring:
     cache:
       period: 3600
 ```
+
+You could also checkout [demo-app](/demo-app) and [demo-plugin-admin](/plugins/demo-plugin-admin) project for more detail.

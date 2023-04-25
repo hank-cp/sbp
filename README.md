@@ -34,7 +34,7 @@ Spring Cloud application.
   * AOP
 
 * Code and test plugin project as **STANDALONE** Spring Boot project.
-* Supports Spring Boot from `2.0` to `2.7`
+* Supports Spring Boot from `2.x` to `3.0.x`
 * **NO** extra knowledge **NEED TO LEARN** as long as you are familiar with Spring Boot.
 * **NO XML**
 
@@ -67,7 +67,7 @@ application, just like any single service provider node in Spring Cloud network.
         <dependency>
             <groupId>org.laxture</groupId>
             <artifactId>sbp-spring-boot-starter</artifactId>
-            <version>2.7.14</version>
+            <version>3.0.18</version>
         </dependency>
         ```
     * Gradle
@@ -75,7 +75,7 @@ application, just like any single service provider node in Spring Cloud network.
         dependencies {
             implementation "org.springframework.boot:spring-boot-starter-web"
             implementation "org.springframework.boot:spring-boot-starter-aop"
-            implementation 'org.laxture:sbp-spring-boot-starter:2.7.14'
+            implementation 'org.laxture:sbp-spring-boot-starter:3.0.18'
         }
         ```
     * Latest master code is always available with version `-SNAPSHOT`
@@ -105,13 +105,13 @@ application, just like any single service provider node in Spring Cloud network.
         <dependency>
             <groupId>org.laxture</groupId>
             <artifactId>sbp-core</artifactId>
-            <version>2.7.14</version>
+            <version>3.0.18</version>
         </dependency>
         ```
     * Gradle
         ```
         dependencies {
-            implementation 'org.laxture:sbp-core:2.7.14'
+            implementation 'org.laxture:sbp-core:3.0.18'
         }
         ```
 4. Add Plugin class
@@ -130,40 +130,19 @@ application, just like any single service provider node in Spring Cloud network.
     ```
 4. Add anything you want in the plugin project like `Controller`, `Service`, `Repository`, `Model`, etc.
  
-Everything is done and now you could start the app project to test the plugin. 
-
-##### Checkout the demo projects for more details
-* demo-shared: Shared code for app and plugin projects.
-* demo-security: Security configuration demonstrate how to introduce Spring Security and secure your 
-API via AOP.
-* demo-apis: Class shared between app\<-\>plugins and plugins\<-\>plugins need to be declared as API.
-* demo-app: The entry point and master project. It provides two `SpringApplication`
-    * `DemoApp` does not have Spring Security configured.
-    * `DomeSecureApp` include Spring Security, so you need to provide authentication information
-    when access its rest API.
-* plugins
-    * demo-plugin-admin
-        * Demonstrate Spring Security integration to plugin projects
-        * Demonstrate [Spring Boot profile](https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-profiles.html) 
-        feature support.
-    * demo-plugin-author: Demonstrate share resource (like DataSource, TransactionManager) between
-    api/plugins.
-    * demo-plugin-library: Demonstrate using Spring Data/JPA.
-    * demo-plugin-shelf: Demonstrate api expose and invocation between plugins.
-* Every single projects with `SpringApplication` could be run standalone.
-* It is basically a skeleton project that you could starts your own project. It almost contains 
-everything we need in the real project. 
+Everything is done and now you could start the app project to test the plugin.
 
 ### Documentation
 * [How it works](docs/how_it_works.md)
 * [Configuration](docs/configuration.md)
 * [Serve Static Content](docs/resource_handling.md)
-* [Persistence](docs/persistence.md)
+* [Extensible Integration](docs/extensible_integration.md)
+  * ~~[Persistence](docs/persistence.md)~~
 * [Security / AOP](docs/security_aop.md)
 * [Deployment](docs/deployment.md)
 * [Support Different Spring Boot Versions](docs/multi_spring_boot_versions)
 * [Trouble Shoot & Misc](docs/trouble_shoot.md)
-* [About demo project](docs/demo_project.md)
+* [How to run](docs/demo_project.md)
 * [Road map](docs/roadmap.md)
 
 <!--

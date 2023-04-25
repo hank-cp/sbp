@@ -44,7 +44,7 @@ jobs:
         PGHOST: localhost
         PGUSER: postgres
     - run: ./gradlew doMigration
-    - run: ./gradlew copyDependencies buildApp check -PspringBootVersion=3.0.2 --rerun-tasks
+    - run: ./gradlew copyDependencies buildApp check --rerun-tasks
   publish-snapshot:
     runs-on: ubuntu-latest
     steps:

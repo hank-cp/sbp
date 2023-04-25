@@ -176,7 +176,7 @@ public abstract class SpringBootPlugin extends Plugin {
 
             SpringBootPlugin springBootPlugin = (SpringBootPlugin) plugin.getPlugin();
             for (IPluginConfigurer configurer : springBootPlugin.pluginConfigurers) {
-                configurer.releaseLegacyResource(plugin, mainAppCtx);
+                configurer.releaseLeaveOverResource(plugin, mainAppCtx);
             }
         } catch (Exception e) {
             log.trace("Release registered resources failed. "+e.getMessage(), e);

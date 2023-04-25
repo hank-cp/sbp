@@ -51,8 +51,7 @@ public class SbpWebConfigurer implements IPluginConfigurer {
     }
 
     @Override
-    public void releaseLegacyResource(PluginWrapper plugin, GenericApplicationContext mainAppCtx) {
-        // unregister Controller beans
+    public void releaseLeaveOverResource(PluginWrapper plugin, GenericApplicationContext mainAppCtx) {
         Stream.concat(Stream.concat(Stream.concat(
                 mainAppCtx.getBeansWithAnnotation(Controller.class).values().stream(),
                 mainAppCtx.getBeansWithAnnotation(RestController.class).values().stream()),

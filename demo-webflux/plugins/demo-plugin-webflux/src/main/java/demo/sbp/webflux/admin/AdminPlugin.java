@@ -16,7 +16,7 @@
 package demo.sbp.webflux.admin;
 
 import org.laxture.sbp.SpringBootPlugin;
-import org.laxture.sbp.spring.boot.SbpSpringDocWebFluxConfigurer;
+import org.laxture.sbp.spring.boot.SbpSpringDocConfigurer;
 import org.laxture.sbp.spring.boot.SpringBootstrap;
 import org.pf4j.PluginWrapper;
 import org.springframework.boot.WebApplicationType;
@@ -27,15 +27,12 @@ import org.springframework.boot.WebApplicationType;
 public class AdminPlugin extends SpringBootPlugin {
 
     public AdminPlugin(PluginWrapper wrapper) {
-        super(wrapper, new SbpSpringDocWebFluxConfigurer());
+        super(wrapper, new SbpSpringDocConfigurer());
     }
 
     @Override
     protected SpringBootstrap createSpringBootstrap() {
         SpringBootstrap bootstrap = new SpringBootstrap(this, AdminPluginStarter.class);
-//        if (getMainApplicationContext().containsBean(SecurityConfig.class.getName())) {
-//            bootstrap.addPresetProperty("sbp.security.enabled", true);
-//        }
         bootstrap.setWebApplicationType(WebApplicationType.REACTIVE);
         return bootstrap;
     }

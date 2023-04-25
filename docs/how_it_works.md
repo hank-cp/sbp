@@ -16,3 +16,6 @@ behavior that will be quite different from original pf4j does.
 * There are two ready to use extended `SpringBootstrap`
   * `SharedDataSourceSpringBootstrap`
   * `SharedJtaSpringBootstrap`
+
+### Register/Unregister 3rd party midware
+* This is done by [`IPluginConfigurator`](extensible_integration.md) interface.

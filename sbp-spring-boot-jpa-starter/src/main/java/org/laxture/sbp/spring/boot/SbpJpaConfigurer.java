@@ -80,7 +80,9 @@ public class SbpJpaConfigurer implements IPluginConfigurer {
     }
 
     @Override
-    public void releaseLegacyResource(PluginWrapper plugin, GenericApplicationContext mainAppCtx) {
-        IPluginConfigurer.super.releaseLegacyResource(plugin, mainAppCtx);
+    public void releaseLeaveOverResource(PluginWrapper plugin, GenericApplicationContext mainAppCtx) {
+        LocalContainerEntityManagerFactoryBean entityManagerFactory =
+            mainAppCtx.getBean(LocalContainerEntityManagerFactoryBean.class);
+        PluginEntityManagerFactoryBeanRegister.unregisterClassloader(entityManagerFactory, plugin.getPluginClassLoader());
     }
 }

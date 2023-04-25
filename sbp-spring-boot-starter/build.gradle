@@ -10,11 +10,7 @@ dependencies {
     api "commons-codec:commons-codec"
 
     api project(':sbp-core')
-    if (VersionNumber.parse("${springBootVersion}") >= VersionNumber.parse("2.5")) {
-        implementation project(':sbp-adapter-2.5')
-    } else {
-        implementation project(':sbp-adapter-2')
-    }
+    implementation project(':sbp-adapter-3')
 
     implementation "org.springframework.boot:spring-boot-starter-web"
     implementation "org.springframework.boot:spring-boot-starter-webflux"

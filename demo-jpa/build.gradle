@@ -1,7 +1,6 @@
 dependencies {
     implementation project(':sbp-spring-boot-starter')
     implementation project(':demo-api')
-    implementation project(':demo-book-model')
     implementation project(':sbp-spring-boot-jpa-starter')
 
     implementation "org.springframework.boot:spring-boot-starter-web"

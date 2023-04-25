@@ -1,6 +1,5 @@
 dependencies {
     implementation project(':demo-api')
-    implementation project(':demo-library-model')
     implementation project(':sbp-core')
     implementation project(':sbp-spring-boot-jpa-starter')
 
@@ -9,8 +8,6 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-aop"
 
     runtimeOnly "org.postgresql:postgresql"
-
-    jooqGenerator "org.postgresql:postgresql"
 }
 
 //*************************************************************************
@@ -21,15 +18,4 @@ mainClassName = 'demo.sbp.library.LibraryPluginStarter'
 
 manifest {
     attributes 'Main-Class': 'demo.sbp.library.LibraryPluginStarter'
-}
-
-task clearDependencies(type: Delete) {
-    delete files("${project.projectDir}/libs")
-}
-
-task copyDependencies(type: Copy) {
-    group 'build'
-    dependsOn project(':demo-library-model').jar, clearDependencies
-    from file("${project(':demo-library-model').buildDir}/libs")
-    into 'libs'
 }

@@ -5,7 +5,7 @@ starting skeleton.
 ### Run the demo project
 
 ##### Prerequisite
-* JDK 8+
+* JDK 17+
 * PostgreSQL 9.6+
     * Modify `postgresql.conf` file, set `max_prepared_connections` to non-zero value.
     * Create database: `psql -c 'create database "sbp";' -U postgres`
@@ -15,11 +15,8 @@ starting skeleton.
 * `git clone git@github.com:hank-cp/sbp.git`
 * run build command in sequence:
     ```
-    > ./gradlew install
     > ./gradlew doMigration
-    > ./gradlew buildApp
-    > ./gradlew copyDependencies
-    > ./gradlew test
+    > ./gradlew copyDependencies buildApp check
     ```
     
 ##### Start DemoApp
@@ -49,24 +46,26 @@ configuration with two user:
 otherwise `PluginManager` couldn't find the `plugin` folder.
  ![](work_dir.png?raw=true)
 
-### Project Description
+### Breakdown
 * demo-shared: Shared code for app and plugin projects.
-* demo-security: Security configuration demonstrate how to introduce Spring Security and secure your 
-API via AOP.
+* demo-security: Security configuration demonstrate how to introduce Spring Security and secure your
+  API via AOP.
 * demo-apis: Class shared between app\<-\>plugins and plugins\<-\>plugins need to be declared as API.
 * demo-app: The entry point and master project. It provides two `SpringApplication`
-    * `DemoApp` does not have Spring Security configured.
-    * `DomeSecureApp` include Spring Security, so you need to provide authentication information
+  * `DemoApp` does not have Spring Security configured.
+  * `DomeSecureApp` include Spring Security, so you need to provide authentication information
     when access its rest API.
-* plugins
+  * plugins
     * demo-plugin-admin
-        * Demonstrate Spring Security integration to plugin projects
-        * Demonstrate [Spring Boot profile](https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-profiles.html) 
+      * Demonstrate Spring Security integration to plugin projects
+      * Demonstrate [Spring Boot profile](https://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-profiles.html)
         feature support.
     * demo-plugin-author: Demonstrate share resource (like DataSource, TransactionManager) between
-    api/plugins.
+      api/plugins.
     * demo-plugin-library: Demonstrate using Spring Data/JPA.
     * demo-plugin-shelf: Demonstrate api expose and invocation between plugins.
-* Every single projects with `SpringApplication` could be run standalone.
-* It is basically a skeleton project that you could starts your own project. It almost contains 
-everything we need in the real project. 
+  * It is basically a skeleton project that you could starts your own project. It almost contains
+    everything we need in the real project.
+* demo-jpa: Demonstrate how to use Spring Data/JPA by `sbp-spring-boot-jpa-starter`
+* demo-webflux: Demonstrate how to use Spring WebFlux by `sbp-spring-boot-webflux-starter`
+* Every single projects with `SpringApplication` could be run standalone. 

@@ -41,8 +41,8 @@ public interface IPluginConfigurer {
         // default do nothing
     }
 
-    default void releaseLegacyResource(PluginWrapper plugin,
-                                       GenericApplicationContext mainAppCtx) {
+    default void releaseLeaveOverResource(PluginWrapper plugin,
+                                          GenericApplicationContext mainAppCtx) {
         // default do nothing
     }
 

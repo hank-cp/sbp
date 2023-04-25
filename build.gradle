@@ -21,6 +21,12 @@ def isApplicationProject(String projectName) {
         && !projectName.endsWith('-test-support')
 }
 
+def hasDataBaseProject(String projectName) {
+    return projectName.equals('demo-app') \
+        || projectName.endsWith('demo-plugin-author') \
+        || projectName.endsWith('demo-plugin-shelf')
+}
+
 def isLibraryProject(String projectName) {
     return projectName.startsWith('sbp-')
 }
@@ -107,11 +113,13 @@ subprojects {
     if (isApplicationProject(name)) {
         apply plugin: 'application'
         apply plugin: 'org.springframework.boot'
-        apply plugin: 'nu.studer.jooq'
-        apply plugin: 'org.flywaydb.flyway'
     } else if (isLibraryProject(name)) {
         apply plugin: 'maven-publish'
         apply plugin: 'signing'
+    }
+    if (hasDataBaseProject(name)) {
+        apply plugin: 'nu.studer.jooq'
+        apply plugin: 'org.flywaydb.flyway'
     }
 
 //*************************************************************************

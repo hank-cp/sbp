@@ -1,6 +1,6 @@
 dependencies {
     implementation project(':sbp-core')
-    implementation project(':sbp-spring-boot-springdoc-webflux-starter')
+    implementation project(':sbp-spring-boot-springdoc-starter')
 
     implementation "org.springframework.boot:spring-boot-starter-webflux"
 
