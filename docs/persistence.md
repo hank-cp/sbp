@@ -1,3 +1,5 @@
+## ❗️❗️❗️After sbp version 18, sbp will only supports Spring Boot 3.x. And Spring Boot stops providing builtin JTA supports from 3.0.x. So the SBP will stop supporting  JTA
+
 **sbp** supports each plugin run as individual application, of
 course, with individual persistence layer setting. You could choose shared
 a single database for app and all of its plugins, or setup separate database
