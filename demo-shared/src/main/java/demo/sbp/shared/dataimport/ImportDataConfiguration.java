@@ -49,7 +49,7 @@ public class ImportDataConfiguration {
     @ConditionalOnProperty(value = {
         "spring.flyway.enabled",
         "spring.flyway.import-data.enabled"
-    })
+    }, havingValue = "true")
     @DependsOn("flywayInitializer")
     public List<Flyway> flywayExecutor() {
         List<Flyway> executors = new ArrayList<>();
