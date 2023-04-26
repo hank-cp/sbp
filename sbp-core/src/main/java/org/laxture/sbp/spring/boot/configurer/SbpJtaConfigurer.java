@@ -23,7 +23,7 @@ import org.springframework.context.support.GenericApplicationContext;
 /**
  * Introduce central Jta transaction management between app and plugins, which
  * connect to very different databases with different <code>DataSource</code>.
- *
+ “““
  * <b>Note that related AutoConfigurations have to be excluded explicitly to avoid
  * duplicated resource retaining.</b>
  *
