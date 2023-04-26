@@ -45,7 +45,7 @@ or raise an [issue](https://github.com/hank-cp/sbp/issues/new) to request a new 
 * Plugin JPA entity will be registered to main `EntityManagerFactory` when plugin is started.
 * Unregister when plugin is stopped.
 
-### (SpringDoc-OpenApi)[https://springdoc.org/v2/]
+### [SpringDoc-OpenApi](https://springdoc.org/v2/)
 * Gradle dependencies: `implementation 'org.laxture:sbp-spring-boot-springdoc-tarter:3.0.18'`
 * by `SbpSpringDocConfigurer`
 * Register plugin api doc when plugin is started.
