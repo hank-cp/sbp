@@ -35,11 +35,15 @@ def isPluginProject(Project project) {
     return project.hasProperty("plugin")
 }
 
-def getVersion(Project project) {
+def generateVersion(Project project, String sbpVersion) {
     def version = getPropertyOrElse(project, 'version', '')
     if (version != '' && version != 'unspecified') return version
     def sVer = VersionNumber.parse(getPropertyOrElse(project, 'springBootVersion', '0.0.0'))
-    return sVer.getMajor() + '.' + sVer.getMinor() + '.' + getPropertyOrElse(project, 'sbpVersion', '0')
+    return sVer.getMajor() + '.' + sVer.getMinor() + '.' + sbpVersion
+}
+
+def getVersion(Project project) {
+    return generateVersion(project, getPropertyOrElse(project, 'sbpVersion', '0'))
 }
 
 buildscript {
@@ -66,22 +70,17 @@ plugins {
 
 task(release) {
     doLast {
-        def currentVersion = "${version}"
-        def newVersion = getPropertyOrElse(project, 'newVersion', '')
-        if (newVersion == '') {
+        if (getPropertyOrElse(project, 'newVersion', '') == '') {
             throw new IllegalArgumentException("Argument 'newVersion' is not specified. Please carry '-PnewVersion=x.x.x' as argument.")
         }
+        def currentVersion = "${getVersion(project)}"
+        def newVersion = generateVersion(project, getPropertyOrElse(project, 'newVersion', ''))
         println "Setting version from $currentVersion to $newVersion"
 
-        //    exec {
-        //        commandLine 'sed', '-ie', "s/$currentVersion/$newVersion/g", "gradle.properties"
-        //    }
-        ant.replaceregexp(match:currentVersion, replace:newVersion, flags:'g', byline:true) {
-            fileset(dir: '', includes: ['gradle.properties', 'README.md', 'README.zh-cn.md'])
-        }
-        ant.propertyfile(file: "gradle.properties") {
-            entry( key: "version", value: "$newVersion")
-        }
+        ant.replaceregexp(match:currentVersion, replace:newVersion, flags:'g', byline:true, file:'README.md')
+        ant.replaceregexp(match:currentVersion, replace:newVersion, flags:'g', byline:true, file:'docs/multi_spring_boot_versions.md')
+        ant.replaceregexp(match:currentVersion, replace:newVersion, flags:'g', byline:true, file:'docs/extensible_integration.md')
+        // fileset doesn't work as expected
     }
 }
 
