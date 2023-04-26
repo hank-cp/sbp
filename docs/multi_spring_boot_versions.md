@@ -2,7 +2,7 @@
 * To match Spring Boot versions, sbp will use the major part and minor part of Spring Boot
 versions, and use micro part for sbp version.
 * Before sbp version 18, Every sbp release will have wwo versions: `2.4.X` and `2.7.X`.
-* ❗️After sbp version 18, sbp will only supports Spring Boot 3.x.
+* ❗️After sbp [version 18](https://github.com/hank-cp/sbp/releases/tag/18), sbp will only supports Spring Boot 3.x.
 * Table below shows the corresponding sbp version to different Spring Boot version.
 
 | Spring Boot Version | sbp Version | Jvm | Gradle                                                                                                                                                                                                                |

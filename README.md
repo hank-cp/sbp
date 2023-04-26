@@ -7,7 +7,7 @@
 sbp introduce plugin oriented programming to Spring Boot. It is inspired and builds 
 on top of [Pf4j](https://pf4j.org/) project.
 
-❗️❗️❗️sbp supports Spring Boot 3.x ONLY from version 18. If you are still using Spring Boot 2.x, please
+❗️❗️❗️sbp supports Spring Boot 3.x ONLY from [version 18](https://github.com/hank-cp/sbp/releases/tag/18). If you are still using Spring Boot 2.x, please
 stay with the [old version](docs/multi_spring_boot_versions.md) of sbp.
 
 [中文](README.zh-cn.md)

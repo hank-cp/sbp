@@ -6,7 +6,7 @@
 
 sbp为Spring Boot带来面向插件开发设计的能力. 它受到开源项目[Pf4j](https://pf4j.org/)的启发, 并构建在其基础之上. 
 
-❗️❗️❗️sbp从版本18开始将只支持Spring Boot 3.x. 如果您还在使用Spring Boot 2.x, 
+❗️❗️❗️sbp从[版本18](https://github.com/hank-cp/sbp/releases/tag/18)开始将只支持Spring Boot 3.x. 如果您还在使用Spring Boot 2.x, 
 请不要升级sbp并继续使用[老版本](docs/multi_spring_boot_versions.md).
 
 ### 为什么我们需要插件化的Spring Boot?
