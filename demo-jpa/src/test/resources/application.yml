@@ -36,7 +36,7 @@ spring:
             hibernate:
               temp:
                 use_jdbc_metadata_defaults: false
-          database-platform: org.hibernate.dialect.PostgreSQL9Dialect
+          database-platform: org.hibernate.dialect.PostgreSQLDialect
     controller:
       base-path: sbp
   jpa:
@@ -44,10 +44,10 @@ spring:
       ddl-auto: create-drop
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.PostgreSQL95Dialect
+        dialect: org.hibernate.dialect.PostgreSQLDialect
         hbm2ddl:
           create_namespaces: true
-        database-platform: org.hibernate.dialect.PostgreSQL9Dialect
+        database-platform: org.hibernate.dialect.PostgreSQLDialect
         temp:
           use_jdbc_metadata_defaults: false
     show-sql: true

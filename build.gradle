@@ -81,6 +81,10 @@ task(release) {
         ant.replaceregexp(match:currentVersion, replace:newVersion, flags:'g', byline:true, file:'docs/multi_spring_boot_versions.md')
         ant.replaceregexp(match:currentVersion, replace:newVersion, flags:'g', byline:true, file:'docs/extensible_integration.md')
         // fileset doesn't work as expected
+
+        ant.propertyfile(file: "gradle.properties") {
+            entry( key: "version", value: "$newVersion")
+        }
     }
 }
 
