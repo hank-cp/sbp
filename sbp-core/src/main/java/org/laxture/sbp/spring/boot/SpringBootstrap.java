@@ -208,12 +208,7 @@ public class SpringBootstrap extends SpringApplication {
             "org.springframework.cloud.consul.discovery.ConsulDiscoveryClientConfiguration",
             "org.springframework.cloud.consul.discovery.reactive.ConsulReactiveDiscoveryClientConfiguration",
             "org.springframework.cloud.consul.discovery.ConsulCatalogWatchAutoConfiguration",
-            "org.springframework.cloud.consul.support.ConsulHeartbeatAutoConfiguration",
-            // Others
-            "org.springframework.boot.autoconfigure.quartz.QuartzAutoConfiguration",
-            "org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration",
-            "org.springframework.boot.autoconfigure.task.TaskSchedulingAutoConfiguration",
-            "org.springframework.boot.autoconfigure.graphql.GraphQlAutoConfiguration",
+            "org.springframework.cloud.consul.support.ConsulHeartbeatAutoConfiguration"
     };
 
     public static final String[] DEFAULT_EXCLUDE_APPLICATION_LISTENERS = {
