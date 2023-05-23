@@ -32,8 +32,8 @@ jobs:
         java-version: 17
     - name: Install PostgreSQL 11 client
       run: |
-        apt-get update
-        apt-get install --yes --no-install-recommends postgresql-client
+        sudo apt-get update
+        sudo apt-get install --yes --no-install-recommends postgresql-client
     - run: |
         psql -c 'create database "sbp";' -U postgres
         psql -c 'create database "sbp-test";' -U postgres
