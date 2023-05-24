@@ -13,27 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package demo.sbp.author;
+package org.laxture.sbp.util;
 
-import org.laxture.sbp.SpringBootPlugin;
-import org.laxture.sbp.spring.boot.SpringBootstrap;
-import org.laxture.sbp.spring.boot.configurer.SbpDataSourceConfigurer;
-import org.laxture.sbp.spring.boot.configurer.SbpSharedServiceConfigurer;
-import org.pf4j.PluginWrapper;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
 
 /**
  * @author <a href="https://github.com/hank-cp">Hank CP</a>
  */
-public class AuthorPlugin extends SpringBootPlugin {
-
-    public AuthorPlugin(PluginWrapper wrapper) {
-        super(wrapper, new SbpDataSourceConfigurer(), new SbpSharedServiceConfigurer());
-    }
+public class OmitInvocationHandler implements InvocationHandler {
 
     @Override
-    protected SpringBootstrap createSpringBootstrap() {
-        return new SpringBootstrap(this, AuthorPluginStarter.class)
-                .importBean("bookService");
+    public Object invoke(Object proxy, Method method, Object[] args) {
+        return null;
     }
-
 }

@@ -19,6 +19,7 @@ import demo.sbp.security.SecurityConfig;
 import org.laxture.sbp.SpringBootPlugin;
 import org.laxture.sbp.spring.boot.SpringBootstrap;
 import org.laxture.sbp.spring.boot.configurer.SbpDataSourceConfigurer;
+import org.laxture.sbp.spring.boot.configurer.SbpSharedServiceConfigurer;
 import org.pf4j.PluginWrapper;
 
 /**
@@ -27,7 +28,7 @@ import org.pf4j.PluginWrapper;
 public class AdminPlugin extends SpringBootPlugin {
 
     public AdminPlugin(PluginWrapper wrapper) {
-        super(wrapper, new SbpDataSourceConfigurer());
+        super(wrapper, new SbpDataSourceConfigurer(), new SbpSharedServiceConfigurer());
     }
 
     @Override

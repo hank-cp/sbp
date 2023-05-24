@@ -16,6 +16,8 @@
 package org.laxture.sbp.util;
 
 import lombok.NonNull;
+import net.bytebuddy.ByteBuddy;
+import net.bytebuddy.dynamic.DynamicType;
 import org.springframework.beans.factory.BeanFactory;
 
 import java.io.*;
@@ -23,13 +25,25 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.function.BiFunction;
+
+import static org.springframework.util.ClassUtils.CGLIB_CLASS_SEPARATOR;
 
 /**
  * @author <a href="https://github.com/hank-cp">Hank CP</a>
  */
 public class BeanUtil {
 
-    private BeanUtil() {};
+    private BeanUtil() {}
+
+    public static Field getField(@NonNull Class<?> clazz,
+                                 @NonNull String fieldName) {
+        try {
+            return clazz.getDeclaredField(fieldName);
+        } catch (Exception e) {
+            return null;
+        }
+    }
 
     public static <T> T getFieldValue(@NonNull Object target,
                                       @NonNull String path) {
@@ -240,6 +254,28 @@ public class BeanUtil {
             }
         }
         return beanName;
+    }
+
+    public static <T> T createProxy(Class<T> clazz,
+                                    T source,
+                                    BiFunction<T, DynamicType.Builder<T>, DynamicType.Builder<T>> customizer) {
+        try {
+            DynamicType.Builder<T> builder = new ByteBuddy()
+                .subclass(clazz).suffix("_sbp_proxy").unsealed();
+            builder = customizer.apply(source, builder);
+            return builder
+                .make()
+                .load(source.getClass().getClassLoader())
+                .getLoaded()
+                .newInstance();
+        } catch (InstantiationException | IllegalAccessException ex) {
+            throw new IllegalStateException(ex);
+        }
+    }
+
+    public static <T> T createProxy(T source,
+                                    BiFunction<T, DynamicType.Builder<T>, DynamicType.Builder<T>> customizer) {
+        return createProxy((Class<T>) source.getClass(), source, customizer);
     }
 
 }

@@ -15,7 +15,6 @@
  */
 package org.laxture.sbp.spring.boot;
 
-import org.laxture.sbp.SpringBootPlugin;
 import org.pf4j.PluginWrapper;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -47,13 +46,13 @@ public class SbpJpaConfigurer implements IPluginConfigurer {
     public void onBootstrap(SpringBootstrap bootstrap, GenericApplicationContext pluginApplicationContext) {
         // share jpa beans
         bootstrap.importBeanFromMainContext(pluginApplicationContext, "dataSource");
-        bootstrap.importBeanFromMainContext(pluginApplicationContext, "org.laxture.sbp.spring.boot.SbpJpaAutoConfiguration", true);
-        bootstrap.importBeanFromMainContext(pluginApplicationContext, "org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaConfiguration", true);
+        bootstrap.importBeanFromMainContext(pluginApplicationContext, "org.laxture.sbp.spring.boot.SbpJpaAutoConfiguration");
+        bootstrap.importBeanFromMainContext(pluginApplicationContext, "org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaConfiguration");
         bootstrap.importBeanFromMainContext(pluginApplicationContext, "transactionManager");
         bootstrap.importBeanFromMainContext(pluginApplicationContext, "jpaVendorAdapter");
-        bootstrap.importBeanFromMainContext(pluginApplicationContext, "persistenceManagedTypes", true);
+        bootstrap.importBeanFromMainContext(pluginApplicationContext, "persistenceManagedTypes");
         bootstrap.importBeanFromMainContext(pluginApplicationContext, "entityManagerFactoryBuilder");
-        bootstrap.importBeanFromMainContext(pluginApplicationContext, "entityManagerFactory", true);
+        bootstrap.importBeanFromMainContext(pluginApplicationContext, "entityManagerFactory");
         bootstrap.importBeanFromMainContext(pluginApplicationContext, "openEntityManagerInViewInterceptorConfigurer");
         bootstrap.importBeanFromMainContext(pluginApplicationContext, "openEntityManagerInViewInterceptor");
 
@@ -69,15 +68,7 @@ public class SbpJpaConfigurer implements IPluginConfigurer {
         entityManagerFactory.afterPropertiesSet();
     }
 
-    @Override
-    public void onStart(SpringBootPlugin plugin) {
-        IPluginConfigurer.super.onStart(plugin);
-    }
-
-    @Override
-    public void onStop(SpringBootPlugin plugin) {
-        IPluginConfigurer.super.onStop(plugin);
-    }
+    // TODO unregister model types on plugin stopped
 
     @Override
     public void releaseLeaveOverResource(PluginWrapper plugin, GenericApplicationContext mainAppCtx) {

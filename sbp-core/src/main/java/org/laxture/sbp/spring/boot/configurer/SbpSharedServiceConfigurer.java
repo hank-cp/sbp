@@ -22,7 +22,7 @@ import org.springframework.context.support.GenericApplicationContext;
 /**
  * @author <a href="https://github.com/hank-cp">Hank CP</a>
  */
-public class SharedServiceConfigurer implements IPluginConfigurer {
+public class SbpSharedServiceConfigurer implements IPluginConfigurer {
 
     @Override
     public String[] excludeConfigurations() {
