@@ -37,7 +37,7 @@ Spring Cloud application.
   * AOP
 
 * Code and test plugin project as **STANDALONE** Spring Boot project.
-* Supports Spring Boot from `2.x` to `3.0.x`
+* Supports Spring Boot from `2.x` to `3.1.x`
 * **NO** extra knowledge **NEED TO LEARN** as long as you are familiar with Spring Boot.
 * **NO XML**
 
@@ -70,7 +70,7 @@ application, just like any single service provider node in Spring Cloud network.
         <dependency>
             <groupId>org.laxture</groupId>
             <artifactId>sbp-spring-boot-starter</artifactId>
-            <version>3.0.18</version>
+            <version>3.1.20</version>
         </dependency>
         ```
     * Gradle
@@ -78,7 +78,7 @@ application, just like any single service provider node in Spring Cloud network.
         dependencies {
             implementation "org.springframework.boot:spring-boot-starter-web"
             implementation "org.springframework.boot:spring-boot-starter-aop"
-            implementation 'org.laxture:sbp-spring-boot-starter:3.0.18'
+            implementation 'org.laxture:sbp-spring-boot-starter:3.1.20'
         }
         ```
     * Latest master code is always available with version `-SNAPSHOT`
@@ -108,13 +108,13 @@ application, just like any single service provider node in Spring Cloud network.
         <dependency>
             <groupId>org.laxture</groupId>
             <artifactId>sbp-core</artifactId>
-            <version>3.0.18</version>
+            <version>3.1.20</version>
         </dependency>
         ```
     * Gradle
         ```
         dependencies {
-            implementation 'org.laxture:sbp-core:3.0.18'
+            implementation 'org.laxture:sbp-core:3.1.20'
         }
         ```
 4. Add Plugin class
