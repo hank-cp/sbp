@@ -15,6 +15,7 @@
  */
 package org.laxture.sbp;
 
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.laxture.sbp.internal.SpringExtensionFactory;
 import org.laxture.sbp.spring.boot.PluginStartingError;
@@ -28,6 +29,7 @@ import org.springframework.context.support.GenericApplicationContext;
 
 import java.nio.file.Path;
 import java.util.*;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * PluginManager to hold the main ApplicationContext
@@ -45,6 +47,9 @@ public class SpringBootPluginManager extends DefaultPluginManager
     private String[] profiles;
     private PluginRepository pluginRepository;
     private final Map<String, PluginStartingError> startingErrors = new HashMap<>();
+
+    @Getter
+    private ReentrantLock loadingLock = new ReentrantLock();
 
     public SpringBootPluginManager() {
         super();
@@ -135,14 +140,19 @@ public class SpringBootPluginManager extends DefaultPluginManager
     // Plugin State Manipulation
     //*************************************************************************
 
+    public boolean isLoading() {
+        return loadingLock.isLocked();
+    }
+
     private void doStartPlugins() {
-        startingErrors.clear();
+        loadingLock.lock();
         long ts = System.currentTimeMillis();
 
         for (PluginWrapper pluginWrapper : resolvedPlugins) {
             PluginState pluginState = pluginWrapper.getPluginState();
             if ((PluginState.DISABLED != pluginState) && (PluginState.STARTED != pluginState)) {
                 if (pluginWrapper.getPlugin() == null) {
+                    loadingLock.unlock();
                     throw new IllegalArgumentException("pluginId " + pluginWrapper.getPluginId() + " doesn't existed.");
                 }
                 try {
@@ -229,73 +239,112 @@ public class SpringBootPluginManager extends DefaultPluginManager
 
     @Override
     public void startPlugins() {
-        doStartPlugins();
-        mainApplicationContext.publishEvent(new SbpPluginStateChangedEvent(mainApplicationContext));
+        try {
+            doStartPlugins();
+            mainApplicationContext.publishEvent(new SbpPluginStateChangedEvent(mainApplicationContext));
+        } finally {
+            loadingLock.unlock();
+        }
     }
 
     @Override
     public PluginState startPlugin(String pluginId) {
-        return doStartPlugin(pluginId, true);
+        try {
+            loadingLock.lock();
+            return doStartPlugin(pluginId, true);
+        } finally {
+            loadingLock.unlock();
+        }
     }
 
     @Override
     public void stopPlugins() {
-        doStopPlugins();
-        mainApplicationContext.publishEvent(new SbpPluginStateChangedEvent(mainApplicationContext));
+        try {
+            loadingLock.lock();
+            doStopPlugins();
+            mainApplicationContext.publishEvent(new SbpPluginStateChangedEvent(mainApplicationContext));
+        } finally {
+            loadingLock.unlock();
+        }
     }
 
     @Override
     public PluginState stopPlugin(String pluginId) {
-        return doStopPlugin(pluginId, true);
+        try {
+            loadingLock.lock();
+            return doStopPlugin(pluginId, true);
+        } finally {
+            loadingLock.unlock();
+        }
     }
 
     public void restartPlugins() {
-        doStopPlugins();
-        startPlugins();
+        try {
+            loadingLock.lock();
+            doStopPlugins();
+            doStartPlugins();
+        } finally {
+            loadingLock.unlock();
+        }
     }
 
     public PluginState restartPlugin(String pluginId) {
-        PluginState pluginState = doStopPlugin(pluginId, false);
-        if (pluginState != PluginState.STARTED) doStartPlugin(pluginId, false);
-        doStartPlugin(pluginId, false);
-        mainApplicationContext.publishEvent(new SbpPluginStateChangedEvent(mainApplicationContext));
-        return pluginState;
+        try {
+            loadingLock.lock();
+            PluginState pluginState = doStopPlugin(pluginId, false);
+            if (pluginState != PluginState.STARTED) doStartPlugin(pluginId, false);
+            doStartPlugin(pluginId, false);
+            mainApplicationContext.publishEvent(new SbpPluginStateChangedEvent(mainApplicationContext));
+            return pluginState;
+        } finally {
+            loadingLock.unlock();
+        }
     }
 
     public void reloadPlugins(boolean restartStartedOnly) {
-        doStopPlugins();
-        List<String> startedPluginIds = new ArrayList<>();
-        getPlugins().forEach(plugin -> {
-            if (plugin.getPluginState() == PluginState.STARTED) {
-                startedPluginIds.add(plugin.getPluginId());
-            }
-            unloadPlugin(plugin.getPluginId());
-        });
-        loadPlugins();
-        if (restartStartedOnly) {
-            startedPluginIds.forEach(pluginId -> {
-                // restart started plugin
-                if (getPlugin(pluginId) != null) {
-                    doStartPlugin(pluginId, false);
+        try {
+            loadingLock.lock();
+            doStopPlugins();
+            List<String> startedPluginIds = new ArrayList<>();
+            getPlugins().forEach(plugin -> {
+                if (plugin.getPluginState() == PluginState.STARTED) {
+                    startedPluginIds.add(plugin.getPluginId());
                 }
+                unloadPlugin(plugin.getPluginId());
             });
-            mainApplicationContext.publishEvent(new SbpPluginStateChangedEvent(mainApplicationContext));
-        } else {
-            startPlugins();
+            loadPlugins();
+            if (restartStartedOnly) {
+                startedPluginIds.forEach(pluginId -> {
+                    // restart started plugin
+                    if (getPlugin(pluginId) != null) {
+                        doStartPlugin(pluginId, false);
+                    }
+                });
+                mainApplicationContext.publishEvent(new SbpPluginStateChangedEvent(mainApplicationContext));
+            } else {
+                startPlugins();
+            }
+        } finally {
+            loadingLock.unlock();
         }
     }
 
     public PluginState reloadPlugins(String pluginId) {
-        PluginWrapper plugin = getPlugin(pluginId);
-        doStopPlugin(pluginId, false);
-        unloadPlugin(pluginId, false);
         try {
-            loadPlugin(plugin.getPluginPath());
-        } catch (Exception ex) {
-            return null;
-        }
+            loadingLock.lock();
+            PluginWrapper plugin = getPlugin(pluginId);
+            doStopPlugin(pluginId, false);
+            unloadPlugin(pluginId, false);
+            try {
+                loadPlugin(plugin.getPluginPath());
+            } catch (Exception ex) {
+                return null;
+            }
 
-        return doStartPlugin(pluginId, true);
+            return doStartPlugin(pluginId, true);
+        } finally {
+            loadingLock.unlock();
+        }
     }
 
 }

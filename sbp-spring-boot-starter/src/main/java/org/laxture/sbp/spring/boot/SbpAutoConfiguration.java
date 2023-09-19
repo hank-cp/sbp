@@ -34,6 +34,7 @@ import java.io.File;
 import java.lang.reflect.Constructor;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 
 /**
@@ -45,7 +46,7 @@ import java.util.function.Consumer;
 @ConditionalOnClass({ PluginManager.class, SpringBootPluginManager.class })
 @ConditionalOnProperty(prefix = SbpProperties.PREFIX, value = "enabled", havingValue = "true")
 @EnableConfigurationProperties({SbpProperties.class, SbpPluginProperties.class})
-@Import({MainAppStartedListener.class, MainAppReadyListener.class})
+@Import({MainAppStartedListener.class, MainAppReadyListener.class, PluginLoadingLockServletFilter.class})
 @Slf4j
 public class SbpAutoConfiguration {
 
