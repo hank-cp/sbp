@@ -15,6 +15,7 @@
  */
 package org.laxture.sbp.spring.boot;
 
+import jakarta.servlet.Filter;
 import org.laxture.sbp.SpringBootPluginManager;
 import org.laxture.sbp.internal.webmvc.PluginRequestMappingHandlerMapping;
 import org.pf4j.PluginManager;
@@ -63,6 +64,12 @@ public class SbpWebMvcPatchAutoConfiguration {
 				return null;
 			}
 		};
+	}
+
+	@Bean
+	@ConditionalOnClass(Filter.class)
+	public Filter pluginLoadingLockServletFilter() {
+		return new PluginLoadingLockServletFilter();
 	}
 
 	@Bean

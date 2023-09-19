@@ -4,11 +4,10 @@ import jakarta.servlet.*;
 import lombok.extern.slf4j.Slf4j;
 import org.laxture.sbp.SpringBootPluginManager;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
 
 import java.io.IOException;
 
-@Configuration @Slf4j
+@Slf4j
 public class PluginLoadingLockServletFilter implements Filter {
 
     @Autowired

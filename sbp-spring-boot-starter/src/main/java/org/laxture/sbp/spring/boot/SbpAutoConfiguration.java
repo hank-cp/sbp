@@ -46,7 +46,7 @@ import java.util.function.Consumer;
 @ConditionalOnClass({ PluginManager.class, SpringBootPluginManager.class })
 @ConditionalOnProperty(prefix = SbpProperties.PREFIX, value = "enabled", havingValue = "true")
 @EnableConfigurationProperties({SbpProperties.class, SbpPluginProperties.class})
-@Import({MainAppStartedListener.class, MainAppReadyListener.class, PluginLoadingLockServletFilter.class})
+@Import({MainAppStartedListener.class, MainAppReadyListener.class})
 @Slf4j
 public class SbpAutoConfiguration {
 
