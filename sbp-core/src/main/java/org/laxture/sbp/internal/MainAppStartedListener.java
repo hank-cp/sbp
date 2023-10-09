@@ -41,6 +41,7 @@ public class MainAppStartedListener implements ApplicationListener<ApplicationSt
     public void onApplicationEvent(ApplicationStartedEvent event) {
         if (pluginManager.isAutoStartPlugin()) {
             pluginManager.startPlugins();
+            pluginManager.releaseLoadingLock();
         }
 
         pluginManager.getPlugins(PluginState.STARTED).forEach(pluginWrapper -> {

@@ -129,7 +129,7 @@ public class SpringBootPluginManager extends DefaultPluginManager
      */
     @Override
     public void afterPropertiesSet() {
-        if (this.autoStartPlugin) loadingLock.tryLock();
+        if (this.autoStartPlugin) loadingLock.lock();
         loadPlugins();
    }
 
@@ -145,15 +145,19 @@ public class SpringBootPluginManager extends DefaultPluginManager
         return loadingLock.isLocked();
     }
 
+    public void releaseLoadingLock() {
+        loadingLock.unlock();
+    }
+
     private void doStartPlugins() {
-        loadingLock.tryLock();
+        loadingLock.lock();
         long ts = System.currentTimeMillis();
 
         for (PluginWrapper pluginWrapper : resolvedPlugins) {
             PluginState pluginState = pluginWrapper.getPluginState();
             if ((PluginState.DISABLED != pluginState) && (PluginState.STARTED != pluginState)) {
                 if (pluginWrapper.getPlugin() == null) {
-                    loadingLock.unlock(); loadingLock.unlock();
+                    loadingLock.unlock();
                     throw new IllegalArgumentException("pluginId " + pluginWrapper.getPluginId() + " doesn't existed.");
                 }
                 try {
@@ -244,67 +248,67 @@ public class SpringBootPluginManager extends DefaultPluginManager
             doStartPlugins();
             mainApplicationContext.publishEvent(new SbpPluginStateChangedEvent(mainApplicationContext));
         } finally {
-            loadingLock.unlock(); loadingLock.unlock();
+            loadingLock.unlock();
         }
     }
 
     @Override
     public PluginState startPlugin(String pluginId) {
         try {
-            loadingLock.tryLock();
+            loadingLock.lock();
             return doStartPlugin(pluginId, true);
         } finally {
-            loadingLock.unlock(); loadingLock.unlock();
+            loadingLock.unlock();
         }
     }
 
     @Override
     public void stopPlugins() {
         try {
-            loadingLock.tryLock();
+            loadingLock.lock();
             doStopPlugins();
             mainApplicationContext.publishEvent(new SbpPluginStateChangedEvent(mainApplicationContext));
         } finally {
-            loadingLock.unlock(); loadingLock.unlock();
+            loadingLock.unlock();
         }
     }
 
     @Override
     public PluginState stopPlugin(String pluginId) {
         try {
-            loadingLock.tryLock();
+            loadingLock.lock();
             return doStopPlugin(pluginId, true);
         } finally {
-            loadingLock.unlock(); loadingLock.unlock();
+            loadingLock.unlock();
         }
     }
 
     public void restartPlugins() {
         try {
-            loadingLock.tryLock();
+            loadingLock.lock();
             doStopPlugins();
             doStartPlugins();
         } finally {
-            loadingLock.unlock(); loadingLock.unlock();
+            loadingLock.unlock();
         }
     }
 
     public PluginState restartPlugin(String pluginId) {
         try {
-            loadingLock.tryLock();
+            loadingLock.lock();
             PluginState pluginState = doStopPlugin(pluginId, false);
             if (pluginState != PluginState.STARTED) doStartPlugin(pluginId, false);
             doStartPlugin(pluginId, false);
             mainApplicationContext.publishEvent(new SbpPluginStateChangedEvent(mainApplicationContext));
             return pluginState;
         } finally {
-            loadingLock.unlock(); loadingLock.unlock();
+            loadingLock.unlock();
         }
     }
 
     public void reloadPlugins(boolean restartStartedOnly) {
         try {
-            loadingLock.tryLock();
+            loadingLock.lock();
             doStopPlugins();
             List<String> startedPluginIds = new ArrayList<>();
             getPlugins().forEach(plugin -> {
@@ -326,13 +330,13 @@ public class SpringBootPluginManager extends DefaultPluginManager
                 startPlugins();
             }
         } finally {
-            loadingLock.unlock(); loadingLock.unlock();
+            loadingLock.unlock();
         }
     }
 
     public PluginState reloadPlugins(String pluginId) {
         try {
-            loadingLock.tryLock();
+            loadingLock.lock();
             PluginWrapper plugin = getPlugin(pluginId);
             doStopPlugin(pluginId, false);
             unloadPlugin(pluginId, false);
@@ -344,7 +348,7 @@ public class SpringBootPluginManager extends DefaultPluginManager
 
             return doStartPlugin(pluginId, true);
         } finally {
-            loadingLock.unlock(); loadingLock.unlock();
+            loadingLock.unlock();
         }
     }
 
