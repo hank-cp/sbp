@@ -36,13 +36,13 @@ def isPluginProject(Project project) {
 }
 
 def generateVersion(Project project, String sbpVersion) {
-    def version = getPropertyOrElse(project, 'version', '')
-    if (version != '' && version != 'unspecified') return version
     def sVer = VersionNumber.parse(getPropertyOrElse(project, 'springBootVersion', '0.0.0'))
     return sVer.getMajor() + '.' + sVer.getMinor() + '.' + sbpVersion
 }
 
 def getVersion(Project project) {
+    def version = getPropertyOrElse(project, 'version', '')
+    if (version != '' && version != 'unspecified') return version
     return generateVersion(project, getPropertyOrElse(project, 'sbpVersion', '0'))
 }
 
