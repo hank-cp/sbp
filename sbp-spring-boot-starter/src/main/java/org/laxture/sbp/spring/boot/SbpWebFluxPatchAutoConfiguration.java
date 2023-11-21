@@ -23,9 +23,12 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.web.WebProperties;
 import org.springframework.boot.autoconfigure.web.reactive.PluginWebFluxResourceHandlerRegistrationCustomizer;
 import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.reactive.WebFluxProperties;
 import org.springframework.boot.autoconfigure.web.reactive.WebFluxRegistrations;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.result.method.annotation.RequestMappingHandlerMapping;
@@ -40,6 +43,7 @@ import org.springframework.web.reactive.result.method.annotation.RequestMappingH
 @ConditionalOnProperty(prefix = SbpProperties.PREFIX, value = {"enabled"}, havingValue = "true")
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 @AutoConfigureBefore({ WebFluxAutoConfiguration.class })
+@EnableConfigurationProperties({WebProperties.class, WebFluxProperties.class})
 public class SbpWebFluxPatchAutoConfiguration {
 
 	@Bean

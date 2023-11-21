@@ -23,9 +23,11 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.web.WebProperties;
 import org.springframework.boot.autoconfigure.web.reactive.WebFluxRegistrations;
 import org.springframework.boot.autoconfigure.web.servlet.PluginResourceHandlerRegistrationCustomizer;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcRegistrations;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -42,7 +44,7 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 @ConditionalOnClass({ PluginManager.class, SpringBootPluginManager.class })
 @ConditionalOnProperty(prefix = SbpProperties.PREFIX, value = "enabled", havingValue = "true")
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
-
+@EnableConfigurationProperties(WebProperties.class)
 public class SbpWebMvcPatchAutoConfiguration {
 
 	@Bean

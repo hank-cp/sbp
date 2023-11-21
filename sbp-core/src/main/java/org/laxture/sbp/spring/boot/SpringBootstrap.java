@@ -467,7 +467,7 @@ public class SpringBootstrap extends SpringApplication {
                                  Class<?> beanClass) {
         try {
             Map<String, ?> beans = sourceApplicationContext.getBeansOfType(beanClass);
-            if (beans.size() == 0) {
+            if (beans.isEmpty()) {
                 return false;
             }
             for (String beanName : beans.keySet()) {
