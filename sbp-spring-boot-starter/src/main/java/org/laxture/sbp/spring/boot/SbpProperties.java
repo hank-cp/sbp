@@ -77,7 +77,7 @@ public class SbpProperties {
 	 */
 	private String pluginsRoot = "plugins";
 	/**
-	 * Allows to provide custom plugin loaders
+	 * Allows to provide custom plugin loaders.
 	 */
 	private Class<PluginLoader> customPluginLoader;
 	/**

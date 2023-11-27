@@ -36,9 +36,11 @@ with two options
 plugins home folder, relative to project working DIR. 
 Default `plugins`
 
-##### `spring.sbp.custom-plugin-loaders`
+##### `spring.sbp.custom-plugin-loader`
 Allows to provide custom plugin loaders. Provided custom `PluginLoader` should have
-a constructor with one argument that accepts `PluginManager`.
+a constructor with one argument that accepts `PluginManager`. By default sbp loads plugin resources (classes and resource files) 
+from file-system or single jar file. If you want to load plugin resources from other format, like fat-jar, you
+will have to provide custom `PluginLoader`.
 
 ##### `spring.sbp.plugin-profiles`: 
 Specify Spring profiles to be used when creating plugins' `ApplicationContext` environment. With profile `plugin` by default. 

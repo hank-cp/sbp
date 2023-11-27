@@ -30,7 +30,7 @@ spring:
           database-platform: org.hibernate.dialect.PostgreSQL9Dialect
     controller:
       base-path: sbp
-#    custom-plugin-loaders:
+#    custom-plugin-loader:
 #      - demo.sbp.app.CustomPluginLoader
   flyway:
     enabled: true
