@@ -65,7 +65,7 @@ otherwise `PluginManager` couldn't find the `plugin` folder.
     * demo-plugin-library: Demonstrate using Spring Data/JPA.
     * demo-plugin-shelf: Demonstrate api expose and invocation between plugins.
   * It is basically a skeleton project that you could starts your own project. It almost contains
-    everything we need in the real project.
+    everything we need in a real project.
 * demo-jpa: Demonstrate how to use Spring Data/JPA by `sbp-spring-boot-jpa-starter`
 * demo-webflux: Demonstrate how to use Spring WebFlux by `sbp-spring-boot-webflux-starter`
-* Every single projects with `SpringApplication` could be run standalone. 
+* Every single project using `SpringApplication` could be run standalone. 
