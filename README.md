@@ -57,7 +57,7 @@ change rapidly. For large scale application, Spring Cloud is still your best cho
 * **sbp** should be able to live with Spring Cloud. After all, it is still a Spring Boot
 application, just like any single service provider node in Spring Cloud network.
 
-### Getting Start
+### Getting Started
 
 ##### Create app project
 1. Create a Spring Boot project with multi sub project structure.
