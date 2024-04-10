@@ -74,8 +74,11 @@ public class SpringBootstrap extends SpringApplication {
 
     public static final String[] DEFAULT_EXCLUDE_CONFIGURATIONS = {
         "org.laxture.sbp.spring.boot.SbpAutoConfiguration",
+        "org.laxture.sbp.spring.boot.SbpWebFluxPatchAutoConfiguration",
+        "org.laxture.sbp.spring.boot.SbpWebMvcPatchAutoConfiguration",
         // Embedded Web Server
         "org.springframework.boot.autoconfigure.web.embedded.EmbeddedWebServerFactoryCustomizerAutoConfiguration",
+        "org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration",
         // Spring Web MVC
         "org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration",
         "org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration",
@@ -453,7 +456,7 @@ public class SpringBootstrap extends SpringApplication {
             applicationContext.getBeanFactory().registerSingleton(beanName, bean);
             applicationContext.getBeanFactory().autowireBean(bean);
             importedBeanNames.add(beanName);
-            log.info("Bean {} is imported from {} ApplicationContext", beanName,
+            log.debug("Bean {} is imported from {} ApplicationContext", beanName,
                 (sourceApplicationContext == mainApplicationContext ? "app" : "plugin"));
             return true;
 
@@ -479,7 +482,7 @@ public class SpringBootstrap extends SpringApplication {
                 applicationContext.getBeanFactory().autowireBean(bean);
                 importedBeanNames.add(beanName);
             }
-            log.info("Bean {} is imported from {} ApplicationContext", beanClass.getSimpleName(),
+            log.debug("Bean {} is imported from {} ApplicationContext", beanClass.getSimpleName(),
                 (sourceApplicationContext == mainApplicationContext ? "app" : "plugin"));
             return true;
         } catch (NoSuchBeanDefinitionException ex) {

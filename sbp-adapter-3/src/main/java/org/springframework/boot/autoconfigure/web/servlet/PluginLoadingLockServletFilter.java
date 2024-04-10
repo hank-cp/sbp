@@ -1,4 +1,4 @@
-package org.laxture.sbp.spring.boot;
+package org.springframework.boot.autoconfigure.web.servlet;
 
 import jakarta.servlet.*;
 import lombok.extern.slf4j.Slf4j;

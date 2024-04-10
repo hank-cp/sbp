@@ -27,9 +27,13 @@ public class SbpDataSourceConfigurer implements IPluginConfigurer {
     @Override
     public String[] excludeConfigurations() {
         return new String[] {
+            "org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration",
             "org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration",
+            "org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration",
             "org.springframework.boot.autoconfigure.transaction.jta.JtaAutoConfiguration",
-            "org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration"
+            "org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration",
+            "org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration",
+            "org.springframework.boot.autoconfigure.jooq.JooqAutoConfiguration"
         };
     }
 
@@ -39,7 +43,18 @@ public class SbpDataSourceConfigurer implements IPluginConfigurer {
         // share dataSource
         bootstrap.importBeanFromMainContext(pluginApplicationContext, "dataSource");
         bootstrap.importBeanFromMainContext(pluginApplicationContext, "transactionManager");
+        bootstrap.importBeanFromMainContext(pluginApplicationContext, "jdbcTemplate");
+        bootstrap.importBeanFromMainContext(pluginApplicationContext, "namedParameterJdbcTemplate");
         // share MongoDbFactory
         bootstrap.importBeanFromMainContext(pluginApplicationContext, "mongoDbFactory");
+        // share cacheManager
+        bootstrap.importBeanFromMainContext(pluginApplicationContext, "cacheManager");
+        // share Jooq
+        bootstrap.importBeanFromMainContext(pluginApplicationContext, "dataSourceConnectionProvider");
+        bootstrap.importBeanFromMainContext(pluginApplicationContext, "transactionProvider");
+        bootstrap.importBeanFromMainContext(pluginApplicationContext, "jooqExceptionTranslatorExecuteListenerProvider");
+        bootstrap.importBeanFromMainContext(pluginApplicationContext, "jooqTransactionManager");
+        bootstrap.importBeanFromMainContext(pluginApplicationContext, "dslContext");
+        bootstrap.importBeanFromMainContext(pluginApplicationContext, "jooqConfiguration");
     }
 }

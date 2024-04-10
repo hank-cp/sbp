@@ -24,14 +24,12 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.WebProperties;
-import org.springframework.boot.autoconfigure.web.reactive.PluginWebFluxResourceHandlerRegistrationCustomizer;
-import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.reactive.WebFluxProperties;
-import org.springframework.boot.autoconfigure.web.reactive.WebFluxRegistrations;
+import org.springframework.boot.autoconfigure.web.reactive.*;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.result.method.annotation.RequestMappingHandlerMapping;
+import org.springframework.web.server.WebFilter;
 
 /**
  * Sbp main app auto configuration for Spring Boot
@@ -45,6 +43,12 @@ import org.springframework.web.reactive.result.method.annotation.RequestMappingH
 @AutoConfigureBefore({ WebFluxAutoConfiguration.class })
 @EnableConfigurationProperties({WebProperties.class, WebFluxProperties.class})
 public class SbpWebFluxPatchAutoConfiguration {
+
+	@Bean
+	@ConditionalOnClass(WebFilter.class)
+	public WebFilter pluginLoadingLockServletFilter() {
+		return new PluginLoadingLockServletFilter();
+	}
 
 	@Bean
 	@ConditionalOnMissingBean(WebFluxRegistrations.class)

@@ -24,29 +24,29 @@ sbp provides below integrations. You could implement your own `IPluginConfigurer
 or raise an [issue](https://github.com/hank-cp/sbp/issues/new) to request a new integration.
 
 ### WebMvc/WebFlux
-* Gradle dependencies: `implementation 'org.laxture:sbp-spring-boot-starter:3.1.22'`
+* Gradle dependencies: `implementation 'org.laxture:sbp-spring-boot-starter:3.2.23'`
 * by `SbpWebConfigurer`
 * it's mandatory, and it will always be first one in the processing queue.
 * Plugin webmvc/webflux controller and router function will be registered to main `ApplicationContext` when plugin is started.
 * Unregister when plugin is stopped.
 
 ### DataSource
-* Gradle dependencies: `implementation 'org.laxture:sbp-spring-boot-starter:3.1.22'`
+* Gradle dependencies: `implementation 'org.laxture:sbp-spring-boot-starter:3.2.23'`
 * by `SbpDataSourceConfigurer`
 * Share data source from main `ApplicationContext` to plugin.e
 ### ~~Jta Transaction(deprecated)~~
-* Gradle dependencies: `implementation 'org.laxture:sbp-spring-boot-starter:3.1.22'`
+* Gradle dependencies: `implementation 'org.laxture:sbp-spring-boot-starter:3.2.23'`
 * by `SbpJtaConfigurer`
 * Share Jta transaction manager from main `ApplicationContext` to plugin.
 
 ### Jpa/Hibernate
-* Gradle dependencies: `implementation 'org.laxture:sbp-spring-boot-jpa-tarter:3.1.22'`
+* Gradle dependencies: `implementation 'org.laxture:sbp-spring-boot-jpa-tarter:3.2.23'`
 * by `SbpJpaConfigurer`
 * Plugin JPA entity will be registered to main `EntityManagerFactory` when plugin is started.
 * Unregister when plugin is stopped.
 
 ### [SpringDoc-OpenApi](https://springdoc.org/v2/)
-* Gradle dependencies: `implementation 'org.laxture:sbp-spring-boot-springdoc-tarter:3.1.22'`
+* Gradle dependencies: `implementation 'org.laxture:sbp-spring-boot-springdoc-tarter:3.2.23'`
 * by `SbpSpringDocConfigurer`
 * Register plugin api doc when plugin is started.
 * Unregister when plugin is stopped.
