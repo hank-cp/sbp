@@ -33,7 +33,7 @@ public class SbpDataSourceConfigurer implements IPluginConfigurer {
             "org.springframework.boot.autoconfigure.transaction.jta.JtaAutoConfiguration",
             "org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration",
             "org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration",
-            "org.springframework.boot.autoconfigure.jooq.JooqAutoConfiguration"
+//            "org.springframework.boot.autoconfigure.jooq.JooqAutoConfiguration"
         };
     }
 
@@ -52,8 +52,6 @@ public class SbpDataSourceConfigurer implements IPluginConfigurer {
         // share Jooq
         bootstrap.importBeanFromMainContext(pluginApplicationContext, "dataSourceConnectionProvider");
         bootstrap.importBeanFromMainContext(pluginApplicationContext, "transactionProvider");
-        bootstrap.importBeanFromMainContext(pluginApplicationContext, "jooqExceptionTranslatorExecuteListenerProvider");
-        bootstrap.importBeanFromMainContext(pluginApplicationContext, "jooqTransactionManager");
         bootstrap.importBeanFromMainContext(pluginApplicationContext, "dslContext");
         bootstrap.importBeanFromMainContext(pluginApplicationContext, "jooqConfiguration");
     }
