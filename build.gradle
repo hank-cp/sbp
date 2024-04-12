@@ -60,6 +60,7 @@ buildscript {
 
 plugins {
     id 'idea'
+    id 'org.jetbrains.gradle.plugin.idea-ext' version '1.1.7'
     id 'nu.studer.jooq' version '8.1' apply false
     id 'org.flywaydb.flyway' version "8.4.0" apply false
 }
@@ -96,6 +97,13 @@ idea {
     module {
         inheritOutputDirs = true
         downloadSources = true
+    }
+    project.settings {
+        compiler {
+            javac {
+                javacAdditionalOptions "-parameters"
+            }
+        }
     }
 }
 
@@ -154,6 +162,14 @@ subprojects {
     } else {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
+    }
+
+    compileJava {
+        options.compilerArgs << '-parameters'
+    }
+
+    compileTestJava {
+        options.compilerArgs << '-parameters'
     }
 
     tasks.withType(AbstractCompile) {

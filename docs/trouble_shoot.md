@@ -1,3 +1,13 @@
+## Things you should know
+* Package name cannot start with `org.pf4j`, `java` or `javax`.
+  `PluginClassLoader` will treat them differently.
+* Name the app package and plugin packages differently, otherwise Spring context building process will mess up.
+* Always use the same framework stack as long as you can between app and plugins. Introducing library with complex
+  dependencies (link Spring Data JPA) into plugin only, will cause many unexpected
+  problems. Because plugin and app have different classloader, it's a little
+  bit hard to mark sure all referred dependent classes are loaded by the same
+  classloader.
+
 ## Trouble Shoot
 
 ##### I get `ClassNotFoundException`
@@ -51,11 +61,42 @@ setting of Run/Debug Configuration:
 with `@Autowire` for `PluginManager` together to make sure Spring instantiates 
 all needed beans before it starts to load plugin.
 
-## Misc.
-* Package name cannot start with `org.pf4j`, `java` or `javax`. 
-`PluginClassLoader` will treat them differently. 
-* Stay in same framework stack as long as you can. Introducing library with complex 
-dependencies (link Spring Data JPA) into plugin only, will cause many unexpected
-problems. Because plugin and app have different classloader, it's a little
-bit hard to mark sure all referred dependent classes are loaded by the same
-classloader.
+##### Name for argument of type [XXX] not specified
+* After upgrade Spring Boot to 3.2.x, you will need to add '-parameters' compiler options.
+* https://stackoverflow.com/questions/77635974/error-name-for-argument-of-type-java-util-uuid-not-specified-and-parameter-n
+  * For Gradle:
+```gradle
+  plugins {
+    id 'idea'
+    id 'org.jetbrains.gradle.plugin.idea-ext' version '1.1.7'
+  }
+  idea {
+    project.settings {
+      compiler {
+        javac {
+          javacAdditionalOptions "-parameters"
+        }
+      }
+    }
+  }
+  compileJava {
+    options.compilerArgs << '-parameters'
+  }
+  compileTestJava {
+    options.compilerArgs << '-parameters'
+  }
+```
+  * For Maven:
+```xml
+<plugin>
+  <groupId>org.apache.maven.plugins</groupId>
+  <artifactId>maven-compiler-plugin</artifactId>
+  <version>3.11.0</version>
+  <configuration>
+    <parameters>true</parameters>
+  </configuration>
+</plugin>
+```
+ 
+
+
