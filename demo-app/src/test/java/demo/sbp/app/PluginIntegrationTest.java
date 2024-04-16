@@ -386,6 +386,42 @@ public class PluginIntegrationTest {
                 });
     }
 
+    @Test
+    public void testThymeleaf() throws Exception {
+        mvc.perform(get("/thymeleaf/app") // served by demo-app
+                .contentType(MediaType.TEXT_HTML))
+            .andExpect(status().isOk())
+            .andDo(result -> {
+                assertThat(result.getResponse().getContentAsString(), containsString("Rendered from the app!"));
+            });
+
+        mvc.perform(get("/thymeleaf/plugin") // served by demo-plugin-admin
+                .contentType(MediaType.TEXT_HTML))
+            .andExpect(status().isOk())
+            .andDo(result -> {
+                assertThat(result.getResponse().getContentAsString(), containsString("Rendered from the plugin!"));
+            });
+
+        // stop demo-plugin-admin
+        pluginManager.stopPlugin("demo-plugin-admin");
+
+        // bar.html should be not found after plugin stop.
+        mvc.perform(get("/thymeleaf/plugin")
+                .contentType(MediaType.TEXT_HTML))
+            .andExpect(status().isNotFound());
+
+        // start demo-plugin-admin again
+        pluginManager.startPlugin("demo-plugin-admin");
+
+        // bar.html should come back to live again.
+        mvc.perform(get("/thymeleaf/plugin")
+                .contentType(MediaType.TEXT_HTML))
+            .andExpect(status().isOk())
+            .andDo(result -> {
+                assertThat(result.getResponse().getContentAsString(), containsString("Rendered from the plugin!"));
+            });
+    }
+
     public interface Runnable {
         public abstract void run() throws Exception;
     }

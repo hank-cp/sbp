@@ -52,12 +52,17 @@ public class SbpWebConfigurer implements IPluginConfigurer {
 
     @Override
     public void releaseLeaveOverResource(PluginWrapper plugin, GenericApplicationContext mainAppCtx) {
-        Stream.concat(Stream.concat(Stream.concat(
-                mainAppCtx.getBeansWithAnnotation(Controller.class).values().stream(),
-                mainAppCtx.getBeansWithAnnotation(RestController.class).values().stream()),
-                mainAppCtx.getBeansOfType(org.springframework.web.servlet.function.RouterFunction.class).values().stream()),
-                mainAppCtx.getBeansOfType(org.springframework.web.reactive.function.server.RouterFunction.class).values().stream())
-            .filter(bean -> bean.getClass().getClassLoader() == plugin.getPluginClassLoader())
+        Stream<Object> stream = mainAppCtx.getBeansWithAnnotation(Controller.class).values().stream();
+        stream = Stream.concat(stream, mainAppCtx.getBeansWithAnnotation(RestController.class).values().stream());
+        try {
+            stream = Stream.concat(stream, mainAppCtx.getBeansOfType(org.springframework.web.servlet.function.RouterFunction.class).values().stream());
+        } catch (Throwable ignored) {} // ignore
+        try {
+            stream = Stream.concat(stream, mainAppCtx.getBeansOfType(org.springframework.web.reactive.function.server.RouterFunction.class).values().stream());
+        } catch (Throwable ignored) {} // ignore
+
+
+        stream.filter(bean -> bean.getClass().getClassLoader() == plugin.getPluginClassLoader())
             .forEach(bean -> {
                 SpringBootPlugin.unregisterBeanFromMainContext(mainAppCtx, bean);
             });

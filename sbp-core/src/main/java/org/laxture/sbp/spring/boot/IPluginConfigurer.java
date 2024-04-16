@@ -28,8 +28,24 @@ public interface IPluginConfigurer {
         return new String[] {};
     }
 
+
+    /**
+     * Hook of creating plugin ApplicationContext. Could import beans from main ApplicationContext
+     * or register extension to main ApplicationContext.
+     *
+     * Note that plugin ApplicationContext is not yet ready in this hook, use <@link #afterBootstrap> instead.
+     */
     default void onBootstrap(SpringBootstrap bootstrap,
                              GenericApplicationContext pluginApplicationContext) {
+        // default do nothing
+    }
+
+    /**
+     * Hook of finishing creating plugin ApplicationContext. If the extension is relied on
+     * plugin beans, it should be done in this hook.
+     */
+    default void afterBootstrap(SpringBootstrap bootstrap,
+                                GenericApplicationContext pluginApplicationContext) {
         // default do nothing
     }
 
@@ -41,6 +57,9 @@ public interface IPluginConfigurer {
         // default do nothing
     }
 
+    /**
+     * Release plugin leave-over resources in main ApplicationContext.
+     */
     default void releaseLeaveOverResource(PluginWrapper plugin,
                                           GenericApplicationContext mainAppCtx) {
         // default do nothing

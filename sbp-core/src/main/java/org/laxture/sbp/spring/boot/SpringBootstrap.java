@@ -364,6 +364,7 @@ public class SpringBootstrap extends SpringApplication {
         setWebApplicationType(WebApplicationType.NONE);
         AnnotationConfigApplicationContext applicationContext =
             (AnnotationConfigApplicationContext) super.createApplicationContext();
+        applicationContext.setId(plugin.getWrapper().getPluginId());
 //        applicationContext.setParent(mainApplicationContext);
         hackBeanFactory(applicationContext);
         applicationContext.setClassLoader(pluginClassLoader);
@@ -398,6 +399,7 @@ public class SpringBootstrap extends SpringApplication {
     @Override
     protected void afterRefresh(ConfigurableApplicationContext context, ApplicationArguments args) {
         context.getBeanFactory().registerSingleton(BEAN_IMPORTED_BEAN_NAMES, importedBeanNames);
+        this.plugin.afterPluginBootstrap(this, (GenericApplicationContext) context);
     }
 
     private void hackBeanFactory(ApplicationContext applicationContext) {

@@ -3,6 +3,8 @@ dependencies {
     implementation project(':demo-api')
     implementation project(':demo-security')
     implementation project(':sbp-core')
+
+    implementation project(':sbp-spring-boot-starter-thymeleaf')
 }
 
 //*************************************************************************

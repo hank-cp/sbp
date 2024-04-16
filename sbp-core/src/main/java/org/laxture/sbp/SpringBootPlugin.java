@@ -101,6 +101,7 @@ public abstract class SpringBootPlugin extends Plugin {
         long startTs = System.currentTimeMillis();
         log.debug("Starting plugin {} ......", getWrapper().getPluginId());
 
+        // initialize Spring application context
         applicationContext = springBootstrap.run();
         for (IPluginConfigurer configurer : this.pluginConfigurers) {
             configurer.onStart(this);
@@ -162,18 +163,6 @@ public abstract class SpringBootPlugin extends Plugin {
     public static void releaseLegacyResources(PluginWrapper plugin,
                                               GenericApplicationContext mainAppCtx) {
         try {
-            // unregister Extension beans
-            Set<String> extensionClassNames = plugin.getPluginManager()
-                    .getExtensionClassNames(plugin.getPluginId());
-            for (String extensionClassName : extensionClassNames) {
-                    Class<?> extensionClass = plugin.getPluginClassLoader().loadClass(extensionClassName);
-                    SpringExtensionFactory extensionFactory = (SpringExtensionFactory) plugin
-                            .getPluginManager().getExtensionFactory();
-                    String beanName = extensionFactory.getExtensionBeanName(extensionClass);
-                    if (StringUtils.isEmpty(beanName)) continue;
-                    unregisterBeanFromMainContext(mainAppCtx, beanName);
-            }
-
             SpringBootPlugin springBootPlugin = (SpringBootPlugin) plugin.getPlugin();
             for (IPluginConfigurer configurer : springBootPlugin.pluginConfigurers) {
                 configurer.releaseLeaveOverResource(plugin, mainAppCtx);
@@ -232,6 +221,13 @@ public abstract class SpringBootPlugin extends Plugin {
                                   GenericApplicationContext pluginApplicationContext) {
         for (IPluginConfigurer configurer : this.pluginConfigurers) {
             configurer.onBootstrap(bootstrap, pluginApplicationContext);
+        }
+    }
+
+    public void afterPluginBootstrap(SpringBootstrap bootstrap,
+                                     GenericApplicationContext pluginApplicationContext) {
+        for (IPluginConfigurer configurer : this.pluginConfigurers) {
+            configurer.afterBootstrap(bootstrap, pluginApplicationContext);
         }
     }
 

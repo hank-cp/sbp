@@ -15,16 +15,26 @@
  */
 package org.laxture.sbp.spring.boot;
 
-import org.laxture.sbp.spring.boot.IPluginConfigurer;
-import org.laxture.sbp.spring.boot.SpringBootstrap;
+import org.laxture.sbp.util.BeanUtil;
+import org.pf4j.PluginWrapper;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafProperties;
 import org.springframework.context.support.GenericApplicationContext;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 import org.thymeleaf.spring6.templateresolver.SpringResourceTemplateResolver;
+import org.thymeleaf.templateresolver.ITemplateResolver;
+
+import java.util.Set;
 
 /**
- * @author <a href="https://github.com/kenpb">Kenneth P. Barquero</a>
+ * Plugin configurer for Thymeleaf.
+ * To customize Thymeleaf configuration via application properties,
+ * you need to import <@link ThymeleafProperties> explicitly by
+ * <code>@Import(ThymeleafProperties.class)</code>
  */
 public class SbpThymeleafConfigurer implements IPluginConfigurer {
+
+    private SpringResourceTemplateResolver pluginTemplateResolver;
 
     @Override
     public String[] excludeConfigurations() {
@@ -34,18 +44,46 @@ public class SbpThymeleafConfigurer implements IPluginConfigurer {
     }
 
     @Override
-    public void onBootstrap(SpringBootstrap bootstrap, GenericApplicationContext pluginApplicationContext) {
+    public void afterBootstrap(SpringBootstrap bootstrap, GenericApplicationContext pluginApplicationContext) {
         SpringTemplateEngine templateEngine = (SpringTemplateEngine) bootstrap.getMainApplicationContext()
                 .getBean("templateEngine");
-        templateEngine.addTemplateResolver(this.pluginTemplateResolver(pluginApplicationContext));
+        Set<ITemplateResolver> resolvers = BeanUtil.getFieldValue(templateEngine, "templateResolvers");
+        pluginTemplateResolver = createPluginTemplateResolver(pluginApplicationContext);
+        assert resolvers != null;
+        resolvers.add(this.pluginTemplateResolver);
     }
 
-    SpringResourceTemplateResolver pluginTemplateResolver(GenericApplicationContext pluginApplicationContext) {
+    private SpringResourceTemplateResolver createPluginTemplateResolver(GenericApplicationContext pluginApplicationContext) {
+        ThymeleafProperties properties;
+        try {
+            properties = pluginApplicationContext.getBean(ThymeleafProperties.class);
+        } catch (NoSuchBeanDefinitionException ignored) {
+            properties = new ThymeleafProperties();
+        }
         SpringResourceTemplateResolver resolver = new SpringResourceTemplateResolver();
         resolver.setApplicationContext(pluginApplicationContext);
-        resolver.setPrefix("/templates/");
-        resolver.setSuffix(".html");
+        resolver.setPrefix(properties.getPrefix());
+        resolver.setSuffix(properties.getSuffix());
+        resolver.setTemplateMode(properties.getMode());
+        if (properties.getEncoding() != null) {
+            resolver.setCharacterEncoding(properties.getEncoding().name());
+        }
+        resolver.setCacheable(properties.isCache());
+        Integer order = properties.getTemplateResolverOrder();
+        if (order != null) {
+            resolver.setOrder(order);
+        }
+        resolver.setCheckExistence(properties.isCheckTemplate());
         return resolver;
     }
 
+    @Override
+    public void releaseLeaveOverResource(PluginWrapper plugin, GenericApplicationContext mainAppCtx) {
+        if (this.pluginTemplateResolver != null) {
+            SpringTemplateEngine templateEngine = (SpringTemplateEngine) mainAppCtx.getBean("templateEngine");
+            Set<ITemplateResolver> resolvers = BeanUtil.getFieldValue(templateEngine, "templateResolvers");
+            assert resolvers != null;
+            resolvers.remove(this.pluginTemplateResolver);
+        }
+    }
 }

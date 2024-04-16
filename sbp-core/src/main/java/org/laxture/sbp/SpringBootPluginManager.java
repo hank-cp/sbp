@@ -193,7 +193,7 @@ public class SpringBootPluginManager extends DefaultPluginManager
                     pluginWrapper.getPlugin().stop();
                     pluginWrapper.setPluginState(PluginState.STOPPED);
                     itr.remove();
-
+                    SpringBootPlugin.releaseLegacyResources(pluginWrapper, mainApplicationContext);
                     firePluginStateEvent(new PluginStateEvent(this, pluginWrapper, pluginState));
                 } catch (PluginRuntimeException e) {
                     log.error(e.getMessage(), e);
@@ -230,6 +230,7 @@ public class SpringBootPluginManager extends DefaultPluginManager
         PluginState previousState = plugin.getPluginState();
         try {
             PluginState pluginState = super.stopPlugin(pluginId);
+            SpringBootPlugin.releaseLegacyResources(plugin, mainApplicationContext);
             if (sendEvent && previousState != pluginState) {
                 mainApplicationContext.publishEvent(new SbpPluginStateChangedEvent(mainApplicationContext));
             }
