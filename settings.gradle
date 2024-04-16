@@ -2,6 +2,7 @@ include 'sbp-core',
         'sbp-adapter-3',
         'sbp-spring-boot-starter',
         'sbp-spring-boot-springdoc-starter',
+        'sbp-spring-boot-starter-thymeleaf',
 
         'demo-shared',
         'demo-security',

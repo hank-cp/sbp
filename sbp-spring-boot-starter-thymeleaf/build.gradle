@@ -1,0 +1,12 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+}
+
+group = 'org.laxture.sbp'
+
+dependencies {
+    api project(':sbp-core')
+
+    implementation "org.springframework.boot:spring-boot-starter-thymeleaf"
+}
