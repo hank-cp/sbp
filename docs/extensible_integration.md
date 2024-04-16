@@ -20,11 +20,14 @@ public class LibraryPlugin extends SpringBootPlugin {
 ----
 
 ## Integrations
-sbp provides below integrations. You could implement your own `IPluginConfigurer` to integrate other frameworks/libraries, 
+sbp provides several integrations. These integrations are provided as familiar Spring boot starter libraries. Add to these
+starter libraries to both app/plugin dependencies to enable.
+
+You could also implement your own `IPluginConfigurer` to integrate other frameworks/libraries, 
 or raise an [issue](https://github.com/hank-cp/sbp/issues/new) to request a new integration.
 
 ### WebMvc/WebFlux
-* Gradle dependencies: `implementation 'org.laxture:sbp-spring-boot-starter:3.2.23'`
+* dependencies: `implementation 'org.laxture:sbp-spring-boot-starter:3.2.23'`
 * by `SbpWebConfigurer`
 * it's mandatory, and it will always be first one in the processing queue.
 * Plugin webmvc/webflux controller and router function will be registered to main `ApplicationContext` when plugin is started.
@@ -33,17 +36,19 @@ or raise an [issue](https://github.com/hank-cp/sbp/issues/new) to request a new 
 ### DataSource
 * Gradle dependencies: `implementation 'org.laxture:sbp-spring-boot-starter:3.2.23'`
 * by `SbpDataSourceConfigurer`
-* Share data source from main `ApplicationContext` to plugin.e
-### ~~Jta Transaction(deprecated)~~
-* Gradle dependencies: `implementation 'org.laxture:sbp-spring-boot-starter:3.2.23'`
-* by `SbpJtaConfigurer`
-* Share Jta transaction manager from main `ApplicationContext` to plugin.
+* Share data source from main `ApplicationContext` to plugin.
+* It shared below resource from app to plugin
+  * JDBC data source
+  * JDBC template
+  * MongoDB
+  * CacheManager
+  * Jooq DSLContext
 
 ### Jpa/Hibernate
 * Gradle dependencies: `implementation 'org.laxture:sbp-spring-boot-jpa-tarter:3.2.23'`
 * by `SbpJpaConfigurer`
-* Plugin JPA entity will be registered to main `EntityManagerFactory` when plugin is started.
-* Unregister when plugin is stopped.
+* Plugin JPA entities will be registered to main `EntityManagerFactory` when plugin is started.
+* Unregister plugin entiies when plugin is stopped.
 
 ### [SpringDoc-OpenApi](https://springdoc.org/v2/)
 * Gradle dependencies: `implementation 'org.laxture:sbp-spring-boot-springdoc-tarter:3.2.23'`
@@ -54,7 +59,7 @@ or raise an [issue](https://github.com/hank-cp/sbp/issues/new) to request a new 
 #### Usage by Annotation (@Controller/@RestController)
 * Use [GroupedOpenApi](https://springdoc.org/v2/#how-can-i-define-multiple-openapi-definitions-in-one-spring-boot-project) to register app/plugin api doc by scan package.
 * example
-```
+```java
     // main app
     @Bean
     public GroupedOpenApi mainApiDoc() {
@@ -77,6 +82,16 @@ or raise an [issue](https://github.com/hank-cp/sbp/issues/new) to request a new 
 [official example](https://github.com/springdoc/springdoc-openapi/blob/master/springdoc-openapi-webflux-core/src/test/java/test/org/springdoc/api/app90/HelloRouter.java). 
 * [`@RouterOperation\@RouterOperations`](https://springdoc.org/v2/#spring-cloud-function-web-support) doesn't work for sbp.
 
-### Flyway
-* Gradle dependencies: `implementation 'org.laxture:sbp-spring-boot-springdoc-tarter:3.0.18'`
-* It will be automatically applied when `spring.flyway.enabled` is true.
+### Thymeleaf
+* Gradle dependencies: `implementation 'org.laxture:sbp-spring-boot-thymeleaf-starter:3.2.23'`
+* by `SbpThymeleafConfigurer`
+* To customize Thymeleaf configuration via application properties, you need to import <@link ThymeleafProperties> explicitly by `@Import(ThymeleafProperties.class)`
+
+### Misc.
+* Gradle dependencies: `implementation 'org.laxture:sbp-spring-boot-starter:3.2.23'`
+* by `SbpSharedServiceConfigurer`
+* Services could be shared from main app to plugins
+
+#### flyway
+* Inject plugin classloader to flyway
+* Will be automatically applied when `spring.flyway.enabled` is true.

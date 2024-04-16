@@ -4,7 +4,7 @@ dependencies {
     implementation project(':demo-api')
     implementation project(':demo-security')
 
-    implementation project(':sbp-spring-boot-starter-thymeleaf')
+    implementation project(':sbp-spring-boot-thymeleaf-starter')
 
     runtimeOnly "org.postgresql:postgresql"
 
