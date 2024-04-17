@@ -33,7 +33,7 @@ public interface IPluginConfigurer {
      * Hook of creating plugin ApplicationContext. Could import beans from main ApplicationContext
      * or register extension to main ApplicationContext.
      *
-     * Note that plugin ApplicationContext is not yet ready in this hook, use <@link #afterBootstrap> instead.
+     * Note that plugin ApplicationContext is not yet ready in this hook, use {@link #afterBootstrap} instead.
      */
     default void onBootstrap(SpringBootstrap bootstrap,
                              GenericApplicationContext pluginApplicationContext) {

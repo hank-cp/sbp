@@ -27,12 +27,17 @@ public class SbpDataSourceConfigurer implements IPluginConfigurer {
     @Override
     public String[] excludeConfigurations() {
         return new String[] {
+//            "org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration",
+//            "org.springframework.boot.autoconfigure.transaction.jta.JtaAutoConfiguration",
+//            "org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration"
+
             "org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration",
             "org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration",
             "org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration",
             "org.springframework.boot.autoconfigure.transaction.jta.JtaAutoConfiguration",
             "org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration",
-            "org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration",
+
+//            "org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration",
 //            "org.springframework.boot.autoconfigure.jooq.JooqAutoConfiguration"
         };
     }
@@ -47,12 +52,21 @@ public class SbpDataSourceConfigurer implements IPluginConfigurer {
         bootstrap.importBeanFromMainContext(pluginApplicationContext, "namedParameterJdbcTemplate");
         // share MongoDbFactory
         bootstrap.importBeanFromMainContext(pluginApplicationContext, "mongoDbFactory");
-        // share cacheManager
-        bootstrap.importBeanFromMainContext(pluginApplicationContext, "cacheManager");
+        // share redis
+        bootstrap.importBeanFromMainContext(pluginApplicationContext, "redisConnectionFactory");
         // share Jooq
         bootstrap.importBeanFromMainContext(pluginApplicationContext, "dataSourceConnectionProvider");
         bootstrap.importBeanFromMainContext(pluginApplicationContext, "transactionProvider");
         bootstrap.importBeanFromMainContext(pluginApplicationContext, "dslContext");
         bootstrap.importBeanFromMainContext(pluginApplicationContext, "jooqConfiguration");
+
+//        // share dataSource
+//        bootstrap.importBeanFromMainContext(pluginApplicationContext, "dataSource");
+//        bootstrap.importBeanFromMainContext(pluginApplicationContext, "transactionManager");
+//        // share MongoDbFactory
+//        bootstrap.importBeanFromMainContext(pluginApplicationContext, "mongoDbFactory");
+//
+//        bootstrap.importBeanFromMainContext(pluginApplicationContext, "redisConnectionFactory");
+//        bootstrap.importBeanFromMainContext(pluginApplicationContext, "dslContext");
     }
 }

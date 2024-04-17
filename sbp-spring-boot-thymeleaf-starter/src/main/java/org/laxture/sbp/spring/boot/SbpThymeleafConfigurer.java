@@ -29,7 +29,7 @@ import java.util.Set;
 /**
  * Plugin configurer for Thymeleaf.
  * To customize Thymeleaf configuration via application properties,
- * you need to import <@link ThymeleafProperties> explicitly by
+ * you need to import {@link ThymeleafProperties} explicitly by
  * <code>@Import(ThymeleafProperties.class)</code>
  */
 public class SbpThymeleafConfigurer implements IPluginConfigurer {
