@@ -22,5 +22,5 @@ dependencies {
     api "org.apache.commons:commons-lang3:3.8.1"
     api 'org.laxture:spring-static-ctx:0.1.2'
     api 'org.flywaydb:flyway-core'
-    api 'org.flywaydb:flyway-database-postgresql'
+    api 'org.flywaydb:flyway-database-postgresql:10.15.0'
 }
