@@ -42,8 +42,9 @@ jobs:
         PGUSER: postgres
     - run: ./gradlew doMigration
     - run: ./gradlew copyDependencies buildApp check -PspringBootVersion=3.0.11 --rerun-tasks
-    - run: ./gradlew copyDependencies buildApp check -PspringBootVersion=3.1.10 --rerun-tasks
-    - run: ./gradlew copyDependencies buildApp check -PspringBootVersion=3.2.4 --rerun-tasks
+    - run: ./gradlew copyDependencies buildApp check -PspringBootVersion=3.1.12 --rerun-tasks
+    - run: ./gradlew copyDependencies buildApp check -PspringBootVersion=3.2.7 --rerun-tasks
+    - run: ./gradlew copyDependencies buildApp check -PspringBootVersion=3.3.1 --rerun-tasks
   publish-snapshot:
     runs-on: ubuntu-latest
     steps:

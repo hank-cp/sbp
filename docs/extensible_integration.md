@@ -27,14 +27,14 @@ You could also implement your own `IPluginConfigurer` to integrate other framewo
 or raise an [issue](https://github.com/hank-cp/sbp/issues/new) to request a new integration.
 
 ### WebMvc/WebFlux
-* dependencies: `implementation 'org.laxture:sbp-spring-boot-starter:3.2.24'`
+* dependencies: `implementation 'org.laxture:sbp-spring-boot-starter:3.3.25'`
 * by `SbpWebConfigurer`
 * it's mandatory, and it will always be first one in the processing queue.
 * Plugin webmvc/webflux controller and router function will be registered to main `ApplicationContext` when plugin is started.
 * Unregister when plugin is stopped.
 
 ### DataSource
-* Gradle dependencies: `implementation 'org.laxture:sbp-spring-boot-starter:3.2.24'`
+* Gradle dependencies: `implementation 'org.laxture:sbp-spring-boot-starter:3.3.25'`
 * by `SbpDataSourceConfigurer`
 * Share data source from main `ApplicationContext` to plugin.
 * It shared below resource from app to plugin
@@ -45,13 +45,13 @@ or raise an [issue](https://github.com/hank-cp/sbp/issues/new) to request a new 
   * Jooq DSLContext
 
 ### Jpa/Hibernate
-* Gradle dependencies: `implementation 'org.laxture:sbp-spring-boot-jpa-tarter:3.2.24'`
+* Gradle dependencies: `implementation 'org.laxture:sbp-spring-boot-jpa-tarter:3.3.25'`
 * by `SbpJpaConfigurer`
 * Plugin JPA entities will be registered to main `EntityManagerFactory` when plugin is started.
 * Unregister plugin entiies when plugin is stopped.
 
 ### [SpringDoc-OpenApi](https://springdoc.org/v2/)
-* Gradle dependencies: `implementation 'org.laxture:sbp-spring-boot-springdoc-tarter:3.2.24'`
+* Gradle dependencies: `implementation 'org.laxture:sbp-spring-boot-springdoc-tarter:3.3.25'`
 * by `SbpSpringDocConfigurer`
 * Register plugin api doc when plugin is started.
 * Unregister when plugin is stopped.
@@ -83,12 +83,12 @@ or raise an [issue](https://github.com/hank-cp/sbp/issues/new) to request a new 
 * [`@RouterOperation\@RouterOperations`](https://springdoc.org/v2/#spring-cloud-function-web-support) doesn't work for sbp.
 
 ### Thymeleaf
-* Gradle dependencies: `implementation 'org.laxture:sbp-spring-boot-thymeleaf-starter:3.2.24'`
+* Gradle dependencies: `implementation 'org.laxture:sbp-spring-boot-thymeleaf-starter:3.3.25'`
 * by `SbpThymeleafConfigurer`
 * To customize Thymeleaf configuration via application properties, you need to import <@link ThymeleafProperties> explicitly by `@Import(ThymeleafProperties.class)`
 
 ### Misc.
-* Gradle dependencies: `implementation 'org.laxture:sbp-spring-boot-starter:3.2.24'`
+* Gradle dependencies: `implementation 'org.laxture:sbp-spring-boot-starter:3.3.25'`
 * by `SbpSharedServiceConfigurer`
 * Services could be shared from main app to plugins
 
