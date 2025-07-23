@@ -42,7 +42,8 @@ public interface IPluginConfigurer {
 
     /**
      * Hook of finishing creating plugin ApplicationContext. If the extension is relied on
-     * plugin beans, it should be done in this hook.
+     * plugin beans, it should be done in this hook. This method is fired by standard Spring
+     * container lifecycle, so there is no plugin things involved.
      */
     default void afterBootstrap(SpringBootstrap bootstrap,
                                 GenericApplicationContext pluginApplicationContext) {

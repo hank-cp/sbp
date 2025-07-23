@@ -1,0 +1,27 @@
+dependencies {
+    implementation project(':sbp-spring-boot-starter')
+    implementation project(':demo-api')
+    implementation(project(':sbp-spring-boot-mcp-starter')) {
+        exclude group: 'org.springframework.ai', module: 'spring-ai-starter-mcp-server-webflux'
+    }
+
+//    implementation platform("org.springframework.ai:spring-ai-bom:1.0.0")
+    implementation 'org.springframework.ai:spring-ai-starter-mcp-server-webmvc:1.0.0'
+    implementation 'com.logaritex.mcp:spring-ai-mcp-annotations:0.1.0'
+    implementation 'org.laxture:spring-static-ctx:0.1.2'
+
+    runtimeOnly "org.postgresql:postgresql"
+
+    testImplementation "org.springframework.boot:spring-boot-starter-test"
+    testImplementation "junit:junit"
+}
+
+//*************************************************************************
+// App Properties
+//*************************************************************************
+
+mainClassName = 'demo.sbp.app.DemoJpaApp'
+
+manifest {
+    attributes 'Main-Class': 'demo.sbp.app.DemoJpaApp'
+}

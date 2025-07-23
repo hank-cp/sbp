@@ -1,0 +1,65 @@
+spring:
+  mvc:
+    throw-exception-if-no-handler-found: true
+    static-path-pattern: /public/**
+  resources:
+    add-mappings: true
+    cache:
+      period: 3600
+  datasource:
+    url: "jdbc:postgresql://localhost/sbp-test"
+    username: postgres
+    driver-class-name: "org.postgresql.Driver"
+  flyway:
+    enabled: false
+  sbp:
+    plugins-root: "demo-mcp/plugins"
+    runtime-mode: development
+    enabled: true
+    classes-directories:
+      - "out/production/classes"
+      - "out/production/resources"
+      - "build/classes/java/main"
+      - "build/resources/main"
+    lib-directories:
+      - "libs"
+    disabled-plugins:
+      - demo-plugin-admin
+      - demo-plugin-author
+      - demo-plugin-shelf
+    plugin-properties:
+      spring:
+        flyway:
+          enabled: false
+        jpa:
+          properties:
+            hibernate:
+              temp:
+                use_jdbc_metadata_defaults: false
+          database-platform: org.hibernate.dialect.PostgreSQLDialect
+    controller:
+      base-path: sbp
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        hbm2ddl:
+          create_namespaces: true
+        database-platform: org.hibernate.dialect.PostgreSQLDialect
+        temp:
+          use_jdbc_metadata_defaults: false
+    show-sql: true
+    open-in-view: false
+  main:
+    allow-bean-definition-overriding: true
+  ai:
+    mcp:
+      server:
+        type: SYNC
+
+
+logging:
+  level:
+    demo.sbp.app: DEBUG

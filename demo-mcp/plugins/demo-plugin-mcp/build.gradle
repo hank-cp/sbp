@@ -1,0 +1,21 @@
+dependencies {
+    implementation project(':demo-api')
+    implementation project(':sbp-core')
+    implementation project(':sbp-spring-boot-mcp-starter')
+
+//    implementation platform("org.springframework.ai:spring-ai-bom:1.0.0")
+//    implementation 'org.springframework.ai:spring-ai-starter-mcp-server-webmvc'
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'com.logaritex.mcp:spring-ai-mcp-annotations:0.1.0'
+
+}
+
+//*************************************************************************
+// App Properties
+//*************************************************************************
+
+mainClassName = 'demo.sbp.plugin_mcp.McpPluginStarter'
+
+manifest {
+    attributes 'Main-Class': 'demo.sbp.plugin_mcp.McpPluginStarter'
+}

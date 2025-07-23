@@ -1,0 +1,52 @@
+spring:
+  mvc:
+    throw-exception-if-no-handler-found: true
+    static-path-pattern: /public/**
+  resources:
+    add-mappings: true
+    cache:
+      period: 3600
+  datasource:
+    url: "jdbc:postgresql://localhost/sbp"
+    username: postgres
+    driver-class-name: "org.postgresql.Driver"
+  flyway:
+    enabled: false
+  sbp:
+    plugins-root: "demo-mcp/plugins"
+    runtime-mode: development
+    enabled: true
+    classes-directories:
+      - "out/production/classes"
+      - "out/production/resources"
+      - "build/classes/java/main"
+      - "build/resources/main"
+    lib-directories:
+      - "libs"
+    disabled-plugins:
+      - demo-plugin-admin
+      - demo-plugin-author
+      - demo-plugin-shelf
+    # plugin-properties will apply these properties for all plugins
+    plugin-properties:
+      spring:
+        flyway:
+          enabled: false
+        jpa:
+          properties:
+            hibernate:
+              temp:
+                use_jdbc_metadata_defaults: false
+          database-platform: org.hibernate.dialect.PostgreSQLDialect
+    controller:
+      base-path: sbp
+  main:
+    allow-bean-definition-overriding: true
+  ai:
+    mcp:
+      server:
+        type: SYNC
+
+logging:
+  level:
+    org.hibernate.tool.schema.internal.ExceptionHandlerLoggedImpl: ERROR

@@ -423,7 +423,7 @@ public class PluginIntegrationTest {
     }
 
     public interface Runnable {
-        public abstract void run() throws Exception;
+        void run() throws Exception;
     }
 
     private static Throwable exceptionOf(Runnable runnable) {

@@ -3,6 +3,7 @@ include 'sbp-core',
         'sbp-spring-boot-starter',
         'sbp-spring-boot-springdoc-starter',
         'sbp-spring-boot-thymeleaf-starter',
+        'sbp-spring-boot-mcp-starter',
 
         'demo-shared',
         'demo-security',
@@ -15,7 +16,10 @@ include 'sbp-core',
         'demo-plugin-admin',
 
         'demo-webflux',
-        'demo-plugin-webflux'
+        'demo-plugin-webflux',
+
+        'demo-mcp',
+        'demo-plugin-mcp'
 
 project(":demo-api").projectDir = file("demo-apis/demo-api")
 project(":demo-plugin-author-api").projectDir = file("demo-apis/demo-plugin-author-api")
@@ -25,6 +29,7 @@ project(":demo-plugin-shelf").projectDir = file("plugins/demo-plugin-shelf")
 project(":demo-plugin-admin").projectDir = file("plugins/demo-plugin-admin")
 
 project(":demo-plugin-webflux").projectDir = file("demo-webflux/plugins/demo-plugin-webflux")
+project(":demo-plugin-mcp").projectDir = file("demo-mcp/plugins/demo-plugin-mcp")
 
 // JPA projects, only support Spring Boot 3+
 
