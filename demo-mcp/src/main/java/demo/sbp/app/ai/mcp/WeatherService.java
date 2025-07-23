@@ -19,7 +19,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 
 import java.util.List;
@@ -30,16 +29,6 @@ import java.util.stream.Collectors;
 public class WeatherService {
 
 	private static final String BASE_URL = "https://api.weather.gov";
-
-	private final RestClient restClient;
-
-	public WeatherService() {
-		this.restClient = RestClient.builder()
-			.baseUrl(BASE_URL)
-			.defaultHeader("Accept", "application/geo+json")
-			.defaultHeader("User-Agent", "WeatherApiClient/1.0 (your@email.com)")
-			.build();
-	}
 
 	@JsonIgnoreProperties(ignoreUnknown = true)
 	public record Points(@JsonProperty("properties") Props properties) {
@@ -90,25 +79,7 @@ public class WeatherService {
 	 */
 	@Tool(description = "Get weather forecast for a specific latitude/longitude")
 	public String getWeatherForecastByLocation(double latitude, double longitude) {
-
-		var points = restClient.get()
-			.uri("/points/{latitude},{longitude}", latitude, longitude)
-			.retrieve()
-			.body(Points.class);
-
-		var forecast = restClient.get().uri(points.properties().forecast()).retrieve().body(Forecast.class);
-
-		String forecastText = forecast.properties().periods().stream().map(p -> {
-			return String.format("""
-					%s:
-					Temperature: %s %s
-					Wind: %s %s
-					Forecast: %s
-					""", p.name(), p.temperature(), p.temperatureUnit(), p.windSpeed(), p.windDirection(),
-					p.detailedForecast());
-		}).collect(Collectors.joining());
-
-		return forecastText;
+		return "This is the mock weather forecast for location (%s, %s)".formatted(latitude, longitude);
 	}
 
 	/**
@@ -119,19 +90,7 @@ public class WeatherService {
 	 */
 	@Tool(description = "Get weather alerts for a US state. Input is Two-letter US state code (e.g. CA, NY)")
 	public String getAlerts(String state) {
-		Alert alert = restClient.get().uri("/alerts/active/area/{state}", state).retrieve().body(Alert.class);
-
-		return alert.features()
-			.stream()
-			.map(f -> String.format("""
-					Event: %s
-					Area: %s
-					Severity: %s
-					Description: %s
-					Instructions: %s
-					""", f.properties().event(), f.properties.areaDesc(), f.properties.severity(),
-					f.properties.description(), f.properties.instruction()))
-			.collect(Collectors.joining("\n"));
+		return "this is the mock weather alerts for %s".formatted(state);
 	}
 
 	public static void main(String[] args) {
