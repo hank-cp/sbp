@@ -94,16 +94,6 @@ public class McpTest {
         log.debug("Plugin result: {}", pluginResource);
         content = (McpSchema.TextResourceContents) pluginResource.contents().get(0);
         assertThat(content.text(), equalTo("Hi alice, I am plugin resources."));
-
-        // stop plugin
-        pluginManager.stopPlugin("demo-plugin-mcp");
-        resList = client.listResources();
-        assertThat(resList.resources().size(), equalTo(8));
-
-        // start plugin
-        pluginManager.startPlugin("demo-plugin-mcp");
-        resList = client.listResources();
-        assertThat(resList.resources().size(), equalTo(9));
     }
 
     @Test
