@@ -56,6 +56,13 @@ spring:
   main:
     allow-bean-definition-overriding: true
 
+jakarta:
+  persistence:
+    schema-generation:
+      database:
+        action:
+          orm: create-drop
+
 logging:
   level:
     org.hibernate.tool.schema.internal.ExceptionHandlerLoggedImpl: ERROR

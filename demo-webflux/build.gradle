@@ -1,6 +1,16 @@
+def isSpringBoot4 = VersionNumber.parse("${springBootVersion}").getMajor() >= 4
+
 configurations.testImplementation {
     exclude group: 'org.springframework.boot', module: 'spring-boot-starter-web'
     exclude group: 'org.springframework', module: 'spring-webmvc'
+}
+
+sourceSets {
+    test {
+        java {
+            srcDir isSpringBoot4 ? 'src/test/java4' : 'src/test/java3'
+        }
+    }
 }
 
 dependencies {
@@ -8,10 +18,12 @@ dependencies {
     implementation project(':sbp-spring-boot-springdoc-starter')
 
     implementation "org.springframework.boot:spring-boot-starter-webflux"
-    implementation "org.springframework.boot:spring-boot-starter-aop"
+    implementation "org.springframework.boot:${aopStarter}"
 
     testImplementation "org.springframework.boot:spring-boot-starter-test"
-    testImplementation "junit:junit"
+    if (isSpringBoot4) {
+        testImplementation "org.springframework.boot:spring-boot-webtestclient"
+    }
 }
 
 //*************************************************************************

@@ -122,6 +122,12 @@ ext."signing.secretKeyRingFile" = rootProject.file('publish.gpg')
 //*************************************************************************
 
 subprojects {
+
+    def springBootVer = VersionNumber.parse("${springBootVersion}")
+    def isSpringBoot4 = springBootVer.getMajor() >= 4
+    // spring-boot-starter-aop was renamed to spring-boot-starter-aspectj in Spring Boot 4.x
+    ext.aopStarter = isSpringBoot4 ? 'spring-boot-starter-aspectj' : 'spring-boot-starter-aop'
+
     repositories {
         mavenCentral()
         maven { url 'https://repo.spring.io/milestone' }
@@ -162,13 +168,14 @@ subprojects {
 // Compile & Assemble
 //*************************************************************************
 
-    if (VersionNumber.parse("${springBootVersion}") >= VersionNumber.parse("3.0")) {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    } else {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(17)
+        }
     }
+
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 
     compileJava {
         options.compilerArgs << '-parameters'
@@ -183,9 +190,6 @@ subprojects {
     }
     tasks.withType(Javadoc) {
         options.encoding = 'UTF-8'
-        if(JavaVersion.current().isJava9Compatible()) {
-            options.addBooleanOption('html5', true)
-        }
     }
 
     jar {
@@ -197,6 +201,7 @@ subprojects {
     }
 
     test {
+        useJUnitPlatform()
         testLogging.showStandardStreams = true
         workingDir = project.rootDir
         testLogging {
@@ -207,7 +212,7 @@ subprojects {
 
     configurations {
         localLibs
-        compile.extendsFrom(localLibs)
+        implementation.extendsFrom(localLibs)
     }
 
     dependencies {
@@ -262,7 +267,7 @@ subprojects {
         task deployPluginToLocal(type: Copy) {
             group 'build'
             dependsOn buildPlugin
-            from "$buildDir/libs/"
+            from "${layout.buildDirectory.get()}/libs/"
             into "$rootDir/path/to/plugins/${plugin}/"
         }
     }
@@ -274,6 +279,16 @@ subprojects {
     dependencyManagement {
         imports {
             mavenBom org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES
+        }
+    }
+
+    // Spring Boot 4.x defaults to Jackson 3.x (tools.jackson group);
+    // override to keep Jackson 2.x (com.fasterxml.jackson group)
+    if (isSpringBoot4) {
+        dependencyManagement {
+            imports {
+                mavenBom "com.fasterxml.jackson:jackson-bom:2.18.2"
+            }
         }
     }
 
@@ -305,7 +320,7 @@ subprojects {
                         baselineVersion = '0'
                         baselineOnMigrate = true
                         table = project.'db.migration.table'
-                        locations = ["filesystem:$buildDir/resources/main/${project.'db.migration.location'}"]
+                        locations = ["filesystem:${layout.buildDirectory.get()}/resources/main/${project.'db.migration.location'}"]
                     }
                 }
                 finalizedBy flywayMigrate, flywayInfo
@@ -325,7 +340,7 @@ subprojects {
                         baselineOnMigrate = true
                         baselineVersion = '0'
                         table = project.'db.data.table'
-                        locations = ["filesystem:$buildDir/resources/main/${project.'db.data.location'}"]
+                        locations = ["filesystem:${layout.buildDirectory.get()}/resources/main/${project.'db.data.location'}"]
                     }
 
                 }

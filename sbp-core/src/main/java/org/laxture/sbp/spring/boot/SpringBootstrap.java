@@ -343,7 +343,18 @@ public class SpringBootstrap extends SpringApplication {
         Set<String> configurations = new HashSet<>(
             Arrays.asList(DEFAULT_EXCLUDE_CONFIGURATIONS));
         configurations.addAll(plugin.getExcludeConfigurations());
-        return configurations.toArray(new String[]{});
+        // Filter out class names that don't exist on the classpath,
+        // so the same list works across Spring Boot 3.x and 4.x.
+        return configurations.stream()
+            .filter(className -> {
+                try {
+                    Class.forName(className, false, pluginClassLoader);
+                    return true;
+                } catch (ClassNotFoundException e) {
+                    return false;
+                }
+            })
+            .toArray(String[]::new);
     }
 
     protected String[] getExcludeApplicationListeners() {

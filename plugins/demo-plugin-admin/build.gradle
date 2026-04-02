@@ -1,3 +1,13 @@
+def isSpringBoot4 = VersionNumber.parse("${springBootVersion}").getMajor() >= 4
+
+sourceSets {
+    main {
+        java {
+            srcDir isSpringBoot4 ? 'src/main/java4' : 'src/main/java3'
+        }
+    }
+}
+
 dependencies {
     implementation project(':demo-shared')
     implementation project(':demo-api')

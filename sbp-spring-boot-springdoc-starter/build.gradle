@@ -5,15 +5,17 @@ plugins {
 
 group = 'org.laxture.sbp'
 
+def springdocVersion = VersionNumber.parse("${springBootVersion}") >= VersionNumber.parse("4.0") ? '3.0.2' : '2.1.0'
+
 dependencies {
     api project(':sbp-core')
 
     implementation "org.springframework.boot:spring-boot-autoconfigure"
 
-    api 'org.springdoc:springdoc-openapi-starter-common:2.1.0'
-    api 'org.springdoc:springdoc-openapi-starter-webflux-api:2.1.0'
+    api "org.springdoc:springdoc-openapi-starter-common:${springdocVersion}"
+    api "org.springdoc:springdoc-openapi-starter-webflux-api:${springdocVersion}"
 
-    implementation 'org.springdoc:springdoc-openapi-starter-webflux-ui:2.0.2'
+    implementation "org.springdoc:springdoc-openapi-starter-webflux-ui:${springdocVersion}"
 
     annotationProcessor "org.springframework.boot:spring-boot-autoconfigure-processor"
 }

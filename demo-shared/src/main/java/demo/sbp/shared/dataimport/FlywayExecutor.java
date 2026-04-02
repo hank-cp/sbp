@@ -17,7 +17,6 @@ package demo.sbp.shared.dataimport;
 
 import org.flywaydb.core.Flyway;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.boot.autoconfigure.flyway.FlywayMigrationInitializer;
 import org.springframework.core.Ordered;
 
 /**
@@ -32,7 +31,7 @@ public class FlywayExecutor implements InitializingBean, Ordered {
     private int order = Ordered.LOWEST_PRECEDENCE;
 
     /**
-     * Create a new {@link FlywayMigrationInitializer} instance.
+     * Create a new FlywayExecutor instance.
      * @param flyway the flyway instance
      */
     public FlywayExecutor(Flyway flyway) {

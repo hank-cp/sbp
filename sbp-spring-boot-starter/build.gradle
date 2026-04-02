@@ -5,20 +5,39 @@ plugins {
 
 group = 'org.laxture.sbp'
 
+def sbVer = VersionNumber.parse("${springBootVersion}")
+def isSpringBoot4 = sbVer.getMajor() >= 4
+
+// Use version-specific source directory for auto-configuration classes
+// that reference internal Spring Boot APIs with different packages
+sourceSets {
+    main {
+        java {
+            srcDir isSpringBoot4 ? 'src/main/java4' : 'src/main/java3'
+        }
+    }
+}
+
 dependencies {
     api "org.apache.commons:commons-lang3"
     api "commons-codec:commons-codec"
 
     api project(':sbp-core')
-    implementation project(':sbp-adapter-3')
+    implementation project(isSpringBoot4 ? ':sbp-adapter-4' : ':sbp-adapter-3')
 
     implementation "org.springframework.boot:spring-boot-starter-web"
     implementation "org.springframework.boot:spring-boot-starter-webflux"
-    implementation "org.springframework.boot:spring-boot-starter-aop"
+    implementation "org.springframework.boot:${aopStarter}"
     implementation "org.springframework.boot:spring-boot-configuration-processor"
     implementation "org.springframework.boot:spring-boot-autoconfigure"
     implementation "org.springframework:spring-context-support"
     implementation 'org.flywaydb:flyway-core'
+
+    if (isSpringBoot4) {
+        implementation "org.springframework.boot:spring-boot-webmvc"
+        implementation "org.springframework.boot:spring-boot-webflux"
+        implementation "org.springframework.boot:spring-boot-flyway"
+    }
 
     annotationProcessor "org.springframework.boot:spring-boot-autoconfigure-processor"
 }

@@ -17,8 +17,6 @@ package demo.sbp.app;
 
 import org.laxture.spring.util.ApplicationContextProvider;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
@@ -28,8 +26,11 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 /**
  * @author <a href="https://github.com/hank-cp">Hank CP</a>
  */
-@SpringBootApplication(scanBasePackages = "demo.sbp", exclude = {
-        SecurityAutoConfiguration.class, SecurityFilterAutoConfiguration.class,
+@SpringBootApplication(scanBasePackages = "demo.sbp", excludeName = {
+        "org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration",
+        "org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration",
+        "org.springframework.boot.security.autoconfigure.SecurityAutoConfiguration",
+        "org.springframework.boot.security.autoconfigure.servlet.ServletWebSecurityAutoConfiguration",
 })
 @Profile("no_security")
 @EnableTransactionManagement

@@ -1,3 +1,13 @@
+def isSpringBoot4 = VersionNumber.parse("${springBootVersion}").getMajor() >= 4
+
+sourceSets {
+    test {
+        java {
+            srcDir isSpringBoot4 ? 'src/test/java4' : 'src/test/java3'
+        }
+    }
+}
+
 dependencies {
     implementation project(':sbp-spring-boot-starter')
     implementation project(':demo-api')
@@ -10,7 +20,10 @@ dependencies {
     runtimeOnly "org.postgresql:postgresql"
 
     testImplementation "org.springframework.boot:spring-boot-starter-test"
-    testImplementation "junit:junit"
+    if (isSpringBoot4) {
+        testImplementation "org.springframework.boot:spring-boot-webmvc-test"
+        testImplementation "com.fasterxml.jackson.core:jackson-databind"
+    }
 }
 
 //*************************************************************************

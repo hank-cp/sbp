@@ -1,0 +1,14 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+}
+
+group = 'org.laxture.sbp'
+
+dependencies {
+    api project(':sbp-core')
+    implementation "org.springframework.boot:spring-boot-starter-web"
+    implementation "org.springframework.boot:spring-boot-starter-webflux"
+    implementation "org.springframework.boot:spring-boot-webmvc"
+    implementation "org.springframework.boot:spring-boot-webflux"
+}

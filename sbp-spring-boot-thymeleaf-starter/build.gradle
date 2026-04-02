@@ -5,8 +5,22 @@ plugins {
 
 group = 'org.laxture.sbp'
 
+def sbVer = VersionNumber.parse("${springBootVersion}")
+def isSpringBoot4 = sbVer.getMajor() >= 4
+
+sourceSets {
+    main {
+        java {
+            srcDir isSpringBoot4 ? 'src/main/java4' : 'src/main/java3'
+        }
+    }
+}
+
 dependencies {
     api project(':sbp-core')
 
     implementation "org.springframework.boot:spring-boot-starter-thymeleaf"
+    if (isSpringBoot4) {
+        api "org.springframework.boot:spring-boot-thymeleaf"
+    }
 }

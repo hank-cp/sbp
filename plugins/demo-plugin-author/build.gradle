@@ -26,7 +26,9 @@ task clearDependencies(type: Delete) {
 task copyDependencies(type: Copy) {
     group 'build'
     dependsOn project(':demo-shared').jar, project(':demo-plugin-author-api').jar, clearDependencies
-    from file("${project(':demo-plugin-author-api').buildDir}/libs")
+    from file("${project(':demo-plugin-author-api').layout.buildDirectory.get()}/libs")
     into 'libs'
     include "demo-plugin-author-api*.jar"
 }
+
+compileJava.dependsOn copyDependencies

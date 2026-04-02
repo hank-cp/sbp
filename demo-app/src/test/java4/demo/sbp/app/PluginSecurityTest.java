@@ -16,17 +16,15 @@
 package demo.sbp.app;
 
 import lombok.extern.java.Log;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 import org.laxture.sbp.SpringBootPluginManager;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Base64;
@@ -37,7 +35,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * @author <a href="https://github.com/hank-cp">Hank CP</a>
  */
-@RunWith(SpringRunner.class)
 @SpringBootTest(classes = DemoTestApp.class)
 @TestPropertySource(properties = "sbp-demo.security.app-enabled=true")
 @AutoConfigureMockMvc

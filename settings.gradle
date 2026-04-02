@@ -1,9 +1,7 @@
 include 'sbp-core',
-        'sbp-adapter-3',
         'sbp-spring-boot-starter',
         'sbp-spring-boot-springdoc-starter',
         'sbp-spring-boot-thymeleaf-starter',
-        'sbp-spring-boot-mcp-starter',
 
         'demo-shared',
         'demo-security',
@@ -16,10 +14,22 @@ include 'sbp-core',
         'demo-plugin-admin',
 
         'demo-webflux',
-        'demo-plugin-webflux',
+        'demo-plugin-webflux'
 
-        'demo-mcp',
-        'demo-plugin-mcp'
+if (VersionNumber.parse("${springBootVersion}") >= VersionNumber.parse("4.0")) {
+    include 'sbp-adapter-4'
+} else {
+    include 'sbp-adapter-3'
+}
+
+// MCP modules require Spring AI which does not yet have a stable release for Spring Boot 4.x
+if (VersionNumber.parse("${springBootVersion}") < VersionNumber.parse("4.0")) {
+    include 'sbp-spring-boot-mcp-starter',
+            'demo-mcp',
+            'demo-plugin-mcp'
+
+    project(":demo-plugin-mcp").projectDir = file("demo-mcp/plugins/demo-plugin-mcp")
+}
 
 project(":demo-api").projectDir = file("demo-apis/demo-api")
 project(":demo-plugin-author-api").projectDir = file("demo-apis/demo-plugin-author-api")
@@ -29,7 +39,6 @@ project(":demo-plugin-shelf").projectDir = file("plugins/demo-plugin-shelf")
 project(":demo-plugin-admin").projectDir = file("plugins/demo-plugin-admin")
 
 project(":demo-plugin-webflux").projectDir = file("demo-webflux/plugins/demo-plugin-webflux")
-project(":demo-plugin-mcp").projectDir = file("demo-mcp/plugins/demo-plugin-mcp")
 
 // JPA projects, only support Spring Boot 3+
 

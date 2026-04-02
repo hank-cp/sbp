@@ -5,6 +5,7 @@ build
 .gradle
 .idea
 *.iml
+.qoder
 
 /local.properties
 

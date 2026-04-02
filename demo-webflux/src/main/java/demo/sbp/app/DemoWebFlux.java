@@ -21,8 +21,6 @@ import org.springdoc.core.annotations.RouterOperation;
 import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.*;
@@ -37,8 +35,11 @@ import static org.springframework.web.reactive.function.server.ServerResponse.ok
 /**
  * @author <a href="https://github.com/hank-cp">Hank CP</a>
  */
-@SpringBootApplication(scanBasePackages = "demo.sbp", exclude = {
-    SecurityAutoConfiguration.class, SecurityFilterAutoConfiguration.class,
+@SpringBootApplication(scanBasePackages = "demo.sbp", excludeName = {
+    "org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration",
+    "org.springframework.boot.autoconfigure.security.servlet.SecurityFilterAutoConfiguration",
+    "org.springframework.boot.security.autoconfigure.SecurityAutoConfiguration",
+    "org.springframework.boot.security.autoconfigure.servlet.ServletWebSecurityAutoConfiguration",
 })
 @ComponentScans(value = {
     @ComponentScan(excludeFilters = @ComponentScan.Filter(

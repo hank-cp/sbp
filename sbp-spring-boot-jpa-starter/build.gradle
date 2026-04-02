@@ -5,11 +5,26 @@ plugins {
 
 group = 'org.laxture.sbp'
 
+def sbVer = VersionNumber.parse("${springBootVersion}")
+def isSpringBoot4 = sbVer.getMajor() >= 4
+
+sourceSets {
+    main {
+        java {
+            srcDir isSpringBoot4 ? 'src/main/java4' : 'src/main/java3'
+        }
+    }
+}
+
 dependencies {
     api project(':sbp-core')
 
     implementation "org.springframework.boot:spring-boot-autoconfigure"
     implementation "org.springframework.boot:spring-boot-starter-data-jpa"
+
+    if (isSpringBoot4) {
+        implementation "org.springframework.boot:spring-boot-persistence"
+    }
 
     annotationProcessor "org.springframework.boot:spring-boot-autoconfigure-processor"
 }

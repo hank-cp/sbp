@@ -2,16 +2,32 @@ plugins {
     id 'java-library'
 }
 
+def sbVer = VersionNumber.parse("${springBootVersion}")
+def isSpringBoot4 = sbVer.getMajor() >= 4
+
+// Flyway autoconfigure classes moved packages in Spring Boot 4.x
+sourceSets {
+    main {
+        java {
+            srcDir isSpringBoot4 ? 'src/main/java4' : 'src/main/java3'
+        }
+    }
+}
+
 dependencies {
     implementation project(':sbp-core')
 
     api "org.springframework.boot:spring-boot-starter-web"
-    api "org.springframework.boot:spring-boot-starter-aop"
+    api "org.springframework.boot:${aopStarter}"
     api("org.springframework.boot:spring-boot-starter-jooq")
     api "org.springframework.boot:spring-boot-configuration-processor"
     api "org.springframework:spring-context-support"
 
-    api "javax.validation:validation-api:2.0.1.Final"
+    if (isSpringBoot4) {
+        api "org.springframework.boot:spring-boot-flyway"
+    }
+
+    api "jakarta.validation:jakarta.validation-api"
     api "joda-time:joda-time"
     api "com.fasterxml.jackson.datatype:jackson-datatype-joda"
     api 'org.modelmapper:modelmapper:2.3.0'
@@ -22,7 +38,7 @@ dependencies {
     api "org.apache.commons:commons-lang3:3.8.1"
     api 'org.laxture:spring-static-ctx:0.1.2'
     api 'org.flywaydb:flyway-core'
-    if (VersionNumber.parse("${springBootVersion}") >= VersionNumber.parse("3.3")) {
+    if (sbVer >= VersionNumber.parse("3.3")) {
         api 'org.flywaydb:flyway-database-postgresql'
     }
 }

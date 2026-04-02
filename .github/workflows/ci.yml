@@ -47,6 +47,7 @@ jobs:
     - run: ./gradlew copyDependencies buildApp check -PspringBootVersion=3.3.12 --rerun-tasks
     - run: ./gradlew copyDependencies buildApp check -PspringBootVersion=3.4.7 --rerun-tasks
     - run: ./gradlew copyDependencies buildApp check -PspringBootVersion=3.5.3 --rerun-tasks
+    - run: ./gradlew copyDependencies buildApp check -PspringBootVersion=4.0.5 --rerun-tasks
   publish-snapshot:
     runs-on: ubuntu-latest
     steps:

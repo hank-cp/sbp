@@ -19,7 +19,6 @@ import org.laxture.sbp.SpringBootPlugin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,7 +29,10 @@ import org.springframework.orm.jpa.persistenceunit.PersistenceManagedTypes;
  * @author <a href="https://github.com/hank-cp">Hank CP</a>
  */
 @Configuration
-@AutoConfigureBefore(HibernateJpaAutoConfiguration.class)
+@AutoConfigureBefore(name = {
+    "org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration",
+    "org.springframework.boot.hibernate.autoconfigure.HibernateJpaAutoConfiguration"
+})
 @ConditionalOnMissingBean(SpringBootPlugin.class) // only configure for main app
 public class SbpJpaAutoConfiguration {
 
