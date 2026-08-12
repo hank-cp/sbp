@@ -180,6 +180,7 @@ public class SpringBootstrap extends SpringApplication {
         "org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration",
         "org.springframework.boot.actuate.autoconfigure.session.SessionsEndpointAutoConfiguration",
         "org.springframework.boot.actuate.autoconfigure.solr.SolrHealthContributorAutoConfiguration",
+        "org.springframework.boot.actuate.autoconfigure.ssl.SslHealthContributorAutoConfiguration",
         "org.springframework.boot.actuate.autoconfigure.system.DiskSpaceHealthContributorAutoConfiguration",
         "org.springframework.boot.actuate.autoconfigure.trace.http.HttpTraceAutoConfiguration",
         "org.springframework.boot.actuate.autoconfigure.trace.http.HttpTraceEndpointAutoConfiguration",
